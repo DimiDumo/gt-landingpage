@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GalleryTalk - Dive into art galleries or build your own</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* Reset and Base */
         *, *::before, *::after {
@@ -23,6 +24,18 @@
             --spacing-lg: 4rem;
             --spacing-xl: 6rem;
             --max-width: 1200px;
+
+            /* Artist palette colors */
+            --burnt-sienna: #A0522D;
+            --ultramarine: #1E3A5F;
+            --cadmium-yellow: #FDB813;
+            --alizarin-crimson: #E32636;
+            --viridian: #40826D;
+            --raw-umber: #714B23;
+            --titanium-white: #F5F5F5;
+            --ivory-black: #1B1B1B;
+            --prussian-blue: #003153;
+            --yellow-ochre: #CC7722;
         }
 
         html {
@@ -31,7 +44,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             line-height: 1.6;
             color: var(--black);
             background-color: var(--white);
@@ -51,18 +64,19 @@
             pointer-events: none;
         }
 
-        /* Brush Cursor */
+        /* Paintbrush Cursor */
         .brush-cursor {
             position: fixed;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 2px solid var(--black);
             pointer-events: none;
-            transform: translate(-50%, -50%);
             z-index: 9999;
             opacity: 0;
             transition: opacity 0.15s;
+            transform-origin: bottom center;
+        }
+
+        .brush-cursor svg {
+            display: block;
+            filter: drop-shadow(1px 2px 3px rgba(0,0,0,0.3));
         }
 
         body.painting .brush-cursor {
@@ -71,15 +85,17 @@
 
         /* Typography */
         h1 {
+            font-family: 'Cormorant Garamond', Georgia, serif;
             font-size: clamp(2.5rem, 5vw, 4rem);
-            font-weight: 700;
+            font-weight: 600;
             line-height: 1.1;
             letter-spacing: -0.02em;
         }
 
         h2 {
+            font-family: 'Cormorant Garamond', Georgia, serif;
             font-size: clamp(1.75rem, 3vw, 2.5rem);
-            font-weight: 600;
+            font-weight: 500;
             line-height: 1.2;
             letter-spacing: -0.01em;
         }
@@ -134,10 +150,10 @@
         }
 
         .logo {
-            font-size: 1.25rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
             text-decoration: none;
             color: var(--black);
         }
@@ -153,6 +169,7 @@
             text-decoration: none;
             color: var(--black);
             font-size: 0.875rem;
+            font-weight: 400;
             transition: opacity 0.2s;
         }
 
@@ -214,82 +231,94 @@
             max-width: 600px;
         }
 
-        /* Color Picker Container */
-        .color-picker-container {
-            display: flex;
+        /* Artist Palette Container */
+        .palette-container {
+            display: inline-flex;
             flex-direction: column;
-            align-items: flex-start;
-            gap: var(--spacing-xs);
+            gap: 0.75rem;
             margin-bottom: var(--spacing-lg);
-            padding: var(--spacing-sm);
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 8px;
-            border: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 1.25rem 1.5rem;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
-        .color-picker-label {
-            font-size: 0.875rem;
-            color: var(--gray-medium);
-            font-weight: 500;
-        }
-
-        .color-picker-row {
+        .palette-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: var(--spacing-sm);
         }
 
-        .rainbow-bar {
-            width: 250px;
-            height: 20px;
-            border-radius: 10px;
-            background: linear-gradient(to right,
-                hsl(0, 100%, 50%),
-                hsl(60, 100%, 50%),
-                hsl(120, 100%, 50%),
-                hsl(180, 100%, 50%),
-                hsl(240, 100%, 50%),
-                hsl(300, 100%, 50%),
-                hsl(360, 100%, 50%)
-            );
-            cursor: crosshair;
-            position: relative;
-            border: 2px solid var(--black);
+        .palette-hint {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 0.9rem;
+            color: var(--gray-medium);
+            font-style: italic;
+            letter-spacing: 0.02em;
         }
 
-        .color-indicator {
-            position: absolute;
-            width: 8px;
-            height: 24px;
-            background: var(--white);
-            border: 2px solid var(--black);
-            border-radius: 4px;
-            top: -4px;
-            transform: translateX(-50%);
-            pointer-events: none;
-        }
-
-        .color-preview {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            border: 2px solid var(--black);
-        }
-
-        .clear-canvas-btn {
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-            background: var(--white);
-            border: 1px solid rgba(0, 0, 0, 0.2);
+        .clear-btn {
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 0.85rem;
+            color: var(--gray-medium);
+            background: none;
+            border: none;
             cursor: pointer;
-            transition: all 0.2s;
-            border-radius: 4px;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            transition: color 0.2s;
+            padding: 0;
         }
 
-        .clear-canvas-btn:hover {
-            background: var(--black);
-            color: var(--white);
-            border-color: var(--black);
+        .clear-btn:hover {
+            color: var(--black);
+        }
+
+        .paint-dabs {
+            display: flex;
+            gap: 0.6rem;
+            align-items: center;
+        }
+
+        .paint-dab {
+            width: 32px;
+            height: 32px;
+            border-radius: 50% 45% 55% 48%;
+            cursor: pointer;
+            box-shadow:
+                2px 3px 6px rgba(0, 0, 0, 0.25),
+                inset -2px -2px 4px rgba(0, 0, 0, 0.1),
+                inset 2px 2px 4px rgba(255, 255, 255, 0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+
+        .paint-dab::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            width: 8px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transform: rotate(-30deg);
+        }
+
+        .paint-dab:hover {
+            transform: scale(1.15) rotate(-2deg);
+        }
+
+        .paint-dab.selected {
+            transform: scale(1.1);
+            box-shadow:
+                0 0 0 3px rgba(255, 255, 255, 0.9),
+                0 0 0 5px currentColor,
+                3px 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .paint-dab.selected:hover {
+            transform: scale(1.15) rotate(-2deg);
         }
 
         /* Vision Section */
@@ -366,8 +395,9 @@
         }
 
         .step-number {
+            font-family: 'Cormorant Garamond', Georgia, serif;
             font-size: 3rem;
-            font-weight: 700;
+            font-weight: 600;
             line-height: 1;
             margin-bottom: var(--spacing-sm);
             opacity: 0.2;
@@ -457,8 +487,9 @@
         }
 
         .pricing-price {
+            font-family: 'Cormorant Garamond', Georgia, serif;
             font-size: 3rem;
-            font-weight: 700;
+            font-weight: 600;
             line-height: 1;
             margin-bottom: var(--spacing-xs);
         }
@@ -491,6 +522,7 @@
         }
 
         .pricing-note {
+            font-family: 'Cormorant Garamond', Georgia, serif;
             font-size: 0.875rem;
             font-style: italic;
             color: var(--gray-medium);
@@ -668,17 +700,19 @@
                 justify-content: center;
             }
 
-            .rainbow-bar {
-                width: 200px;
-            }
-
-            .color-picker-container {
-                align-items: center;
-            }
-
-            .color-picker-row {
+            .paint-dabs {
                 flex-wrap: wrap;
                 justify-content: center;
+            }
+
+            .palette-container {
+                align-items: center;
+                text-align: center;
+            }
+
+            .palette-header {
+                flex-direction: column;
+                gap: 0.5rem;
             }
 
             /* Hide brush cursor on mobile */
@@ -692,13 +726,51 @@
     <!-- Paint Canvas -->
     <canvas id="paintCanvas"></canvas>
 
-    <!-- Brush Cursor -->
-    <div class="brush-cursor" id="brushCursor"></div>
+    <!-- Paintbrush Cursor -->
+    <div class="brush-cursor" id="brushCursor">
+        <svg viewBox="0 0 28 70" width="28" height="70">
+            <!-- Handle -->
+            <rect x="10" y="0" width="8" height="32" fill="#C4956A" rx="1"/>
+            <rect x="10" y="0" width="8" height="32" fill="url(#handleGradient)" rx="1"/>
+            <!-- Handle detail lines -->
+            <line x1="12" y1="4" x2="12" y2="28" stroke="#A67B4D" stroke-width="0.5" opacity="0.5"/>
+            <line x1="16" y1="4" x2="16" y2="28" stroke="#D4A574" stroke-width="0.5" opacity="0.3"/>
+            <!-- Ferrule (metal band) -->
+            <rect x="8" y="30" width="12" height="10" fill="#B8B8B8"/>
+            <rect x="8" y="30" width="12" height="10" fill="url(#ferruleGradient)"/>
+            <line x1="8" y1="32" x2="20" y2="32" stroke="#888" stroke-width="0.5"/>
+            <line x1="8" y1="38" x2="20" y2="38" stroke="#888" stroke-width="0.5"/>
+            <!-- Bristles base -->
+            <ellipse cx="14" cy="42" rx="7" ry="3" fill="#D4A574"/>
+            <!-- Bristles - colored dynamically -->
+            <path id="bristlesPath" d="M7 42 Q5 55 8 62 Q10 66 14 68 Q18 66 20 62 Q23 55 21 42 Z" fill="currentColor"/>
+            <!-- Bristle texture -->
+            <line x1="10" y1="44" x2="9" y2="60" stroke="rgba(0,0,0,0.1)" stroke-width="0.5"/>
+            <line x1="12" y1="44" x2="11" y2="64" stroke="rgba(0,0,0,0.1)" stroke-width="0.5"/>
+            <line x1="14" y1="44" x2="14" y2="66" stroke="rgba(0,0,0,0.1)" stroke-width="0.5"/>
+            <line x1="16" y1="44" x2="17" y2="64" stroke="rgba(0,0,0,0.1)" stroke-width="0.5"/>
+            <line x1="18" y1="44" x2="19" y2="60" stroke="rgba(0,0,0,0.1)" stroke-width="0.5"/>
+            <!-- Gradients -->
+            <defs>
+                <linearGradient id="handleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#A67B4D;stop-opacity:0.3" />
+                    <stop offset="50%" style="stop-color:#E8C9A0;stop-opacity:0.2" />
+                    <stop offset="100%" style="stop-color:#8B6914;stop-opacity:0.3" />
+                </linearGradient>
+                <linearGradient id="ferruleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#666;stop-opacity:0.3" />
+                    <stop offset="30%" style="stop-color:#FFF;stop-opacity:0.4" />
+                    <stop offset="70%" style="stop-color:#FFF;stop-opacity:0.2" />
+                    <stop offset="100%" style="stop-color:#666;stop-opacity:0.3" />
+                </linearGradient>
+            </defs>
+        </svg>
+    </div>
 
     <!-- Navigation -->
     <nav>
         <div class="nav-content">
-            <a href="#" class="logo">Gallery Talk</a>
+            <a href="#" class="logo">GalleryTalk</a>
             <button class="mobile-menu-btn" onclick="toggleMenu()" aria-label="Toggle menu">
                 <span></span>
                 <span></span>
@@ -719,15 +791,23 @@
                 <h1>Dive into art galleries or build your own, today</h1>
                 <p>We envision a world where art knows no boundaries. Artists around the world should be able to share their art with people all around the world.</p>
 
-                <!-- Color Picker -->
-                <div class="color-picker-container">
-                    <span class="color-picker-label">Pick a color and paint!</span>
-                    <div class="color-picker-row">
-                        <div class="rainbow-bar" id="rainbowBar">
-                            <div class="color-indicator" id="colorIndicator"></div>
-                        </div>
-                        <div class="color-preview" id="colorPreview"></div>
-                        <button class="clear-canvas-btn" id="clearCanvas">Clear canvas</button>
+                <!-- Artist Palette -->
+                <div class="palette-container">
+                    <div class="palette-header">
+                        <span class="palette-hint">Click and drag to paint</span>
+                        <button class="clear-btn" id="clearCanvas">Clear</button>
+                    </div>
+                    <div class="paint-dabs" id="paintDabs">
+                        <div class="paint-dab selected" data-color="#A0522D" style="background-color: #A0522D; color: #A0522D;" title="Burnt Sienna"></div>
+                        <div class="paint-dab" data-color="#1E3A5F" style="background-color: #1E3A5F; color: #1E3A5F;" title="Ultramarine Blue"></div>
+                        <div class="paint-dab" data-color="#FDB813" style="background-color: #FDB813; color: #FDB813;" title="Cadmium Yellow"></div>
+                        <div class="paint-dab" data-color="#E32636" style="background-color: #E32636; color: #E32636;" title="Alizarin Crimson"></div>
+                        <div class="paint-dab" data-color="#40826D" style="background-color: #40826D; color: #40826D;" title="Viridian Green"></div>
+                        <div class="paint-dab" data-color="#714B23" style="background-color: #714B23; color: #714B23;" title="Raw Umber"></div>
+                        <div class="paint-dab" data-color="#F5F5F5" style="background-color: #F5F5F5; color: #F5F5F5;" title="Titanium White"></div>
+                        <div class="paint-dab" data-color="#1B1B1B" style="background-color: #1B1B1B; color: #1B1B1B;" title="Ivory Black"></div>
+                        <div class="paint-dab" data-color="#003153" style="background-color: #003153; color: #003153;" title="Prussian Blue"></div>
+                        <div class="paint-dab" data-color="#CC7722" style="background-color: #CC7722; color: #CC7722;" title="Yellow Ochre"></div>
                     </div>
                 </div>
 
@@ -885,7 +965,7 @@
         <div class="container">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <a href="#" class="logo">Gallery Talk</a>
+                    <a href="#" class="logo">GalleryTalk</a>
                     <div class="social-links">
                         <a href="#" aria-label="Instagram">In</a>
                         <a href="#" aria-label="LinkedIn">Li</a>
@@ -927,16 +1007,16 @@
         const canvas = document.getElementById('paintCanvas');
         const ctx = canvas.getContext('2d');
         const brushCursor = document.getElementById('brushCursor');
-        const rainbowBar = document.getElementById('rainbowBar');
-        const colorIndicator = document.getElementById('colorIndicator');
-        const colorPreview = document.getElementById('colorPreview');
+        const bristlesPath = document.getElementById('bristlesPath');
+        const paintDabs = document.querySelectorAll('.paint-dab');
         const clearCanvasBtn = document.getElementById('clearCanvas');
 
         let isDrawing = false;
-        let currentColor = 'hsl(0, 100%, 50%)';
+        let currentColor = '#A0522D'; // Burnt Sienna default
         let lastX = 0;
         let lastY = 0;
-        const brushSize = 25;
+        let lastAngle = 0;
+        const brushSize = 20;
 
         // Initialize canvas size
         function resizeCanvas() {
@@ -951,74 +1031,101 @@
             canvas.height = scrollHeight;
         }
 
-        // Initialize color
-        function initColor() {
-            colorPreview.style.backgroundColor = currentColor;
-            brushCursor.style.backgroundColor = currentColor;
-            colorIndicator.style.left = '0px';
+        // Initialize brush color
+        function initBrush() {
+            bristlesPath.style.fill = currentColor;
+            brushCursor.style.color = currentColor;
         }
 
-        // Update color from rainbow bar
-        function updateColor(e) {
-            const rect = rainbowBar.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            if (e.touches) {
-                x = e.touches[0].clientX - rect.left;
-            }
-            x = Math.max(0, Math.min(x, rect.width));
-
-            const hue = (x / rect.width) * 360;
-            currentColor = `hsl(${hue}, 100%, 50%)`;
-            colorPreview.style.backgroundColor = currentColor;
-            brushCursor.style.backgroundColor = currentColor;
-            colorIndicator.style.left = `${x}px`;
+        // Convert hex to rgba
+        function hexToRgba(hex, alpha) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
         }
 
-        // Rainbow bar events
-        rainbowBar.addEventListener('click', updateColor);
-        rainbowBar.addEventListener('mousedown', (e) => {
-            updateColor(e);
-            const onMove = (e) => updateColor(e);
-            const onUp = () => {
-                document.removeEventListener('mousemove', onMove);
-                document.removeEventListener('mouseup', onUp);
-            };
-            document.addEventListener('mousemove', onMove);
-            document.addEventListener('mouseup', onUp);
+        // Paint dab selection
+        paintDabs.forEach(dab => {
+            dab.addEventListener('click', () => {
+                // Remove selected class from all
+                paintDabs.forEach(d => d.classList.remove('selected'));
+                // Add to clicked one
+                dab.classList.add('selected');
+                // Update color
+                currentColor = dab.dataset.color;
+                bristlesPath.style.fill = currentColor;
+                brushCursor.style.color = currentColor;
+            });
         });
 
-        // Touch support for rainbow bar
-        rainbowBar.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            updateColor(e);
-        });
-        rainbowBar.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            updateColor(e);
-        });
-
-        // Draw function
-        function draw(x, y) {
+        // Watercolor drawing function
+        function drawWatercolor(x, y) {
             if (!isDrawing) return;
 
-            ctx.beginPath();
-            ctx.moveTo(lastX, lastY);
-            ctx.lineTo(x, y);
-            ctx.strokeStyle = currentColor;
-            ctx.lineWidth = brushSize;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-            ctx.stroke();
+            // Draw multiple semi-transparent circles for watercolor texture
+            const numDabs = 4;
+            for (let i = 0; i < numDabs; i++) {
+                const offsetX = (Math.random() - 0.5) * brushSize * 0.6;
+                const offsetY = (Math.random() - 0.5) * brushSize * 0.6;
+                const radius = brushSize * (0.6 + Math.random() * 0.5);
+                const opacity = 0.08 + Math.random() * 0.12;
+
+                ctx.beginPath();
+                ctx.arc(x + offsetX, y + offsetY, radius, 0, Math.PI * 2);
+                ctx.fillStyle = hexToRgba(currentColor, opacity);
+                ctx.fill();
+            }
+
+            // Draw connecting stroke with soft edges
+            if (lastX && lastY) {
+                const dist = Math.sqrt((x - lastX) ** 2 + (y - lastY) ** 2);
+                const steps = Math.max(1, Math.floor(dist / 3));
+
+                for (let i = 0; i < steps; i++) {
+                    const t = i / steps;
+                    const px = lastX + (x - lastX) * t;
+                    const py = lastY + (y - lastY) * t;
+
+                    const radius = brushSize * (0.7 + Math.random() * 0.3);
+                    const opacity = 0.06 + Math.random() * 0.08;
+
+                    ctx.beginPath();
+                    ctx.arc(px, py, radius, 0, Math.PI * 2);
+                    ctx.fillStyle = hexToRgba(currentColor, opacity);
+                    ctx.fill();
+                }
+            }
 
             lastX = x;
             lastY = y;
         }
 
+        // Update brush cursor rotation based on movement
+        function updateBrushRotation(x, y, prevX, prevY) {
+            if (prevX !== undefined && prevY !== undefined) {
+                const dx = x - prevX;
+                const dy = y - prevY;
+                if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+                    // Calculate angle and apply subtle rotation
+                    let angle = Math.atan2(dx, -dy) * (180 / Math.PI);
+                    // Smooth the rotation
+                    angle = lastAngle + (angle - lastAngle) * 0.3;
+                    // Limit the tilt
+                    angle = Math.max(-25, Math.min(25, angle));
+                    lastAngle = angle;
+                    brushCursor.style.transform = `translate(-14px, -68px) rotate(${angle}deg)`;
+                }
+            }
+        }
+
+        let prevMouseX, prevMouseY;
+
         // Mouse events for drawing
         document.addEventListener('mousedown', (e) => {
             // Don't draw on UI elements
             if (e.target.closest('nav') ||
-                e.target.closest('.color-picker-container') ||
+                e.target.closest('.palette-container') ||
                 e.target.closest('.btn') ||
                 e.target.closest('a') ||
                 e.target.closest('button')) {
@@ -1029,11 +1136,8 @@
             lastX = e.clientX;
             lastY = e.clientY + window.scrollY;
 
-            // Draw a dot at the starting point
-            ctx.beginPath();
-            ctx.arc(lastX, lastY, brushSize / 2, 0, Math.PI * 2);
-            ctx.fillStyle = currentColor;
-            ctx.fill();
+            // Draw initial watercolor dab
+            drawWatercolor(lastX, lastY);
         });
 
         document.addEventListener('mousemove', (e) => {
@@ -1041,15 +1145,22 @@
             brushCursor.style.left = e.clientX + 'px';
             brushCursor.style.top = e.clientY + 'px';
 
+            // Update rotation
+            updateBrushRotation(e.clientX, e.clientY, prevMouseX, prevMouseY);
+            prevMouseX = e.clientX;
+            prevMouseY = e.clientY;
+
             if (isDrawing) {
                 const x = e.clientX;
                 const y = e.clientY + window.scrollY;
-                draw(x, y);
+                drawWatercolor(x, y);
             }
         });
 
         document.addEventListener('mouseup', () => {
             isDrawing = false;
+            lastX = 0;
+            lastY = 0;
         });
 
         document.addEventListener('mouseleave', () => {
@@ -1069,7 +1180,7 @@
         document.addEventListener('touchstart', (e) => {
             // Don't draw on UI elements
             if (e.target.closest('nav') ||
-                e.target.closest('.color-picker-container') ||
+                e.target.closest('.palette-container') ||
                 e.target.closest('.btn') ||
                 e.target.closest('a') ||
                 e.target.closest('button')) {
@@ -1081,11 +1192,8 @@
             lastX = touch.clientX;
             lastY = touch.clientY + window.scrollY;
 
-            // Draw a dot at the starting point
-            ctx.beginPath();
-            ctx.arc(lastX, lastY, brushSize / 2, 0, Math.PI * 2);
-            ctx.fillStyle = currentColor;
-            ctx.fill();
+            // Draw initial watercolor dab
+            drawWatercolor(lastX, lastY);
         }, { passive: true });
 
         document.addEventListener('touchmove', (e) => {
@@ -1093,7 +1201,7 @@
 
             // Don't prevent default scrolling on UI elements
             if (e.target.closest('nav') ||
-                e.target.closest('.color-picker-container') ||
+                e.target.closest('.palette-container') ||
                 e.target.closest('.btn') ||
                 e.target.closest('a') ||
                 e.target.closest('button')) {
@@ -1103,11 +1211,13 @@
             const touch = e.touches[0];
             const x = touch.clientX;
             const y = touch.clientY + window.scrollY;
-            draw(x, y);
+            drawWatercolor(x, y);
         }, { passive: true });
 
         document.addEventListener('touchend', () => {
             isDrawing = false;
+            lastX = 0;
+            lastY = 0;
         });
 
         document.addEventListener('touchcancel', () => {
@@ -1155,7 +1265,7 @@
 
         // Initialize
         resizeCanvas();
-        initColor();
+        initBrush();
     </script>
 </body>
 </html>
