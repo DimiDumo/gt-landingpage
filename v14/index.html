@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GalleryTalk - From Chaos to Art</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f8f6f4 0%, #ebe7e3 50%, #f0ebe6 100%);
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Subtle paper texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        #physics-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Cards styling */
+        .card {
+            position: absolute;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow:
+                0 4px 20px rgba(0, 0, 0, 0.08),
+                0 8px 40px rgba(0, 0, 0, 0.04);
+            padding: 20px;
+            cursor: grab;
+            user-select: none;
+            transform-origin: center center;
+            transition: box-shadow 0.3s ease;
+            z-index: 10;
+            backface-visibility: hidden;
+            will-change: transform;
+        }
+
+        .card:hover {
+            box-shadow:
+                0 8px 30px rgba(0, 0, 0, 0.12),
+                0 16px 60px rgba(0, 0, 0, 0.08);
+        }
+
+        .card.dragging {
+            cursor: grabbing;
+            z-index: 100;
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.2),
+                0 30px 80px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Hero Card */
+        .card-hero {
+            width: 380px;
+            min-height: 200px;
+            background: linear-gradient(145deg, #ffffff 0%, #fdfcfb 100%);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .card-hero h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.3;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+        }
+
+        .card-hero .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #ff6b9d, #ffa64d, #ffd93d, #6bcbff);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card-hero .cta-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 30px rgba(255, 107, 157, 0.5);
+        }
+
+        /* Logo Card */
+        .card-logo {
+            width: 220px;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .logo-flame {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #ff6b9d, #ffa64d, #ffd93d, #6bcbff);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flame-dance 3s ease-in-out infinite;
+        }
+
+        @keyframes flame-dance {
+            0%, 100% { transform: scale(1) rotate(-5deg); }
+            50% { transform: scale(1.05) rotate(5deg); }
+        }
+
+        .logo-text {
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #ff6b9d, #ffa64d, #ffd93d, #6bcbff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Vision Card */
+        .card-vision {
+            width: 340px;
+            min-height: 120px;
+            background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
+            color: white;
+        }
+
+        .card-vision h2 {
+            font-size: 1.3rem;
+            font-weight: 500;
+            line-height: 1.5;
+            font-style: italic;
+        }
+
+        /* Feature Cards */
+        .card-feature {
+            width: 180px;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 12px;
+        }
+
+        .card-feature .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .card-feature.feature-1 .icon { background: linear-gradient(135deg, #ff6b9d, #ff8a7a); }
+        .card-feature.feature-2 .icon { background: linear-gradient(135deg, #ffa64d, #ffcc70); }
+        .card-feature.feature-3 .icon { background: linear-gradient(135deg, #6bcbff, #a8e6ff); }
+        .card-feature.feature-4 .icon { background: linear-gradient(135deg, #b088f9, #d4b8ff); }
+
+        .card-feature h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #333;
+            line-height: 1.4;
+        }
+
+        /* Art Cards */
+        .card-art {
+            width: 160px;
+            height: 200px;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .card-art .art-preview {
+            flex: 1;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-art .art-preview::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 100%);
+        }
+
+        .card-art.art-1 .art-preview { background: linear-gradient(145deg, #ff6b9d, #c75b8c); }
+        .card-art.art-2 .art-preview { background: linear-gradient(145deg, #ffa64d, #e8943f); }
+        .card-art.art-3 .art-preview { background: linear-gradient(145deg, #6bcbff, #5ab8e8); }
+        .card-art.art-4 .art-preview { background: linear-gradient(145deg, #b088f9, #9a70e8); }
+        .card-art.art-5 .art-preview { background: linear-gradient(145deg, #2dd4bf, #14b8a6); }
+        .card-art.art-6 .art-preview { background: linear-gradient(145deg, #1a1a1a, #333); }
+
+        .card-art .artist-name {
+            font-size: 0.75rem;
+            color: #666;
+            font-weight: 500;
+        }
+
+        /* Connect Card */
+        .card-connect {
+            width: 300px;
+            min-height: 100px;
+            background: linear-gradient(145deg, #fff7ed, #fffbf5);
+            border: 2px solid #ffd93d;
+        }
+
+        .card-connect h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .card-connect h2 em {
+            font-style: normal;
+            background: linear-gradient(135deg, #ff6b9d, #ffa64d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Pricing Cards */
+        .card-pricing {
+            width: 200px;
+            min-height: 180px;
+        }
+
+        .card-pricing.free {
+            background: linear-gradient(145deg, #f0fdf4, #ecfdf5);
+            border: 2px solid #22c55e;
+        }
+
+        .card-pricing.paid {
+            background: linear-gradient(145deg, #fdf4ff, #fdf2f8);
+            border: 2px solid #d946ef;
+        }
+
+        .card-pricing .price {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .card-pricing.free .price { color: #22c55e; }
+        .card-pricing.paid .price { color: #d946ef; }
+
+        .card-pricing .description {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        .card-pricing .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        .card-pricing.free .tag {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .card-pricing.paid .tag {
+            background: #fae8ff;
+            color: #86198f;
+        }
+
+        /* Quote Card */
+        .card-quote {
+            width: 260px;
+            min-height: 120px;
+            background: linear-gradient(145deg, #fef3c7, #fef9c3);
+            border-left: 4px solid #fbbf24;
+        }
+
+        .card-quote p {
+            font-size: 1rem;
+            font-weight: 500;
+            color: #78350f;
+            font-style: italic;
+            line-height: 1.6;
+        }
+
+        /* Differentiator Cards */
+        .card-diff {
+            width: 220px;
+            min-height: 100px;
+            background: linear-gradient(145deg, #f8fafc, #f1f5f9);
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-diff h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 6px;
+        }
+
+        .card-diff p {
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        /* Control UI */
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 16px;
+            z-index: 1000;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 60px;
+            box-shadow:
+                0 10px 40px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(0, 0, 0, 0.05);
+        }
+
+        .control-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 50px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn.organize {
+            background: linear-gradient(135deg, #ff6b9d, #ffa64d, #ffd93d, #6bcbff);
+            color: white;
+            box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4);
+        }
+
+        .control-btn.organize:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 107, 157, 0.5);
+        }
+
+        .control-btn.scatter {
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .control-btn.scatter:hover {
+            background: #333;
+            transform: translateY(-2px);
+        }
+
+        .control-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Instructions */
+        .instructions {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            padding: 12px 24px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            opacity: 0.9;
+            transition: opacity 0.5s ease;
+        }
+
+        .instructions.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Organized state grid */
+        .organized .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            padding: 100px 60px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Footer in organized mode */
+        .footer-organized {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(100%);
+            transition: all 0.5s ease;
+            z-index: 999;
+        }
+
+        .footer-organized.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .footer-organized .footer-logo {
+            font-weight: 800;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, #ff6b9d, #ffa64d, #ffd93d, #6bcbff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-organized .footer-info {
+            font-size: 0.75rem;
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .card-hero {
+                width: 280px;
+                min-height: 160px;
+            }
+
+            .card-hero h1 {
+                font-size: 1.3rem;
+            }
+
+            .card-feature {
+                width: 140px;
+                min-height: 120px;
+            }
+
+            .card-art {
+                width: 120px;
+                height: 150px;
+            }
+
+            .card-vision {
+                width: 260px;
+            }
+
+            .card-connect {
+                width: 240px;
+            }
+
+            .controls {
+                flex-direction: column;
+                bottom: 20px;
+                padding: 12px 16px;
+            }
+
+            .control-btn {
+                padding: 12px 20px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="canvas-container">
+        <canvas id="physics-canvas"></canvas>
+    </div>
+
+    <div class="instructions" id="instructions">
+        Drag the pieces around or click "Organize Gallery" to see the magic
+    </div>
+
+    <!-- Cards will be positioned by JavaScript -->
+    <div class="cards-container" id="cards-container">
+        <!-- Logo Card -->
+        <div class="card card-logo" id="card-logo">
+            <div class="logo-flame"></div>
+            <div class="logo-text">GALLERY TALK</div>
+        </div>
+
+        <!-- Hero Card -->
+        <div class="card card-hero" id="card-hero">
+            <h1>Dive into art galleries or build your own, today</h1>
+            <a href="https://gallerytalk.io" class="cta-btn">Live demo <span>&#8594;</span></a>
+        </div>
+
+        <!-- Vision Card -->
+        <div class="card card-vision" id="card-vision">
+            <h2>"We envision a world where art knows no boundaries."</h2>
+        </div>
+
+        <!-- Feature Cards -->
+        <div class="card card-feature feature-1" id="card-feature-1">
+            <div class="icon">&#127912;</div>
+            <h3>Visit galleries instantly</h3>
+        </div>
+
+        <div class="card card-feature feature-2" id="card-feature-2">
+            <div class="icon">&#128176;</div>
+            <h3>Fair commission (0%)</h3>
+        </div>
+
+        <div class="card card-feature feature-3" id="card-feature-3">
+            <div class="icon">&#10084;</div>
+            <h3>For All You Love</h3>
+        </div>
+
+        <div class="card card-feature feature-4" id="card-feature-4">
+            <div class="icon">&#9889;</div>
+            <h3>Build Gallery in Minutes</h3>
+        </div>
+
+        <!-- Art Preview Cards -->
+        <div class="card card-art art-1" id="card-art-1">
+            <div class="art-preview"></div>
+            <span class="artist-name">@annaschulz</span>
+        </div>
+
+        <div class="card card-art art-2" id="card-art-2">
+            <div class="art-preview"></div>
+            <span class="artist-name">@jusgomo</span>
+        </div>
+
+        <div class="card card-art art-3" id="card-art-3">
+            <div class="art-preview"></div>
+            <span class="artist-name">@aryabimbi</span>
+        </div>
+
+        <div class="card card-art art-4" id="card-art-4">
+            <div class="art-preview"></div>
+            <span class="artist-name">@patriciawolf</span>
+        </div>
+
+        <div class="card card-art art-5" id="card-art-5">
+            <div class="art-preview"></div>
+            <span class="artist-name">@batista_paints</span>
+        </div>
+
+        <div class="card card-art art-6" id="card-art-6">
+            <div class="art-preview"></div>
+            <span class="artist-name">@alanndv</span>
+        </div>
+
+        <!-- Connect Card -->
+        <div class="card card-connect" id="card-connect">
+            <h2>Connect <em>personally</em>, Explore <em>together</em></h2>
+        </div>
+
+        <!-- Quote Card -->
+        <div class="card card-quote" id="card-quote">
+            <p>"Artists around the world should be able to share their art with people all around the world."</p>
+        </div>
+
+        <!-- Pricing Cards -->
+        <div class="card card-pricing free" id="card-pricing-free">
+            <div class="price">Free</div>
+            <div class="description">14 days trial<br>No credit card required</div>
+            <span class="tag">Try now</span>
+        </div>
+
+        <div class="card card-pricing paid" id="card-pricing-paid">
+            <div class="price">6.99&euro;</div>
+            <div class="description">monthly<br>0% commission</div>
+            <span class="tag">Start now</span>
+        </div>
+
+        <!-- Differentiator Cards -->
+        <div class="card card-diff" id="card-diff-1">
+            <h4>Your Own Space</h4>
+            <p>Never worry, exhibit where you want.</p>
+        </div>
+
+        <div class="card card-diff" id="card-diff-2">
+            <h4>Support Your Vision</h4>
+            <p>Let your art shine for the price you choose.</p>
+        </div>
+
+        <div class="card card-diff" id="card-diff-3">
+            <h4>Global Art Community</h4>
+            <p>Get a full experience of showcases around the world.</p>
+        </div>
+    </div>
+
+    <div class="controls" id="controls">
+        <button class="control-btn organize" id="btn-organize">
+            <span>&#10024;</span> Organize Gallery
+        </button>
+        <button class="control-btn scatter" id="btn-scatter" style="display: none;">
+            <span>&#127922;</span> Scatter Again
+        </button>
+    </div>
+
+    <div class="footer-organized" id="footer">
+        <div class="footer-logo">GALLERY TALK</div>
+        <div class="footer-info">BonfireHQ GmbH &bull; Copyright 2026</div>
+    </div>
+
+    <script>
+        // Matter.js module aliases
+        const Engine = Matter.Engine,
+              Render = Matter.Render,
+              Runner = Matter.Runner,
+              Bodies = Matter.Bodies,
+              Body = Matter.Body,
+              Composite = Matter.Composite,
+              Mouse = Matter.Mouse,
+              MouseConstraint = Matter.MouseConstraint,
+              Events = Matter.Events;
+
+        // State
+        let isOrganized = false;
+        let engine, render, runner;
+        let cardBodies = [];
+        let mouseConstraint;
+
+        // Card data with DOM references
+        const cards = [];
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', init);
+
+        function init() {
+            // Get all card elements
+            const cardElements = document.querySelectorAll('.card');
+
+            cardElements.forEach((el, index) => {
+                cards.push({
+                    element: el,
+                    id: el.id,
+                    width: el.offsetWidth,
+                    height: el.offsetHeight,
+                    body: null
+                });
+            });
+
+            // Initialize physics engine
+            initPhysics();
+
+            // Set up event listeners
+            document.getElementById('btn-organize').addEventListener('click', organizeGallery);
+            document.getElementById('btn-scatter').addEventListener('click', scatterCards);
+
+            // Initial scatter
+            setTimeout(scatterCards, 100);
+        }
+
+        function initPhysics() {
+            const canvas = document.getElementById('physics-canvas');
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            // Create engine
+            engine = Engine.create({
+                gravity: { x: 0, y: 0.3, scale: 0.001 }
+            });
+
+            // Create renderer (invisible - we're using DOM elements)
+            render = Render.create({
+                canvas: canvas,
+                engine: engine,
+                options: {
+                    width: width,
+                    height: height,
+                    wireframes: false,
+                    background: 'transparent',
+                    showDebug: false
+                }
+            });
+
+            // Create boundaries (walls)
+            const wallThickness = 100;
+            const walls = [
+                // Bottom
+                Bodies.rectangle(width / 2, height + wallThickness / 2, width + wallThickness * 2, wallThickness, {
+                    isStatic: true,
+                    render: { visible: false }
+                }),
+                // Top
+                Bodies.rectangle(width / 2, -wallThickness / 2, width + wallThickness * 2, wallThickness, {
+                    isStatic: true,
+                    render: { visible: false }
+                }),
+                // Left
+                Bodies.rectangle(-wallThickness / 2, height / 2, wallThickness, height + wallThickness * 2, {
+                    isStatic: true,
+                    render: { visible: false }
+                }),
+                // Right
+                Bodies.rectangle(width + wallThickness / 2, height / 2, wallThickness, height + wallThickness * 2, {
+                    isStatic: true,
+                    render: { visible: false }
+                })
+            ];
+
+            Composite.add(engine.world, walls);
+
+            // Create physics bodies for each card
+            cards.forEach((card, index) => {
+                const x = Math.random() * (width - card.width - 100) + 50 + card.width / 2;
+                const y = Math.random() * (height - card.height - 200) + 50 + card.height / 2;
+
+                const body = Bodies.rectangle(x, y, card.width, card.height, {
+                    restitution: 0.4,
+                    friction: 0.3,
+                    frictionAir: 0.02,
+                    angle: (Math.random() - 0.5) * 0.8,
+                    render: { visible: false },
+                    label: card.id
+                });
+
+                card.body = body;
+                cardBodies.push(body);
+                Composite.add(engine.world, body);
+            });
+
+            // Add mouse control
+            const mouse = Mouse.create(document.body);
+            mouseConstraint = MouseConstraint.create(engine, {
+                mouse: mouse,
+                constraint: {
+                    stiffness: 0.2,
+                    render: { visible: false }
+                }
+            });
+
+            // Fix mouse for scrolling
+            mouse.element.removeEventListener('mousewheel', mouse.mousewheel);
+            mouse.element.removeEventListener('DOMMouseScroll', mouse.mousewheel);
+
+            Composite.add(engine.world, mouseConstraint);
+
+            // Track dragging state
+            Events.on(mouseConstraint, 'startdrag', (event) => {
+                const cardData = cards.find(c => c.body === event.body);
+                if (cardData) {
+                    cardData.element.classList.add('dragging');
+                }
+            });
+
+            Events.on(mouseConstraint, 'enddrag', (event) => {
+                const cardData = cards.find(c => c.body === event.body);
+                if (cardData) {
+                    cardData.element.classList.remove('dragging');
+                }
+            });
+
+            // Start the engine
+            runner = Runner.create();
+            Runner.run(runner, engine);
+            Render.run(render);
+
+            // Update DOM positions
+            (function update() {
+                if (!isOrganized) {
+                    cards.forEach(card => {
+                        if (card.body) {
+                            const pos = card.body.position;
+                            const angle = card.body.angle;
+
+                            card.element.style.left = (pos.x - card.width / 2) + 'px';
+                            card.element.style.top = (pos.y - card.height / 2) + 'px';
+                            card.element.style.transform = `rotate(${angle}rad)`;
+                        }
+                    });
+                }
+                requestAnimationFrame(update);
+            })();
+
+            // Handle window resize
+            window.addEventListener('resize', handleResize);
+        }
+
+        function handleResize() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            render.canvas.width = width;
+            render.canvas.height = height;
+            render.options.width = width;
+            render.options.height = height;
+
+            // Update walls
+            const walls = Composite.allBodies(engine.world).filter(b => b.isStatic);
+            Composite.remove(engine.world, walls);
+
+            const wallThickness = 100;
+            const newWalls = [
+                Bodies.rectangle(width / 2, height + wallThickness / 2, width + wallThickness * 2, wallThickness, { isStatic: true, render: { visible: false } }),
+                Bodies.rectangle(width / 2, -wallThickness / 2, width + wallThickness * 2, wallThickness, { isStatic: true, render: { visible: false } }),
+                Bodies.rectangle(-wallThickness / 2, height / 2, wallThickness, height + wallThickness * 2, { isStatic: true, render: { visible: false } }),
+                Bodies.rectangle(width + wallThickness / 2, height / 2, wallThickness, height + wallThickness * 2, { isStatic: true, render: { visible: false } })
+            ];
+            Composite.add(engine.world, newWalls);
+        }
+
+        function scatterCards() {
+            isOrganized = false;
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            document.getElementById('btn-organize').style.display = 'flex';
+            document.getElementById('btn-scatter').style.display = 'none';
+            document.getElementById('footer').classList.remove('visible');
+            document.getElementById('instructions').classList.remove('hidden');
+
+            // Reset physics
+            engine.gravity.y = 0.3;
+
+            cards.forEach((card, index) => {
+                // Enable physics body
+                Body.setStatic(card.body, false);
+
+                // Random position
+                const x = Math.random() * (width - card.width - 100) + 50 + card.width / 2;
+                const y = Math.random() * (height * 0.6) + card.height / 2;
+
+                // Set position and give initial velocity
+                Body.setPosition(card.body, { x, y });
+                Body.setAngle(card.body, (Math.random() - 0.5) * 1);
+                Body.setVelocity(card.body, {
+                    x: (Math.random() - 0.5) * 10,
+                    y: Math.random() * 5
+                });
+                Body.setAngularVelocity(card.body, (Math.random() - 0.5) * 0.1);
+
+                // Reset card styles
+                card.element.style.transition = 'none';
+                card.element.style.cursor = 'grab';
+            });
+        }
+
+        function organizeGallery() {
+            isOrganized = true;
+
+            document.getElementById('btn-organize').style.display = 'none';
+            document.getElementById('btn-scatter').style.display = 'flex';
+            document.getElementById('instructions').classList.add('hidden');
+
+            // Calculate grid positions
+            const gridPositions = calculateGridPositions();
+
+            // Disable physics by making bodies static
+            cards.forEach(card => {
+                Body.setStatic(card.body, true);
+            });
+
+            // Animate cards to grid positions
+            cards.forEach((card, index) => {
+                const target = gridPositions[index];
+                if (!target) return;
+
+                const currentX = parseFloat(card.element.style.left) || 0;
+                const currentY = parseFloat(card.element.style.top) || 0;
+                const currentRotation = card.body.angle;
+
+                gsap.to(card.element, {
+                    left: target.x + 'px',
+                    top: target.y + 'px',
+                    rotation: 0,
+                    duration: 0.8,
+                    delay: index * 0.05,
+                    ease: 'elastic.out(1, 0.75)',
+                    onComplete: () => {
+                        card.element.style.cursor = 'default';
+                    }
+                });
+            });
+
+            // Show footer after animation
+            setTimeout(() => {
+                document.getElementById('footer').classList.add('visible');
+            }, 1000);
+        }
+
+        function calculateGridPositions() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            const padding = 40;
+            const gap = 24;
+
+            const positions = [];
+
+            // Define a layout grid - positions based on card type
+            const layout = {
+                'card-logo': { col: 0, row: 0, priority: 1 },
+                'card-hero': { col: 1, row: 0, colspan: 2, priority: 2 },
+                'card-vision': { col: 3, row: 0, priority: 3 },
+                'card-feature-1': { col: 0, row: 1, priority: 4 },
+                'card-feature-2': { col: 1, row: 1, priority: 5 },
+                'card-feature-3': { col: 2, row: 1, priority: 6 },
+                'card-feature-4': { col: 3, row: 1, priority: 7 },
+                'card-art-1': { col: 0, row: 2, priority: 8 },
+                'card-art-2': { col: 1, row: 2, priority: 9 },
+                'card-art-3': { col: 2, row: 2, priority: 10 },
+                'card-art-4': { col: 3, row: 2, priority: 11 },
+                'card-art-5': { col: 0, row: 3, priority: 12 },
+                'card-art-6': { col: 1, row: 3, priority: 13 },
+                'card-connect': { col: 2, row: 3, priority: 14 },
+                'card-quote': { col: 0, row: 4, priority: 15 },
+                'card-pricing-free': { col: 1, row: 4, priority: 16 },
+                'card-pricing-paid': { col: 2, row: 4, priority: 17 },
+                'card-diff-1': { col: 3, row: 3, priority: 18 },
+                'card-diff-2': { col: 3, row: 4, priority: 19 },
+                'card-diff-3': { col: 0, row: 5, priority: 20 }
+            };
+
+            // Calculate grid cell size
+            const cols = 4;
+            const cellWidth = (width - padding * 2 - gap * (cols - 1)) / cols;
+            const startY = 100;
+            const rowHeight = 220;
+
+            cards.forEach(card => {
+                const pos = layout[card.id];
+                if (pos) {
+                    const x = padding + pos.col * (cellWidth + gap) + (cellWidth - card.width) / 2;
+                    const y = startY + pos.row * rowHeight;
+                    positions.push({ x, y });
+                } else {
+                    // Fallback position
+                    positions.push({
+                        x: Math.random() * (width - 300) + 100,
+                        y: Math.random() * (height - 300) + 100
+                    });
+                }
+            });
+
+            return positions;
+        }
+
+        // Allow keyboard shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                if (isOrganized) {
+                    scatterCards();
+                } else {
+                    organizeGallery();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
