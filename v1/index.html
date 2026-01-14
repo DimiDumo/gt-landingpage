@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GalleryTalk - Dive into art galleries or build your own</title>
+    <style>
+        /* Reset and Base */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --gray-light: #f5f5f5;
+            --gray-medium: #888888;
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 2rem;
+            --spacing-lg: 4rem;
+            --spacing-xl: 6rem;
+            --max-width: 1200px;
+        }
+
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--black);
+            background-color: var(--white);
+        }
+
+        /* Typography */
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: clamp(1.75rem, 3vw, 2.5rem);
+            font-weight: 600;
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            line-height: 1.3;
+        }
+
+        p {
+            font-size: 1.125rem;
+            color: var(--gray-medium);
+        }
+
+        /* Layout */
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 var(--spacing-md);
+        }
+
+        section {
+            padding: var(--spacing-xl) 0;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            background-color: var(--black);
+            opacity: 0.1;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--white);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-content {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: var(--spacing-sm) var(--spacing-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: var(--black);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--black);
+            font-size: 0.875rem;
+            transition: opacity 0.2s;
+        }
+
+        .nav-links a:hover {
+            opacity: 0.6;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 0.875rem 2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: 2px solid var(--black);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: var(--black);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--white);
+            color: var(--black);
+        }
+
+        .btn-secondary {
+            background-color: var(--white);
+            color: var(--black);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--black);
+            color: var(--white);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+        }
+
+        .hero-content {
+            max-width: 800px;
+        }
+
+        .hero h1 {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: var(--spacing-lg);
+            max-width: 600px;
+        }
+
+        /* Vision Section */
+        .vision {
+            background-color: var(--gray-light);
+        }
+
+        .vision-content {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .vision h2 {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .vision > .container > p {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin: var(--spacing-xl) 0;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: var(--spacing-md);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto var(--spacing-sm);
+            border: 2px solid var(--black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .feature-item h3 {
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .feature-item p {
+            font-size: 1rem;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            text-align: center;
+        }
+
+        .how-it-works h2 {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-lg);
+        }
+
+        .step {
+            padding: var(--spacing-md);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .step-number {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: var(--spacing-sm);
+            opacity: 0.2;
+        }
+
+        .step h3 {
+            margin-bottom: var(--spacing-xs);
+        }
+
+        /* What Makes Different */
+        .different {
+            background-color: var(--black);
+            color: var(--white);
+        }
+
+        .different h2 {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .different .features-grid {
+            margin-bottom: 0;
+        }
+
+        .different .feature-item {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .different .feature-icon {
+            border-color: var(--white);
+        }
+
+        .different p {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .different .btn-primary {
+            background-color: var(--white);
+            color: var(--black);
+            border-color: var(--white);
+        }
+
+        .different .btn-primary:hover {
+            background-color: transparent;
+            color: var(--white);
+        }
+
+        .different-cta {
+            text-align: center;
+            margin-top: var(--spacing-xl);
+        }
+
+        /* Pricing Section */
+        .pricing {
+            text-align: center;
+        }
+
+        .pricing h2 {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-md);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            padding: var(--spacing-lg);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        .pricing-card.featured {
+            border: 2px solid var(--black);
+        }
+
+        .pricing-label {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--spacing-sm);
+            color: var(--gray-medium);
+        }
+
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .pricing-period {
+            font-size: 0.875rem;
+            color: var(--gray-medium);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .pricing-description {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .pricing-features li {
+            padding: var(--spacing-xs) 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-size: 0.9375rem;
+        }
+
+        .pricing-features li::before {
+            content: "+";
+            margin-right: var(--spacing-xs);
+            font-weight: 600;
+        }
+
+        .pricing-note {
+            font-size: 0.875rem;
+            font-style: italic;
+            color: var(--gray-medium);
+            margin-top: var(--spacing-sm);
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background-color: var(--gray-light);
+            text-align: center;
+            padding: var(--spacing-xl) 0;
+        }
+
+        .cta-section h2 {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .cta-section p {
+            margin-bottom: var(--spacing-lg);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Footer */
+        footer {
+            padding: var(--spacing-lg) 0;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .footer-brand .logo {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .footer-links h4 {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--gray-medium);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--black);
+        }
+
+        .footer-address {
+            font-size: 0.875rem;
+            color: var(--gray-medium);
+            font-style: normal;
+        }
+
+        .footer-address p {
+            font-size: 0.875rem;
+        }
+
+        .footer-bottom {
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-md);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .footer-bottom p {
+            font-size: 0.75rem;
+        }
+
+        /* Social Links */
+        .social-links {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+        }
+
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            color: var(--black);
+            transition: all 0.2s;
+        }
+
+        .social-links a:hover {
+            background-color: var(--black);
+            color: var(--white);
+            border-color: var(--black);
+        }
+
+        /* Mobile Navigation */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: var(--spacing-xs);
+        }
+
+        .mobile-menu-btn span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background-color: var(--black);
+            margin: 5px 0;
+            transition: all 0.3s;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--white);
+                flex-direction: column;
+                padding: var(--spacing-md);
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .hero {
+                min-height: auto;
+                padding-top: 120px;
+                padding-bottom: var(--spacing-xl);
+            }
+
+            section {
+                padding: var(--spacing-lg) 0;
+            }
+
+            .features-grid {
+                gap: var(--spacing-md);
+            }
+
+            .pricing-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .social-links {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-content">
+            <a href="#" class="logo">Gallery Talk</a>
+            <button class="mobile-menu-btn" onclick="toggleMenu()" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#features">Product</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#" class="btn btn-primary">Artist sign up</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Dive into art galleries or build your own, today</h1>
+                <p>We envision a world where art knows no boundaries. Artists around the world should be able to share their art with people all around the world.</p>
+                <a href="#" class="btn btn-primary">Live demo &rarr;</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- Vision Section -->
+    <section class="vision" id="features">
+        <div class="container">
+            <div class="vision-content">
+                <h2>We envision a world where art knows no boundaries.</h2>
+                <p>We empower artists by making it easy to set up virtual galleries and connect with collectors, enthusiasts and other artists with a passion for art.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">&rarr;</div>
+                    <h3>Visit galleries instantly</h3>
+                    <p>Explore virtual exhibitions from anywhere in the world</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">0%</div>
+                    <h3>Fair commission</h3>
+                    <p>Keep 100% of your sales with zero platform fees</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">&hearts;</div>
+                    <h3>For All You Love</h3>
+                    <p>Discover art that resonates with your personal taste</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">&plus;</div>
+                    <h3>Build Gallery in Minutes</h3>
+                    <p>Create your virtual space quickly and easily</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2>How It Works</h2>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">01</div>
+                    <h3>Create Your Gallery</h3>
+                    <p>Set up your virtual exhibition space in minutes with our intuitive builder.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">02</div>
+                    <h3>Upload Your Art</h3>
+                    <p>Add your artworks and arrange them exactly how you want visitors to experience them.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">03</div>
+                    <h3>Connect & Sell</h3>
+                    <p>Share your gallery with the world, connect with collectors, and sell your art commission-free.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- What Makes Different Section -->
+    <section class="different">
+        <div class="container">
+            <h2>What makes GalleryTalk different?</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">&#9634;</div>
+                    <h3>Your Own Space</h3>
+                    <p>Getting ready to exhibit where you want.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">&#8644;</div>
+                    <h3>Stay Connected</h3>
+                    <p>Start connecting with you and your audience.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">&uarr;</div>
+                    <h3>Support Your Vision</h3>
+                    <p>Let your art shine for the price you choose and sell the way you want.</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">&#9673;</div>
+                    <h3>Global Community</h3>
+                    <p>Get a full experience of showcases around the world.</p>
+                </div>
+            </div>
+            <div class="different-cta">
+                <a href="#" class="btn btn-primary">Explore Gallery &rarr;</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2>Simple, transparent pricing</h2>
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <div class="pricing-label">Trial</div>
+                    <div class="pricing-price">Free</div>
+                    <div class="pricing-period">14 days</div>
+                    <p class="pricing-description">Experiment & explore 14 days of Starter for free</p>
+                    <ul class="pricing-features">
+                        <li>Full access to gallery builder</li>
+                        <li>Upload artworks</li>
+                        <li>Share your gallery</li>
+                    </ul>
+                    <a href="#" class="btn btn-secondary">Try now</a>
+                    <p class="pricing-note">*No credit card required</p>
+                </div>
+                <div class="pricing-card featured">
+                    <div class="pricing-label">Starter</div>
+                    <div class="pricing-price">6.99&euro;</div>
+                    <div class="pricing-period">monthly</div>
+                    <p class="pricing-description">Everything you need to showcase and sell your art</p>
+                    <ul class="pricing-features">
+                        <li>Display up to 50 artworks</li>
+                        <li>0% commission on sold artworks</li>
+                        <li>Host online art exhibitions</li>
+                        <li>Activate visitor donations</li>
+                        <li>Gallery analytics</li>
+                        <li>Access to expert curation support</li>
+                        <li>Digital Gallery Playbook</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary">Start now</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Become free. Get your own gallery.</h2>
+            <p>Our mission is to democratize art, breaking down barriers and making it accessible to all.</p>
+            <a href="#" class="btn btn-primary">Start creating &rarr;</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <a href="#" class="logo">Gallery Talk</a>
+                    <div class="social-links">
+                        <a href="#" aria-label="Instagram">In</a>
+                        <a href="#" aria-label="LinkedIn">Li</a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <h4>Links</h4>
+                    <ul>
+                        <li><a href="#">Product</a></li>
+                        <li><a href="#">Artists</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">Imprint & Data privacy</a></li>
+                    </ul>
+                </div>
+                <div class="footer-links">
+                    <h4>Contact</h4>
+                    <address class="footer-address">
+                        <p>BonfireHQ GmbH</p>
+                        <p>Waldsaumstr. 3</p>
+                        <p>81377 Munchen</p>
+                        <p><a href="mailto:contact@gallerytalk.io">Contact us</a></p>
+                    </address>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>Copyright 2026, BonfireHQ GmbH</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

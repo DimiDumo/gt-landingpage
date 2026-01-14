@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GALLERYTALK - Art Without Boundaries</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Anton&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --accent: #ff2d00;
+            --accent-yellow: #ffdd00;
+            --border-width: 4px;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            background: var(--white);
+            color: var(--black);
+            line-height: 1.4;
+            overflow-x: hidden;
+        }
+
+        /* BRUTALIST GRID OVERLAY */
+        .grid-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-image:
+                linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--white);
+            border-bottom: var(--border-width) solid var(--black);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: 'Anton', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .logo span {
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--black);
+            text-decoration: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: var(--black);
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border: var(--border-width) solid var(--black);
+            transition: all 0.15s;
+            font-family: 'Space Mono', monospace;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: translate(-4px, -4px);
+            box-shadow: 4px 4px 0 var(--black);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--black);
+        }
+
+        .btn-outline:hover {
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .btn-accent {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .btn-accent:hover {
+            background: var(--accent-yellow);
+            border-color: var(--accent-yellow);
+            color: var(--black);
+        }
+
+        /* HERO */
+        .hero {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            margin-top: 70px;
+            position: relative;
+        }
+
+        .hero-left {
+            background: var(--black);
+            color: var(--white);
+            padding: 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-right: var(--border-width) solid var(--black);
+        }
+
+        .hero-headline {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(3rem, 8vw, 7rem);
+            line-height: 0.95;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+        }
+
+        .hero-headline .highlight {
+            color: var(--accent);
+            display: block;
+        }
+
+        .hero-right {
+            background: var(--accent-yellow);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 4rem;
+            position: relative;
+        }
+
+        .hero-right::before {
+            content: 'ART';
+            font-family: 'Anton', sans-serif;
+            font-size: 20vw;
+            color: rgba(0,0,0,0.1);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-10deg);
+        }
+
+        .hero-cta {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-cta .btn {
+            font-size: 1.5rem;
+            padding: 1.5rem 3rem;
+        }
+
+        /* VISION SECTION */
+        .vision {
+            border-top: var(--border-width) solid var(--black);
+            padding: 6rem 2rem;
+            position: relative;
+        }
+
+        .vision-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-number {
+            font-family: 'Anton', sans-serif;
+            font-size: 10rem;
+            color: var(--accent);
+            opacity: 0.2;
+            position: absolute;
+            top: 1rem;
+            left: 2rem;
+            line-height: 1;
+        }
+
+        .vision h2 {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            text-transform: uppercase;
+            max-width: 900px;
+            margin-bottom: 2rem;
+            line-height: 1;
+        }
+
+        .vision-text {
+            font-size: 1.1rem;
+            max-width: 700px;
+            border-left: var(--border-width) solid var(--accent);
+            padding-left: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* FEATURES GRID */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            border-top: var(--border-width) solid var(--black);
+        }
+
+        .feature-box {
+            padding: 3rem 2rem;
+            border-right: var(--border-width) solid var(--black);
+            border-bottom: var(--border-width) solid var(--black);
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .feature-box:nth-child(4) {
+            border-right: none;
+        }
+
+        .feature-box:hover {
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .feature-box::before {
+            content: attr(data-num);
+            font-family: 'Anton', sans-serif;
+            font-size: 4rem;
+            color: var(--accent);
+            opacity: 0.3;
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        .feature-box h3 {
+            font-family: 'Anton', sans-serif;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            margin-top: 2rem;
+        }
+
+        /* HOW IT WORKS */
+        .how-it-works {
+            background: var(--black);
+            color: var(--white);
+            padding: 6rem 2rem;
+            position: relative;
+        }
+
+        .how-it-works::before {
+            content: 'HOW';
+            font-family: 'Anton', sans-serif;
+            font-size: 30vw;
+            color: rgba(255,255,255,0.03);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+        }
+
+        .how-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .how-it-works h2 {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            text-transform: uppercase;
+            margin-bottom: 4rem;
+        }
+
+        .how-it-works h2 span {
+            color: var(--accent);
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+        }
+
+        .step {
+            border: var(--border-width) solid var(--white);
+            padding: 2rem;
+            position: relative;
+            margin-left: -4px;
+        }
+
+        .step:first-child {
+            margin-left: 0;
+        }
+
+        .step-number {
+            font-family: 'Anton', sans-serif;
+            font-size: 6rem;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 1rem;
+        }
+
+        .step h3 {
+            font-family: 'Anton', sans-serif;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .step p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* DIFFERENTIATORS */
+        .different {
+            padding: 6rem 2rem;
+            border-top: var(--border-width) solid var(--black);
+            position: relative;
+        }
+
+        .different-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .different h2 {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            text-transform: uppercase;
+            margin-bottom: 4rem;
+        }
+
+        .different h2 span {
+            color: var(--accent);
+        }
+
+        .diff-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0;
+        }
+
+        .diff-item {
+            border: var(--border-width) solid var(--black);
+            padding: 3rem;
+            margin-top: -4px;
+            margin-left: -4px;
+            transition: all 0.2s;
+        }
+
+        .diff-item:nth-child(1),
+        .diff-item:nth-child(2) {
+            margin-top: 0;
+        }
+
+        .diff-item:nth-child(1),
+        .diff-item:nth-child(3) {
+            margin-left: 0;
+        }
+
+        .diff-item:hover {
+            background: var(--accent-yellow);
+            transform: translate(-4px, -4px);
+            box-shadow: 4px 4px 0 var(--black);
+        }
+
+        .diff-icon {
+            font-family: 'Anton', sans-serif;
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .diff-item h3 {
+            font-family: 'Anton', sans-serif;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        /* PRICING */
+        .pricing {
+            background: var(--accent);
+            color: var(--white);
+            padding: 6rem 2rem;
+            border-top: var(--border-width) solid var(--black);
+            position: relative;
+        }
+
+        .pricing::before {
+            content: '$';
+            font-family: 'Anton', sans-serif;
+            font-size: 50vw;
+            color: rgba(0,0,0,0.1);
+            position: absolute;
+            top: 50%;
+            right: 5%;
+            transform: translateY(-50%);
+        }
+
+        .pricing-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .pricing h2 {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(3rem, 8vw, 7rem);
+            text-transform: uppercase;
+            margin-bottom: 4rem;
+            color: var(--white);
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .pricing-card {
+            background: var(--white);
+            color: var(--black);
+            border: var(--border-width) solid var(--black);
+            padding: 3rem;
+        }
+
+        .pricing-card.featured {
+            background: var(--black);
+            color: var(--white);
+            transform: translate(-8px, -8px);
+            box-shadow: 8px 8px 0 var(--accent-yellow);
+        }
+
+        .price {
+            font-family: 'Anton', sans-serif;
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .price-period {
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+
+        .pricing-card h3 {
+            font-family: 'Anton', sans-serif;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: var(--border-width) solid currentColor;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .pricing-card.featured .pricing-features li {
+            border-bottom-color: rgba(255,255,255,0.1);
+        }
+
+        .pricing-features li::before {
+            content: '+';
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .pricing-note {
+            font-size: 0.85rem;
+            opacity: 0.7;
+            margin-top: 1rem;
+        }
+
+        /* CTA SECTION */
+        .cta-section {
+            background: var(--black);
+            color: var(--white);
+            padding: 8rem 2rem;
+            text-align: center;
+            border-top: var(--border-width) solid var(--black);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: 'CREATE';
+            font-family: 'Anton', sans-serif;
+            font-size: 15vw;
+            color: rgba(255,255,255,0.03);
+            position: absolute;
+            bottom: -2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+
+        .cta-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta-section h2 {
+            font-family: 'Anton', sans-serif;
+            font-size: clamp(3rem, 10vw, 8rem);
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            line-height: 0.95;
+        }
+
+        .cta-section h2 span {
+            color: var(--accent);
+            display: block;
+        }
+
+        .cta-section p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 3rem;
+            opacity: 0.8;
+        }
+
+        .cta-section .btn {
+            font-size: 1.3rem;
+            padding: 1.5rem 4rem;
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .cta-section .btn:hover {
+            background: var(--accent-yellow);
+            border-color: var(--accent-yellow);
+            color: var(--black);
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--white);
+            border-top: var(--border-width) solid var(--black);
+            padding: 3rem 2rem;
+        }
+
+        .footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .footer-brand .logo {
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        .footer-col h4 {
+            font-family: 'Anton', sans-serif;
+            font-size: 1rem;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            letter-spacing: 0.1em;
+        }
+
+        .footer-col a {
+            display: block;
+            color: var(--black);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 0.3rem 0;
+            transition: color 0.2s;
+        }
+
+        .footer-col a:hover {
+            color: var(--accent);
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 3rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            opacity: 0.7;
+        }
+
+        /* MOBILE STYLES */
+        @media (max-width: 1024px) {
+            .features {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .feature-box:nth-child(2) {
+                border-right: none;
+            }
+
+            .steps-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .step {
+                margin-left: -4px;
+                margin-top: -4px;
+            }
+
+            .step:nth-child(1),
+            .step:nth-child(2) {
+                margin-top: 0;
+            }
+
+            .step:nth-child(1),
+            .step:nth-child(3) {
+                margin-left: 0;
+            }
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+                margin-top: 60px;
+            }
+
+            .hero-left {
+                padding: 3rem 1.5rem;
+                border-right: none;
+                border-bottom: var(--border-width) solid var(--white);
+            }
+
+            .hero-right {
+                padding: 4rem 1.5rem;
+                min-height: 40vh;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-box {
+                border-right: none;
+            }
+
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .step {
+                margin-left: 0;
+            }
+
+            .diff-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .diff-item {
+                margin-left: 0;
+            }
+
+            .pricing-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+                box-shadow: 4px 4px 0 var(--accent-yellow);
+            }
+
+            .footer-inner {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .section-number {
+                font-size: 6rem;
+            }
+        }
+
+        /* ANIMATION */
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        .hero-headline:hover {
+            animation: glitch 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-overlay"></div>
+
+    <!-- NAVIGATION -->
+    <nav>
+        <div class="logo">GALLERY<span>TALK</span></div>
+        <div class="nav-links">
+            <a href="#features">Product</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#" class="btn btn-outline">Artist Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-left">
+            <h1 class="hero-headline">
+                DIVE INTO
+                <span class="highlight">ART GALLERIES</span>
+                OR BUILD YOUR OWN, TODAY
+            </h1>
+        </div>
+        <div class="hero-right">
+            <div class="hero-cta">
+                <a href="#" class="btn btn-accent">LIVE DEMO &rarr;</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- VISION -->
+    <section class="vision">
+        <span class="section-number">01</span>
+        <div class="vision-inner">
+            <h2>WE ENVISION A WORLD WHERE ART KNOWS NO BOUNDARIES.</h2>
+            <p class="vision-text">
+                Artists around the world should be able to share their art with people all around the world. We empower them by making it easy to set up virtual galleries and connect with collectors, enthusiasts and other artists with a passion for art.
+            </p>
+            <a href="#" class="btn">TRY IT NOW &rarr;</a>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section id="features" class="features">
+        <div class="feature-box" data-num="01">
+            <h3>Visit Galleries Instantly</h3>
+        </div>
+        <div class="feature-box" data-num="02">
+            <h3>Fair Commission (0%)</h3>
+        </div>
+        <div class="feature-box" data-num="03">
+            <h3>For All You Love</h3>
+        </div>
+        <div class="feature-box" data-num="04">
+            <h3>Build Gallery in Minutes</h3>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="how-it-works">
+        <div class="how-inner">
+            <h2>WHAT MAKES <span>GALLERYTALK</span> DIFFERENT?</h2>
+            <div class="steps-grid">
+                <div class="step">
+                    <div class="step-number">01</div>
+                    <h3>YOUR OWN SPACE</h3>
+                    <p>Never worry in their own space. Getting ready to exhibit where you want.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">02</div>
+                    <h3>STAY CONNECTED</h3>
+                    <p>Personally get together, and stay connected. Start connecting with you and your audience.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">03</div>
+                    <h3>YOUR VISION</h3>
+                    <p>Support your artist vision. Let your art shine for the price you choose and sell the way you want.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">04</div>
+                    <h3>GLOBAL COMMUNITY</h3>
+                    <p>Be one of a global art community. Get a full experience of showcases around the world.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DIFFERENTIATORS -->
+    <section class="different">
+        <div class="different-inner">
+            <h2>CONNECT <span>PERSONALLY</span>, EXPLORE <span>TOGETHER</span></h2>
+            <div class="diff-grid">
+                <div class="diff-item">
+                    <div class="diff-icon">[+]</div>
+                    <h3>Virtual Galleries</h3>
+                    <p>Our mission is to democratize art, breaking down barriers and making it accessible to all.</p>
+                </div>
+                <div class="diff-item">
+                    <div class="diff-icon">[+]</div>
+                    <h3>Global Reach</h3>
+                    <p>Allow artists worldwide to showcase their creations to new audiences everywhere.</p>
+                </div>
+                <div class="diff-item">
+                    <div class="diff-icon">[+]</div>
+                    <h3>Zero Commission</h3>
+                    <p>Keep 100% of your sales. We believe artists should earn what they deserve.</p>
+                </div>
+                <div class="diff-item">
+                    <div class="diff-icon">[+]</div>
+                    <h3>Host Exhibitions</h3>
+                    <p>Create and host your own online art exhibitions with complete creative control.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="pricing">
+        <div class="pricing-inner">
+            <h2>PRICING</h2>
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <div class="price">FREE</div>
+                    <h3>TRIAL PLAN</h3>
+                    <p>Experiment & explore 14 days of Starter for free</p>
+                    <ul class="pricing-features">
+                        <li>Full platform access</li>
+                        <li>Build your gallery</li>
+                        <li>No credit card required</li>
+                    </ul>
+                    <a href="#" class="btn btn-outline">TRY NOW</a>
+                </div>
+                <div class="pricing-card featured">
+                    <div class="price">6.99<span class="price-period">/month</span></div>
+                    <h3>STARTER PLAN</h3>
+                    <p>Everything you need to run your virtual gallery</p>
+                    <ul class="pricing-features">
+                        <li>Display up to 50 artworks</li>
+                        <li>0% commission on sold artworks</li>
+                        <li>Host online art exhibitions</li>
+                        <li>Activate visitor donations</li>
+                        <li>Gallery analytics</li>
+                        <li>Expert curation support</li>
+                        <li>Digital Gallery Playbook</li>
+                    </ul>
+                    <a href="#" class="btn btn-accent">START NOW</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="cta-inner">
+            <h2>BECOME FREE.<br><span>GET YOUR OWN GALLERY.</span></h2>
+            <p>Join artists worldwide who are sharing their art without boundaries.</p>
+            <a href="#" class="btn">START CREATING &rarr;</a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="logo">GALLERY<span>TALK</span></div>
+                <p>BonfireHQ GmbH<br>Waldsaumstr. 3<br>81377 Munchen</p>
+            </div>
+            <div class="footer-col">
+                <h4>Product</h4>
+                <a href="#">Features</a>
+                <a href="#">Pricing</a>
+                <a href="#">Artists</a>
+            </div>
+            <div class="footer-col">
+                <h4>Social</h4>
+                <a href="#">Instagram</a>
+                <a href="#">LinkedIn</a>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
+                <a href="#">Imprint & Data Privacy</a>
+                <a href="#">Contact Us</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>Copyright 2026, BonfireHQ GmbH</span>
+            <span>GALLERYTALK</span>
+        </div>
+    </footer>
+</body>
+</html>
