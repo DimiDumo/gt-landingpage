@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This repository is designed for rapidly iterating over different landing page designs and styles for GalleryTalk. The goal is to create multiple landing page variations that can be easily deployed (e.g., via Netlify Drop) for A/B testing or style exploration.
+This repository is designed for rapidly iterating over different landing page designs and styles for GalleryTalk. The goal is to create multiple landing page variations that can be easily deployed via GitHub Pages for A/B testing or style exploration.
 
 ## Structure
 
@@ -39,7 +39,7 @@ When asked to create a new landing page variation:
 3. Pull content from `README.md`
 4. Apply the requested style/design approach
 5. Ensure CSS is self-contained (inline or in same folder)
-6. The folder should be directly uploadable to Netlify Drop
+6. The folder is automatically deployed via GitHub Pages when pushed to main
 
 ### Design Directions to Explore
 
