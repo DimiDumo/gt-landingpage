@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GalleryTalk - Dive into Art Galleries</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS Custom Properties - Initial values (will be morphed by JS) */
+        :root {
+            --morph: 0.5;
+
+            /* Colors - Interpolated */
+            --bg-r: 245;
+            --bg-g: 222;
+            --bg-b: 179;
+            --text-r: 60;
+            --text-g: 40;
+            --text-b: 20;
+            --accent-r: 139;
+            --accent-g: 69;
+            --accent-b: 19;
+            --card-bg-r: 255;
+            --card-bg-g: 248;
+            --card-bg-b: 235;
+
+            /* Computed colors */
+            --bg-color: rgb(var(--bg-r), var(--bg-g), var(--bg-b));
+            --text-color: rgb(var(--text-r), var(--text-g), var(--text-b));
+            --accent-color: rgb(var(--accent-r), var(--accent-g), var(--accent-b));
+            --card-bg: rgb(var(--card-bg-r), var(--card-bg-g), var(--card-bg-b));
+
+            /* Other morphing properties */
+            --border-radius: 0px;
+            --border-width: 3px;
+            --shadow-blur: 0px;
+            --shadow-spread: 4px;
+            --shadow-opacity: 0.3;
+            --letter-spacing: 0.05em;
+            --heading-spacing: 0.1em;
+            --blur-amount: 0px;
+            --glow-opacity: 0;
+            --noise-opacity: 0.1;
+            --gradient-opacity: 0;
+
+            /* Font family (switched at midpoint) */
+            --font-heading: 'Playfair Display', Georgia, serif;
+            --font-body: 'Playfair Display', Georgia, serif;
+        }
+
+        /* Reset */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Noise texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: var(--noise-opacity);
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.1s ease;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Modern gradient overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: var(--gradient-opacity);
+            background: linear-gradient(135deg, rgba(88, 28, 135, 0.3) 0%, rgba(15, 23, 42, 0.5) 50%, rgba(6, 182, 212, 0.2) 100%);
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            position: sticky;
+            top: 0;
+            background: var(--card-bg);
+            backdrop-filter: blur(var(--blur-amount));
+            z-index: 100;
+            border-bottom: var(--border-width) solid var(--accent-color);
+            box-shadow: 0 var(--shadow-spread) calc(var(--shadow-blur) + 10px) rgba(var(--text-r), var(--text-g), var(--text-b), var(--shadow-opacity));
+        }
+
+        .logo {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: var(--heading-spacing);
+            color: var(--accent-color);
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            letter-spacing: var(--letter-spacing);
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.8rem;
+            background: var(--accent-color);
+            color: var(--card-bg);
+            text-decoration: none;
+            font-family: var(--font-body);
+            font-weight: 600;
+            letter-spacing: var(--letter-spacing);
+            border-radius: var(--border-radius);
+            border: var(--border-width) solid var(--accent-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 var(--shadow-spread) var(--shadow-blur) rgba(var(--accent-r), var(--accent-g), var(--accent-b), var(--shadow-opacity));
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 calc(var(--shadow-spread) + 2px) calc(var(--shadow-blur) + 5px) rgba(var(--accent-r), var(--accent-g), var(--accent-b), calc(var(--shadow-opacity) + 0.1));
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--accent-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 4rem 5%;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-family: var(--font-heading);
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            letter-spacing: var(--heading-spacing);
+            margin-bottom: 2rem;
+            max-width: 900px;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            max-width: 600px;
+            margin-bottom: 2.5rem;
+            letter-spacing: var(--letter-spacing);
+            opacity: 0.9;
+        }
+
+        /* Decorative frame around hero */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 2rem;
+            left: 5%;
+            right: 5%;
+            bottom: 2rem;
+            border: var(--border-width) solid var(--accent-color);
+            border-radius: var(--border-radius);
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        /* Section styling */
+        section {
+            padding: 5rem 5%;
+        }
+
+        .section-title {
+            font-family: var(--font-heading);
+            font-size: clamp(2rem, 4vw, 3rem);
+            text-align: center;
+            margin-bottom: 3rem;
+            letter-spacing: var(--heading-spacing);
+        }
+
+        .section-title span {
+            color: var(--accent-color);
+        }
+
+        /* Vision Section */
+        .vision {
+            text-align: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .vision-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 3rem;
+            letter-spacing: var(--letter-spacing);
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(var(--blur-amount));
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border: var(--border-width) solid var(--accent-color);
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 var(--shadow-spread) var(--shadow-blur) rgba(var(--text-r), var(--text-g), var(--text-b), var(--shadow-opacity));
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Glow effect for modern style */
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(var(--accent-r), var(--accent-g), var(--accent-b), var(--glow-opacity)) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .feature-card h3 {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+            letter-spacing: var(--letter-spacing);
+        }
+
+        .feature-card p {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            letter-spacing: var(--letter-spacing);
+        }
+
+        /* How It Works */
+        .how-it-works {
+            background: var(--card-bg);
+            position: relative;
+        }
+
+        .steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .step {
+            flex: 1;
+            min-width: 250px;
+            max-width: 350px;
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: var(--accent-color);
+            color: var(--card-bg);
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            border: var(--border-width) solid var(--accent-color);
+            box-shadow: 0 var(--shadow-spread) var(--shadow-blur) rgba(var(--accent-r), var(--accent-g), var(--accent-b), var(--shadow-opacity));
+        }
+
+        .step h3 {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+            letter-spacing: var(--letter-spacing);
+        }
+
+        .step p {
+            font-size: 0.95rem;
+            opacity: 0.85;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            text-align: center;
+        }
+
+        .pricing-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            flex: 1;
+            min-width: 280px;
+            max-width: 400px;
+            background: var(--card-bg);
+            backdrop-filter: blur(var(--blur-amount));
+            padding: 3rem 2rem;
+            border-radius: var(--border-radius);
+            border: var(--border-width) solid var(--accent-color);
+            box-shadow: 0 var(--shadow-spread) var(--shadow-blur) rgba(var(--text-r), var(--text-g), var(--text-b), var(--shadow-opacity));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pricing-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--accent-color);
+        }
+
+        .pricing-card h3 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            letter-spacing: var(--heading-spacing);
+        }
+
+        .price {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .price-period {
+            font-size: 1rem;
+            opacity: 0.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .pricing-features li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            letter-spacing: var(--letter-spacing);
+        }
+
+        .pricing-features li::before {
+            content: '\2713';
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        /* CTA Section */
+        .cta {
+            text-align: center;
+            padding: 6rem 5%;
+            position: relative;
+        }
+
+        .cta h2 {
+            font-family: var(--font-heading);
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 1.5rem;
+            letter-spacing: var(--heading-spacing);
+        }
+
+        .cta p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+            letter-spacing: var(--letter-spacing);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--card-bg);
+            padding: 3rem 5%;
+            border-top: var(--border-width) solid var(--accent-color);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-brand {
+            font-family: var(--font-heading);
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: var(--heading-spacing);
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+            letter-spacing: var(--letter-spacing);
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+            color: var(--accent-color);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(var(--text-r), var(--text-g), var(--text-b), 0.2);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        /* Morph Indicator */
+        .morph-indicator {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-top: var(--border-width) solid var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5%;
+            z-index: 1000;
+        }
+
+        .morph-track {
+            width: 100%;
+            max-width: 600px;
+            height: 8px;
+            background: rgba(var(--text-r), var(--text-g), var(--text-b), 0.2);
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .morph-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 50%;
+            background: var(--accent-color);
+            border-radius: 4px;
+            transition: width 0.05s ease;
+        }
+
+        .morph-labels {
+            position: absolute;
+            top: -25px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: var(--letter-spacing);
+            text-transform: uppercase;
+        }
+
+        .morph-label-retro {
+            color: #8B4513;
+        }
+
+        .morph-label-modern {
+            color: #06B6D4;
+        }
+
+        .morph-hint {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            opacity: 0.6;
+            white-space: nowrap;
+        }
+
+        /* Body padding for fixed indicator */
+        body {
+            padding-bottom: 70px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .steps {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .pricing-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .morph-indicator {
+                height: 50px;
+            }
+
+            .morph-labels {
+                font-size: 0.65rem;
+            }
+        }
+
+        /* Ornate border decoration for retro style */
+        .ornate-border {
+            position: relative;
+        }
+
+        .ornate-border::before,
+        .ornate-border::after {
+            content: '\2022 \2022 \2022';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--accent-color);
+            letter-spacing: 1em;
+            opacity: calc(1 - var(--morph));
+        }
+
+        .ornate-border::before {
+            top: -1.5rem;
+        }
+
+        .ornate-border::after {
+            bottom: -1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">Gallery Talk</div>
+        <ul class="nav-links">
+            <li><a href="#features">Product</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+            <li><a href="#cta" class="btn">Artist Sign Up</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Dive into art galleries or build your own, today</h1>
+        <p>We envision a world where art knows no boundaries. Artists around the world should be able to share their art with people all around the world.</p>
+        <a href="#features" class="btn">Live Demo &rarr;</a>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features">
+        <h2 class="section-title ornate-border">What makes <span>GalleryTalk</span> different?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">&#127970;</span>
+                <h3>Visit Galleries Instantly</h3>
+                <p>Getting ready to exhibit where you want. Never worry in their own space.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">&#128101;</span>
+                <h3>Fair Commission (0%)</h3>
+                <p>Personally get together, and stay connected with your audience.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">&#9729;</span>
+                <h3>Support Your Vision</h3>
+                <p>Let your art shine for the price you choose and sell the way you want.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">&#127758;</span>
+                <h3>Global Art Community</h3>
+                <p>Get a full experience of showcases around the world.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how">
+        <h2 class="section-title ornate-border">Build Your <span>Gallery</span> in Minutes</h2>
+        <div class="steps">
+            <div class="step">
+                <div class="step-number">1</div>
+                <h3>Sign Up Free</h3>
+                <p>Experiment and explore with 14 days of Starter for free. No credit card required.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <h3>Upload Your Art</h3>
+                <p>Display up to 50 artworks and host online art exhibitions.</p>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <h3>Connect & Sell</h3>
+                <p>Reach new audiences and enthusiasts. Activate visitor donations with 0% commission.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <h2 class="section-title ornate-border"><span>Simple</span> Pricing</h2>
+        <div class="pricing-cards">
+            <div class="pricing-card">
+                <h3>Trial Plan</h3>
+                <div class="price">Free</div>
+                <div class="price-period">14 days of Starter</div>
+                <ul class="pricing-features">
+                    <li>Experiment and explore</li>
+                    <li>No credit card required</li>
+                    <li>Full platform access</li>
+                    <li>Upload your artworks</li>
+                </ul>
+                <a href="#cta" class="btn btn-outline">Try Now</a>
+            </div>
+            <div class="pricing-card">
+                <h3>Starter Plan</h3>
+                <div class="price">6.99&euro;</div>
+                <div class="price-period">monthly</div>
+                <ul class="pricing-features">
+                    <li>Display up to 50 artworks</li>
+                    <li>0% commission on sales</li>
+                    <li>Host online exhibitions</li>
+                    <li>Activate visitor donations</li>
+                    <li>Gallery analytics</li>
+                    <li>Expert curation support</li>
+                    <li>Digital Gallery Playbook</li>
+                </ul>
+                <a href="#cta" class="btn">Start Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="cta">
+        <h2>Become free. Get your own gallery.</h2>
+        <p>Our mission is to democratize art, breaking down barriers and making it accessible to all.</p>
+        <a href="#" class="btn">Start Creating &rarr;</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div>
+                <div class="footer-brand">Gallery Talk</div>
+                <p style="opacity: 0.8; font-size: 0.9rem;">Empowering artists to reach new audiences worldwide.</p>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 1rem; font-family: var(--font-heading);">Connect</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Instagram</a></li>
+                    <li><a href="#">LinkedIn</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 1rem; font-family: var(--font-heading);">Legal</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Imprint &amp; Data Privacy</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 style="margin-bottom: 1rem; font-family: var(--font-heading);">Address</h4>
+                <p style="opacity: 0.8; font-size: 0.9rem;">
+                    BonfireHQ GmbH<br>
+                    Waldsaumstr. 3<br>
+                    81377 Munich
+                </p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            Copyright 2026, BonfireHQ GmbH
+        </div>
+    </footer>
+
+    <!-- Morph Indicator -->
+    <div class="morph-indicator">
+        <div class="morph-track">
+            <div class="morph-labels">
+                <span class="morph-label-retro">Retro</span>
+                <span class="morph-label-modern">Modern</span>
+            </div>
+            <div class="morph-fill" id="morphFill"></div>
+            <div class="morph-hint">Move mouse horizontally to morph the style</div>
+        </div>
+    </div>
+
+    <script>
+        // Color definitions
+        const retroColors = {
+            bg: { r: 245, g: 222, b: 179 },        // Wheat/cream
+            text: { r: 60, g: 40, b: 20 },          // Dark brown
+            accent: { r: 139, g: 69, b: 19 },       // Saddle brown
+            card: { r: 255, g: 248, b: 235 }        // Cream white
+        };
+
+        const modernColors = {
+            bg: { r: 15, g: 23, b: 42 },            // Slate dark
+            text: { r: 248, g: 250, b: 252 },       // Near white
+            accent: { r: 6, g: 182, b: 212 },       // Cyan
+            card: { r: 30, g: 41, b: 59 }           // Slate darker
+        };
+
+        // Interpolate between two values
+        function lerp(start, end, progress) {
+            return start + (end - start) * progress;
+        }
+
+        // Interpolate colors
+        function lerpColor(color1, color2, progress) {
+            return {
+                r: Math.round(lerp(color1.r, color2.r, progress)),
+                g: Math.round(lerp(color1.g, color2.g, progress)),
+                b: Math.round(lerp(color1.b, color2.b, progress))
+            };
+        }
+
+        // Ease function for smoother transitions
+        function easeInOutCubic(t) {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        }
+
+        // Update CSS variables based on morph progress
+        function updateMorph(progress) {
+            const root = document.documentElement;
+            const easedProgress = easeInOutCubic(progress);
+
+            // Update morph variable
+            root.style.setProperty('--morph', progress);
+
+            // Interpolate colors
+            const bgColor = lerpColor(retroColors.bg, modernColors.bg, easedProgress);
+            const textColor = lerpColor(retroColors.text, modernColors.text, easedProgress);
+            const accentColor = lerpColor(retroColors.accent, modernColors.accent, easedProgress);
+            const cardColor = lerpColor(retroColors.card, modernColors.card, easedProgress);
+
+            root.style.setProperty('--bg-r', bgColor.r);
+            root.style.setProperty('--bg-g', bgColor.g);
+            root.style.setProperty('--bg-b', bgColor.b);
+
+            root.style.setProperty('--text-r', textColor.r);
+            root.style.setProperty('--text-g', textColor.g);
+            root.style.setProperty('--text-b', textColor.b);
+
+            root.style.setProperty('--accent-r', accentColor.r);
+            root.style.setProperty('--accent-g', accentColor.g);
+            root.style.setProperty('--accent-b', accentColor.b);
+
+            root.style.setProperty('--card-bg-r', cardColor.r);
+            root.style.setProperty('--card-bg-g', cardColor.g);
+            root.style.setProperty('--card-bg-b', cardColor.b);
+
+            // Interpolate other properties
+            root.style.setProperty('--border-radius', lerp(0, 20, easedProgress) + 'px');
+            root.style.setProperty('--border-width', lerp(3, 1, easedProgress) + 'px');
+            root.style.setProperty('--shadow-blur', lerp(0, 30, easedProgress) + 'px');
+            root.style.setProperty('--shadow-spread', lerp(4, 0, easedProgress) + 'px');
+            root.style.setProperty('--shadow-opacity', lerp(0.3, 0.15, easedProgress));
+            root.style.setProperty('--letter-spacing', lerp(0.05, -0.02, easedProgress) + 'em');
+            root.style.setProperty('--heading-spacing', lerp(0.1, 0, easedProgress) + 'em');
+            root.style.setProperty('--blur-amount', lerp(0, 20, easedProgress) + 'px');
+            root.style.setProperty('--glow-opacity', lerp(0, 0.3, easedProgress));
+            root.style.setProperty('--noise-opacity', lerp(0.08, 0, easedProgress));
+            root.style.setProperty('--gradient-opacity', lerp(0, 1, easedProgress));
+
+            // Switch fonts at 50% threshold
+            const isModern = progress > 0.5;
+            const fontHeading = isModern ? "'Inter', system-ui, sans-serif" : "'Playfair Display', Georgia, serif";
+            const fontBody = isModern ? "'Inter', system-ui, sans-serif" : "'Playfair Display', Georgia, serif";
+            root.style.setProperty('--font-heading', fontHeading);
+            root.style.setProperty('--font-body', fontBody);
+
+            // Update morph indicator
+            const morphFill = document.getElementById('morphFill');
+            if (morphFill) {
+                morphFill.style.width = (progress * 100) + '%';
+            }
+        }
+
+        // Track mouse movement
+        let currentProgress = 0.5;
+        let targetProgress = 0.5;
+
+        document.addEventListener('mousemove', (e) => {
+            targetProgress = e.clientX / window.innerWidth;
+        });
+
+        // Smooth animation loop
+        function animate() {
+            // Smoothly interpolate towards target
+            currentProgress += (targetProgress - currentProgress) * 0.1;
+            updateMorph(currentProgress);
+            requestAnimationFrame(animate);
+        }
+
+        // Initialize at center
+        updateMorph(0.5);
+        animate();
+
+        // Handle touch events for mobile
+        document.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) {
+                targetProgress = e.touches[0].clientX / window.innerWidth;
+            }
+        });
+
+        // Reset to center on mouse leave
+        document.addEventListener('mouseleave', () => {
+            // Optionally keep the last position or reset
+            // targetProgress = 0.5;
+        });
+    </script>
+</body>
+</html>
