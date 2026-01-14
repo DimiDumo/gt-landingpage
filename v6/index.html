@@ -959,7 +959,7 @@
                 <span class="morph-label-baroque">Baroque</span>
             </div>
             <div class="morph-fill" id="morphFill"></div>
-            <div class="morph-hint">Move mouse horizontally to morph the style</div>
+            <div class="morph-hint">Move mouse or tilt device to morph style</div>
         </div>
     </div>
 
@@ -1137,6 +1137,24 @@
                 targetProgress = e.touches[0].clientX / window.innerWidth;
             }
         });
+
+        document.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 0) {
+                targetProgress = e.touches[0].clientX / window.innerWidth;
+            }
+        });
+
+        // Also support device orientation for mobile tilt
+        if (window.DeviceOrientationEvent) {
+            window.addEventListener('deviceorientation', (e) => {
+                // gamma is left-to-right tilt (-90 to 90)
+                if (e.gamma !== null) {
+                    // Map -45 to 45 degrees to 0-1 progress
+                    const gamma = Math.max(-45, Math.min(45, e.gamma));
+                    targetProgress = (gamma + 45) / 90;
+                }
+            });
+        }
     </script>
 </body>
 </html>
