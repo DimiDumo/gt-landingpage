@@ -156,14 +156,11 @@
         .scroll-container {
             margin: 0 40px;
             position: relative;
-            height: 100vh;
-            overflow: hidden;
         }
 
         /* Section base styles */
         section {
             min-height: 100vh;
-            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1288,49 +1285,32 @@
         const TOTAL_FRAMES = 140;
         let currentFrame = 1;
 
-        // Update frame counter
-        function updateFrameCounter(frame) {
-            currentFrame = Math.round(frame);
+        // Update frame counter based on total scroll progress
+        function updateFrameCounter(progress) {
+            currentFrame = Math.round(1 + progress * (TOTAL_FRAMES - 1));
             document.getElementById('currentFrame').textContent = currentFrame;
-            document.getElementById('progressFill').style.width = (currentFrame / TOTAL_FRAMES * 100) + '%';
+            document.getElementById('progressFill').style.width = (progress * 100) + '%';
         }
 
-        // Pin the entire scroll container - this is the key fix!
-        // Instead of sections scrolling past, we pin the whole thing and animate within
-        const scrollContainer = document.querySelector('.scroll-container');
-        const totalHeight = 5000; // Total scroll distance for all animations
-
-        // Create master timeline with pinning
-        const masterTL = gsap.timeline({
-            scrollTrigger: {
-                trigger: ".scroll-container",
-                start: "top top",
-                end: `+=${totalHeight}`,
-                pin: true,
-                pinSpacing: true,
-                scrub: 0.3, // Faster response to scroll
-                onUpdate: (self) => {
-                    updateFrameCounter(1 + self.progress * (TOTAL_FRAMES - 1));
-                }
-            }
-        });
-
-        // Hide all sections initially except hero, we'll reveal them via animation
-        gsap.set(['.vision', '.features', '.connection', '.pricing', '.finale'], {
-            autoAlpha: 0,
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%'
-        });
-        gsap.set('.hero', {
-            autoAlpha: 1
+        // Track overall scroll progress for frame counter
+        ScrollTrigger.create({
+            trigger: '.scroll-container',
+            start: 'top top',
+            end: 'bottom bottom',
+            onUpdate: (self) => updateFrameCounter(self.progress)
         });
 
         // ===== SEQUENCE 1: HERO (Frames 1-30) =====
-        const heroTL = gsap.timeline();
+        const heroTL = gsap.timeline({
+            scrollTrigger: {
+                trigger: '.hero',
+                start: 'top 80%',
+                end: 'center center',
+                scrub: 0.2
+            }
+        });
 
-        // Frames 2-15: Brush strokes appear
+        // Brush strokes appear
         const strokes = document.querySelectorAll('.brush-stroke');
         strokes.forEach((stroke, i) => {
             heroTL.to(stroke, {
@@ -1341,7 +1321,7 @@
             }, i * 0.08);
         });
 
-        // Frames 16-26: Letters type in
+        // Letters type in
         const letters = document.querySelectorAll('.hero-title .letter');
         letters.forEach((letter, i) => {
             heroTL.to(letter, {
@@ -1358,7 +1338,7 @@
             duration: 0.01
         }, 0.68);
 
-        // Frame 27-30: CTA appears
+        // CTA appears
         heroTL.to('.hero-cta', {
             opacity: 1,
             scale: 1,
@@ -1366,14 +1346,15 @@
             ease: "back.out(1.7)"
         }, 1.2);
 
-        masterTL.add(heroTL, 0);
-
-        // Transition: Hero out, Vision in
-        masterTL.to('.hero', { autoAlpha: 0, duration: 0.1 }, 1.3);
-        masterTL.to('.vision', { autoAlpha: 1, duration: 0.1 }, 1.3);
-
         // ===== SEQUENCE 2: VISION (Frames 31-50) =====
-        const visionTL = gsap.timeline();
+        const visionTL = gsap.timeline({
+            scrollTrigger: {
+                trigger: '.vision',
+                start: 'top 80%',
+                end: 'center center',
+                scrub: 0.2
+            }
+        });
 
         // Floor appears
         visionTL.to('.room-floor', {
@@ -1419,14 +1400,15 @@
             ease: "steps(4)"
         }, 0.75);
 
-        masterTL.add(visionTL, 1.4);
-
-        // Transition: Vision out, Features in
-        masterTL.to('.vision', { autoAlpha: 0, duration: 0.1 }, 2.4);
-        masterTL.to('.features', { autoAlpha: 1, duration: 0.1 }, 2.4);
-
         // ===== SEQUENCE 3: FEATURES (Frames 51-80) =====
-        const featuresTL = gsap.timeline();
+        const featuresTL = gsap.timeline({
+            scrollTrigger: {
+                trigger: '.features',
+                start: 'top 80%',
+                end: 'center center',
+                scrub: 0.2
+            }
+        });
 
         // Feature 1: Doors
         featuresTL.to('#feature1', {
@@ -1508,14 +1490,15 @@
             ease: "back.out(2)"
         }, 0.9);
 
-        masterTL.add(featuresTL, 2.5);
-
-        // Transition: Features out, Connection in
-        masterTL.to('.features', { autoAlpha: 0, duration: 0.1 }, 3.6);
-        masterTL.to('.connection', { autoAlpha: 1, duration: 0.1 }, 3.6);
-
         // ===== SEQUENCE 4: CONNECTION (Frames 81-100) =====
-        const connectionTL = gsap.timeline();
+        const connectionTL = gsap.timeline({
+            scrollTrigger: {
+                trigger: '.connection',
+                start: 'top 80%',
+                end: 'center center',
+                scrub: 0.2
+            }
+        });
 
         // Avatars walk toward each other
         connectionTL.to('#avatar1', {
@@ -1544,14 +1527,15 @@
             ease: "steps(3)"
         }, 0.7);
 
-        masterTL.add(connectionTL, 3.7);
-
-        // Transition: Connection out, Pricing in
-        masterTL.to('.connection', { autoAlpha: 0, duration: 0.1 }, 4.6);
-        masterTL.to('.pricing', { autoAlpha: 1, duration: 0.1 }, 4.6);
-
         // ===== SEQUENCE 5: PRICING (Frames 101-120) =====
-        const pricingTL = gsap.timeline();
+        const pricingTL = gsap.timeline({
+            scrollTrigger: {
+                trigger: '.pricing',
+                start: 'top 80%',
+                end: 'center center',
+                scrub: 0.2
+            }
+        });
 
         // Cards deal in
         pricingTL.to('#cardFree', {
@@ -1608,14 +1592,15 @@
             }
         }, 0.15);
 
-        masterTL.add(pricingTL, 4.7);
-
-        // Transition: Pricing out, Finale in
-        masterTL.to('.pricing', { autoAlpha: 0, duration: 0.1 }, 5.6);
-        masterTL.to('.finale', { autoAlpha: 1, duration: 0.1 }, 5.6);
-
         // ===== SEQUENCE 6: FINALE (Frames 121-140) =====
-        const finaleTL = gsap.timeline();
+        const finaleTL = gsap.timeline({
+            scrollTrigger: {
+                trigger: '.finale',
+                start: 'top 80%',
+                end: 'center center',
+                scrub: 0.2
+            }
+        });
 
         // Frame zooms in
         finaleTL.to('#finaleFrame', {
@@ -1642,8 +1627,6 @@
             duration: 0.25,
             ease: "steps(5)"
         }, 0.55);
-
-        masterTL.add(finaleTL, 5.7);
 
         // Add some jitter effect on scroll for authenticity
         let lastScrollY = 0;
