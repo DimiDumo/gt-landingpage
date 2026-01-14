@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GalleryTalk - The Living Conversation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --pink: #FF6B9D;
+            --orange: #FF8A5B;
+            --yellow: #FFD93D;
+            --blue: #6BCBFF;
+            --purple: #A855F7;
+            --dark: #1a1a2e;
+            --darker: #0f0f1a;
+            --light: #f8f9fa;
+            --gray: #e9ecef;
+            --text-dark: #2d3748;
+            --bubble-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(180deg, #fafafa 0%, #f0f4f8 50%, #e8eef4 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: var(--text-dark);
+        }
+
+        /* Chat Container */
+        .chat-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+
+        /* Navigation as a floating header bubble */
+        .nav-bubble {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 50px;
+            padding: 12px 30px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        .logo-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--pink), var(--orange), var(--yellow), var(--blue));
+            border-radius: 8px;
+            position: relative;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 3px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--pink);
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, var(--pink), var(--orange));
+            color: white;
+            padding: 8px 18px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-cta:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+        }
+
+        /* Chat Participants - Avatars */
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .avatar-artist {
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+        }
+
+        .avatar-collector {
+            background: linear-gradient(135deg, var(--blue), #4F46E5);
+        }
+
+        .avatar-gallerytalk {
+            background: linear-gradient(135deg, var(--pink), var(--orange), var(--yellow));
+        }
+
+        /* Message Row */
+        .message-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .message-row.from-left {
+            flex-direction: row;
+        }
+
+        .message-row.from-right {
+            flex-direction: row-reverse;
+        }
+
+        .message-row.from-left .bubble {
+            border-bottom-left-radius: 8px;
+        }
+
+        .message-row.from-right .bubble {
+            border-bottom-right-radius: 8px;
+        }
+
+        /* Speech Bubbles */
+        .bubble {
+            max-width: 70%;
+            padding: 18px 24px;
+            border-radius: 24px;
+            position: relative;
+            box-shadow: var(--bubble-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .bubble:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Bubble variants */
+        .bubble-white {
+            background: white;
+            color: var(--text-dark);
+        }
+
+        .bubble-gradient {
+            background: linear-gradient(135deg, var(--pink), var(--orange));
+            color: white;
+        }
+
+        .bubble-blue {
+            background: linear-gradient(135deg, var(--blue), #4F46E5);
+            color: white;
+        }
+
+        .bubble-purple {
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            color: white;
+        }
+
+        .bubble-yellow {
+            background: linear-gradient(135deg, var(--yellow), var(--orange));
+            color: var(--text-dark);
+        }
+
+        .bubble-dark {
+            background: var(--dark);
+            color: white;
+        }
+
+        /* Hero Bubble - Extra large */
+        .hero-section {
+            padding-top: 120px;
+            margin-bottom: 40px;
+        }
+
+        .hero-bubble {
+            max-width: 85%;
+            padding: 40px 50px;
+            font-size: 32px;
+            font-weight: 700;
+            line-height: 1.3;
+            text-align: center;
+            margin: 0 auto;
+            background: linear-gradient(135deg, var(--pink), var(--orange), var(--yellow));
+            color: white;
+            border-radius: 40px;
+            box-shadow: 0 10px 50px rgba(255, 107, 157, 0.3);
+        }
+
+        .hero-bubble:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 60px rgba(255, 107, 157, 0.4);
+        }
+
+        .hero-cta {
+            display: inline-block;
+            margin-top: 25px;
+            background: white;
+            color: var(--pink);
+            padding: 14px 32px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .hero-cta:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 30px 0;
+            opacity: 0;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            padding: 16px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--bubble-shadow);
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: #adb5bd;
+            border-radius: 50%;
+            animation: typingBounce 1.4s ease-in-out infinite;
+        }
+
+        .typing-dots span:nth-child(1) { animation-delay: 0s; }
+        .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-8px); }
+        }
+
+        /* Section Dividers */
+        .section-divider {
+            text-align: center;
+            margin: 50px 0 30px;
+            opacity: 0;
+        }
+
+        .section-label {
+            display: inline-block;
+            background: var(--gray);
+            color: #6c757d;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Feature Checkmarks Row */
+        .features-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            opacity: 0;
+        }
+
+        .feature-chip {
+            background: white;
+            padding: 12px 22px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: var(--bubble-shadow);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .feature-chip:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .feature-chip .check {
+            color: #22c55e;
+            font-weight: 700;
+        }
+
+        /* Connect Section */
+        .connect-bubble {
+            text-align: center;
+            padding: 50px;
+            font-size: 28px;
+            font-weight: 700;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+
+        .connect-bubble em {
+            font-style: normal;
+            background: linear-gradient(135deg, var(--pink), var(--orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Image inside bubble */
+        .image-bubble {
+            padding: 20px;
+            max-width: 80%;
+        }
+
+        .image-bubble img {
+            width: 100%;
+            border-radius: 16px;
+            display: block;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-placeholder::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg,
+                transparent 30%,
+                rgba(255,255,255,0.5) 50%,
+                transparent 70%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .play-button {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--pink), var(--orange));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .play-button:hover {
+            transform: scale(1.1);
+        }
+
+        .play-button::after {
+            content: '';
+            border-left: 20px solid white;
+            border-top: 12px solid transparent;
+            border-bottom: 12px solid transparent;
+            margin-left: 5px;
+        }
+
+        /* Difference Section - Thread style */
+        .thread-container {
+            margin: 40px 0;
+        }
+
+        .thread-line {
+            width: 2px;
+            background: linear-gradient(180deg, var(--pink), var(--orange), var(--yellow), var(--blue));
+            margin-left: 19px;
+            height: 30px;
+            opacity: 0;
+        }
+
+        .difference-bubble {
+            padding: 20px 28px;
+        }
+
+        .difference-bubble h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .difference-bubble p {
+            font-size: 14px;
+            opacity: 0.85;
+            line-height: 1.5;
+        }
+
+        /* Pricing Cards inside bubbles */
+        .pricing-row {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .pricing-bubble {
+            flex: 1;
+            min-width: 280px;
+            max-width: 350px;
+            padding: 35px;
+            text-align: center;
+            opacity: 0;
+        }
+
+        .pricing-bubble h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .pricing-bubble .price {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .pricing-bubble .period {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-bottom: 20px;
+        }
+
+        .pricing-bubble .description {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .pricing-bubble ul {
+            text-align: left;
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .pricing-bubble ul li {
+            padding: 8px 0;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pricing-bubble ul li::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: currentColor;
+            border-radius: 50%;
+            opacity: 0.5;
+        }
+
+        .pricing-cta {
+            display: inline-block;
+            padding: 14px 35px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .pricing-cta-primary {
+            background: white;
+            color: var(--pink);
+        }
+
+        .pricing-cta-secondary {
+            background: linear-gradient(135deg, var(--pink), var(--orange));
+            color: white;
+        }
+
+        .pricing-cta:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Footer */
+        .footer-bubble {
+            text-align: center;
+            padding: 40px;
+            max-width: 90%;
+            margin: 60px auto 0;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .footer-logo .logo-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .footer-logo span {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-address {
+            font-size: 13px;
+            opacity: 0.7;
+            line-height: 1.8;
+            margin-top: 20px;
+        }
+
+        .footer-address a {
+            color: var(--yellow);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-bubble {
+                padding: 10px 20px;
+                gap: 15px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .hero-bubble {
+                font-size: 24px;
+                padding: 30px 25px;
+                max-width: 95%;
+            }
+
+            .bubble {
+                max-width: 85%;
+                padding: 14px 18px;
+            }
+
+            .connect-bubble {
+                font-size: 22px;
+                padding: 35px 25px;
+            }
+
+            .pricing-bubble {
+                min-width: 100%;
+            }
+
+            .message-row .avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+
+            .features-row {
+                gap: 10px;
+            }
+
+            .feature-chip {
+                padding: 10px 16px;
+                font-size: 13px;
+            }
+        }
+
+        /* Animation Classes */
+        .animate-in {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+
+        .bubble-pop {
+            animation: bubblePop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes bubblePop {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .slide-left {
+            animation: slideLeft 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes slideLeft {
+            0% {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide-right {
+            animation: slideRight 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes slideRight {
+            0% {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav-bubble">
+        <div class="logo">
+            <div class="logo-icon"></div>
+            <span>GALLERY TALK</span>
+        </div>
+        <div class="nav-links">
+            <a href="#product">Product</a>
+            <a href="#artists">Artists</a>
+            <a href="#pricing">Pricing</a>
+        </div>
+        <a href="#signup" class="nav-cta">Artist sign up</a>
+    </nav>
+
+    <div class="chat-container">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-bubble bubble" id="hero">
+                Dive into art galleries or build your own, today
+                <a href="#demo" class="hero-cta">Live demo &rarr;</a>
+            </div>
+        </section>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" data-delay="0.5">
+            <div class="avatar avatar-gallerytalk">GT</div>
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Vision Conversation -->
+        <div class="section-divider">
+            <span class="section-label">Our Vision</span>
+        </div>
+
+        <div class="message-row from-left">
+            <div class="avatar avatar-gallerytalk">GT</div>
+            <div class="bubble bubble-gradient">
+                We envision a world where art knows no boundaries.
+            </div>
+        </div>
+
+        <div class="message-row from-right">
+            <div class="avatar avatar-artist">A</div>
+            <div class="bubble bubble-white">
+                Artists around the world should be able to share their art with people all around the world.
+            </div>
+        </div>
+
+        <div class="message-row from-left">
+            <div class="avatar avatar-gallerytalk">GT</div>
+            <div class="bubble bubble-blue">
+                We empower them by making it easy to set up virtual galleries and connect with collectors, enthusiasts and other artists.
+            </div>
+        </div>
+
+        <!-- Feature Chips -->
+        <div class="features-row">
+            <div class="feature-chip"><span class="check">&#10003;</span> Visit galleries instantly</div>
+            <div class="feature-chip"><span class="check">&#10003;</span> Fair commission (0%)</div>
+            <div class="feature-chip"><span class="check">&#10003;</span> For All You Love</div>
+            <div class="feature-chip"><span class="check">&#10003;</span> Build Gallery in Minutes</div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" data-delay="0.3">
+            <div class="avatar avatar-collector">C</div>
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Connect Section -->
+        <div class="message-row from-right" style="justify-content: center;">
+            <div class="bubble bubble-white connect-bubble">
+                Connect <em>personally</em>, Explore <em>together</em>
+            </div>
+        </div>
+
+        <!-- Video placeholder -->
+        <div class="message-row from-left" style="justify-content: center;">
+            <div class="bubble bubble-white image-bubble">
+                <div class="image-placeholder">
+                    <div class="play-button"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- What Makes Different Section -->
+        <div class="section-divider">
+            <span class="section-label">What makes GalleryTalk different?</span>
+        </div>
+
+        <div class="thread-container">
+            <div class="message-row from-left">
+                <div class="avatar avatar-gallerytalk">GT</div>
+                <div class="bubble bubble-purple difference-bubble">
+                    <h4>Never worry in their own space</h4>
+                    <p>Getting ready to exhibit where you want.</p>
+                </div>
+            </div>
+
+            <div class="thread-line"></div>
+
+            <div class="message-row from-left">
+                <div class="avatar avatar-gallerytalk">GT</div>
+                <div class="bubble bubble-gradient difference-bubble">
+                    <h4>Personally get together, and stay connected</h4>
+                    <p>Start connecting with you and your audience.</p>
+                </div>
+            </div>
+
+            <div class="thread-line"></div>
+
+            <div class="message-row from-left">
+                <div class="avatar avatar-gallerytalk">GT</div>
+                <div class="bubble bubble-blue difference-bubble">
+                    <h4>Support your artist vision</h4>
+                    <p>Let your art shine for the price you choose and sell the way you want.</p>
+                </div>
+            </div>
+
+            <div class="thread-line"></div>
+
+            <div class="message-row from-left">
+                <div class="avatar avatar-gallerytalk">GT</div>
+                <div class="bubble bubble-yellow difference-bubble">
+                    <h4>Be one of a global art community</h4>
+                    <p>Get a full experience of showcases around the world.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Bubble -->
+        <div class="message-row from-right">
+            <div class="avatar avatar-collector">C</div>
+            <div class="bubble bubble-white" style="text-align: center;">
+                <a href="#explore" class="pricing-cta pricing-cta-secondary">Explore Gallery &rarr;</a>
+            </div>
+        </div>
+
+        <!-- Pricing Section -->
+        <div class="section-divider" id="pricing">
+            <span class="section-label">Pricing</span>
+        </div>
+
+        <div class="pricing-row">
+            <div class="bubble bubble-white pricing-bubble">
+                <h3>Free Trial</h3>
+                <div class="price">Free</div>
+                <div class="period">14 days</div>
+                <p class="description">Try 14 days free - no credit card needed</p>
+                <a href="#try" class="pricing-cta pricing-cta-secondary">Try now</a>
+            </div>
+
+            <div class="bubble bubble-gradient pricing-bubble">
+                <h3>Full Access</h3>
+                <div class="price">6.99&euro;</div>
+                <div class="period">per month</div>
+                <p class="description">Full features for serious artists</p>
+                <ul>
+                    <li>Display up to 50 artworks</li>
+                    <li>0% commission on sales</li>
+                    <li>Host online exhibitions</li>
+                    <li>Visitor donations</li>
+                    <li>Gallery analytics</li>
+                    <li>Expert curation support</li>
+                </ul>
+                <a href="#start" class="pricing-cta pricing-cta-primary">Start now</a>
+            </div>
+        </div>
+
+        <!-- Final typing indicator -->
+        <div class="typing-indicator" data-delay="0.2">
+            <div class="avatar avatar-gallerytalk">GT</div>
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+
+        <!-- Footer Bubble -->
+        <div class="bubble bubble-dark footer-bubble message-row" style="opacity: 0;">
+            <div class="footer-logo">
+                <div class="logo-icon"></div>
+                <span>GALLERY TALK</span>
+            </div>
+            <p style="font-size: 18px; margin-bottom: 25px;">Let's connect!</p>
+            <div class="footer-links">
+                <a href="#instagram">Instagram</a>
+                <a href="#linkedin">LinkedIn</a>
+                <a href="#imprint">Imprint & Data privacy</a>
+            </div>
+            <div class="footer-address">
+                BonfireHQ GmbH<br>
+                Waldsaumstr. 3, 81377 Munich<br>
+                <a href="mailto:contact@gallerytalk.io">Contact us</a><br><br>
+                Copyright 2026, BonfireHQ GmbH
+            </div>
+        </div>
+    </div>
+
+    <!-- GSAP Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <script>
+        // Register ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero Animation
+        gsap.from("#hero", {
+            duration: 1,
+            scale: 0.8,
+            opacity: 0,
+            ease: "back.out(1.7)",
+            delay: 0.3
+        });
+
+        // Message rows animation
+        const messageRows = gsap.utils.toArray('.message-row');
+        messageRows.forEach((row, i) => {
+            const isLeft = row.classList.contains('from-left');
+
+            gsap.fromTo(row,
+                {
+                    opacity: 0,
+                    x: isLeft ? -60 : 60,
+                    y: 20
+                },
+                {
+                    opacity: 1,
+                    x: 0,
+                    y: 0,
+                    duration: 0.7,
+                    ease: "back.out(1.4)",
+                    scrollTrigger: {
+                        trigger: row,
+                        start: "top 85%",
+                        toggleActions: "play none none none"
+                    }
+                }
+            );
+        });
+
+        // Section dividers
+        gsap.utils.toArray('.section-divider').forEach(divider => {
+            gsap.fromTo(divider,
+                { opacity: 0, y: 20 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.5,
+                    scrollTrigger: {
+                        trigger: divider,
+                        start: "top 85%"
+                    }
+                }
+            );
+        });
+
+        // Feature chips staggered animation
+        gsap.fromTo('.features-row',
+            { opacity: 0 },
+            {
+                opacity: 1,
+                duration: 0.5,
+                scrollTrigger: {
+                    trigger: '.features-row',
+                    start: "top 85%"
+                }
+            }
+        );
+
+        gsap.utils.toArray('.feature-chip').forEach((chip, i) => {
+            gsap.fromTo(chip,
+                { opacity: 0, y: 30, scale: 0.8 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    duration: 0.5,
+                    delay: i * 0.1,
+                    ease: "back.out(1.7)",
+                    scrollTrigger: {
+                        trigger: '.features-row',
+                        start: "top 85%"
+                    }
+                }
+            );
+        });
+
+        // Typing indicators
+        gsap.utils.toArray('.typing-indicator').forEach(indicator => {
+            const delay = parseFloat(indicator.dataset.delay) || 0.3;
+
+            gsap.fromTo(indicator,
+                { opacity: 0, x: -30 },
+                {
+                    opacity: 1,
+                    x: 0,
+                    duration: 0.4,
+                    scrollTrigger: {
+                        trigger: indicator,
+                        start: "top 90%",
+                        onEnter: () => {
+                            // Show typing for a moment then fade
+                            gsap.to(indicator, {
+                                opacity: 0,
+                                delay: 1.5,
+                                duration: 0.3
+                            });
+                        }
+                    }
+                }
+            );
+        });
+
+        // Thread lines
+        gsap.utils.toArray('.thread-line').forEach(line => {
+            gsap.fromTo(line,
+                { opacity: 0, scaleY: 0 },
+                {
+                    opacity: 1,
+                    scaleY: 1,
+                    duration: 0.4,
+                    transformOrigin: "top",
+                    scrollTrigger: {
+                        trigger: line,
+                        start: "top 85%"
+                    }
+                }
+            );
+        });
+
+        // Pricing bubbles
+        gsap.utils.toArray('.pricing-bubble').forEach((bubble, i) => {
+            gsap.fromTo(bubble,
+                { opacity: 0, y: 50, scale: 0.9 },
+                {
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    duration: 0.7,
+                    delay: i * 0.2,
+                    ease: "back.out(1.4)",
+                    scrollTrigger: {
+                        trigger: '.pricing-row',
+                        start: "top 80%"
+                    }
+                }
+            );
+        });
+
+        // Footer bubble
+        gsap.fromTo('.footer-bubble',
+            { opacity: 0, y: 40 },
+            {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                ease: "power2.out",
+                scrollTrigger: {
+                    trigger: '.footer-bubble',
+                    start: "top 90%"
+                }
+            }
+        );
+
+        // Hover effects enhancement
+        document.querySelectorAll('.bubble').forEach(bubble => {
+            bubble.addEventListener('mouseenter', () => {
+                gsap.to(bubble, {
+                    scale: 1.02,
+                    boxShadow: "0 12px 40px rgba(0, 0, 0, 0.15)",
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+
+            bubble.addEventListener('mouseleave', () => {
+                gsap.to(bubble, {
+                    scale: 1,
+                    boxShadow: "0 4px 20px rgba(0, 0, 0, 0.08)",
+                    duration: 0.3,
+                    ease: "power2.out"
+                });
+            });
+        });
+
+        // Play button animation
+        const playButton = document.querySelector('.play-button');
+        if (playButton) {
+            playButton.addEventListener('mouseenter', () => {
+                gsap.to(playButton, {
+                    scale: 1.15,
+                    duration: 0.3,
+                    ease: "back.out(1.7)"
+                });
+            });
+
+            playButton.addEventListener('mouseleave', () => {
+                gsap.to(playButton, {
+                    scale: 1,
+                    duration: 0.3
+                });
+            });
+        }
+    </script>
+</body>
+</html>

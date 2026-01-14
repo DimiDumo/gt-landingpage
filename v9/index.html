@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GalleryTalk - Walk Through Art</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --cream: #FAF7F2;
+            --cream-dark: #EDE8E0;
+            --wall: #F5F1EA;
+            --wood-dark: #2C1810;
+            --wood-medium: #4A3728;
+            --wood-light: #6B5344;
+            --text-dark: #1A1A1A;
+            --text-muted: #666666;
+            --gold: #C9A962;
+            --gradient-pink: #FF6B9D;
+            --gradient-orange: #FF8A50;
+            --gradient-yellow: #FFD93D;
+            --gradient-blue: #6BCFFF;
+        }
+
+        html, body {
+            overflow-x: hidden;
+            background: var(--cream);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+        }
+
+        /* Horizontal scroll container */
+        .gallery-wrapper {
+            overflow-x: hidden;
+        }
+
+        .gallery-track {
+            display: flex;
+            width: fit-content;
+        }
+
+        /* Each room */
+        .room {
+            width: 100vw;
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* Wall texture background */
+        .wall-texture {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(180deg, rgba(0,0,0,0.02) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.03) 100%),
+                repeating-linear-gradient(90deg, transparent, transparent 100px, rgba(0,0,0,0.01) 100px, rgba(0,0,0,0.01) 101px);
+            pointer-events: none;
+        }
+
+        /* Floor reflection */
+        .floor {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 120px;
+            background: linear-gradient(to top, var(--wood-dark), transparent);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        /* Ceiling detail */
+        .ceiling {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.08), transparent);
+            pointer-events: none;
+        }
+
+        /* Doorway transitions */
+        .doorway {
+            position: absolute;
+            right: -80px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 160px;
+            height: 85vh;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .doorway::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                transparent 0%,
+                var(--wood-dark) 35%,
+                var(--wood-dark) 65%,
+                transparent 100%
+            );
+            opacity: 0.9;
+        }
+
+        .doorway-inner {
+            position: absolute;
+            top: 5%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            height: 90%;
+            background: var(--cream-dark);
+            box-shadow: inset 0 0 60px rgba(0,0,0,0.1);
+        }
+
+        /* Content frames */
+        .frame {
+            background: white;
+            padding: 3rem;
+            position: relative;
+            box-shadow:
+                0 4px 20px rgba(0,0,0,0.1),
+                inset 0 0 0 1px rgba(0,0,0,0.05);
+        }
+
+        .frame::before {
+            content: '';
+            position: absolute;
+            top: -12px;
+            left: -12px;
+            right: -12px;
+            bottom: -12px;
+            background: linear-gradient(135deg, var(--wood-light), var(--wood-dark));
+            z-index: -1;
+            box-shadow:
+                0 8px 40px rgba(0,0,0,0.25),
+                0 2px 10px rgba(0,0,0,0.15);
+        }
+
+        /* Typography */
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            letter-spacing: -0.01em;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        p {
+            line-height: 1.7;
+            color: var(--text-muted);
+        }
+
+        /* Gradient CTA */
+        .cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, var(--gradient-pink), var(--gradient-orange), var(--gradient-yellow));
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 50px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 20px rgba(255, 107, 157, 0.3);
+        }
+
+        .cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 107, 157, 0.4);
+        }
+
+        /* Room 1: Hero - Grand Entrance */
+        .room-hero {
+            background: linear-gradient(135deg, var(--cream) 0%, var(--wall) 100%);
+        }
+
+        .hero-content {
+            text-align: center;
+            max-width: 800px;
+            padding: 2rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--gradient-pink), var(--gradient-orange), var(--gradient-yellow), var(--gradient-blue));
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 28px;
+            background: white;
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+            opacity: 0.9;
+        }
+
+        .logo-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            color: var(--text-dark);
+        }
+
+        .hero-title {
+            margin-bottom: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .hero-cta {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0;
+        }
+
+        .scroll-hint span {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .scroll-arrow {
+            width: 30px;
+            height: 30px;
+            border-right: 2px solid var(--text-muted);
+            border-bottom: 2px solid var(--text-muted);
+            transform: rotate(-45deg);
+            animation: scrollBounce 2s infinite;
+        }
+
+        @keyframes scrollBounce {
+            0%, 100% { transform: rotate(-45deg) translate(0, 0); }
+            50% { transform: rotate(-45deg) translate(5px, 5px); }
+        }
+
+        /* Room 2: Vision */
+        .room-vision {
+            background: var(--wall);
+        }
+
+        .vision-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            max-width: 1200px;
+            padding: 2rem;
+            align-items: center;
+        }
+
+        .vision-text {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+
+        .vision-text h2 {
+            margin-bottom: 1.5rem;
+        }
+
+        .vision-text p {
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+        }
+
+        .feature-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .pill {
+            padding: 0.75rem 1.25rem;
+            background: white;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .vision-frame {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+
+        .vision-artwork {
+            aspect-ratio: 4/3;
+            background: linear-gradient(135deg, var(--gradient-blue) 0%, var(--gradient-pink) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vision-artwork::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 30% 30%, var(--gradient-yellow) 0%, transparent 30%),
+                radial-gradient(circle at 70% 70%, var(--gradient-orange) 0%, transparent 25%);
+            animation: artFloat 10s ease-in-out infinite;
+        }
+
+        @keyframes artFloat {
+            0%, 100% { transform: translate(-10%, -10%); }
+            50% { transform: translate(10%, 10%); }
+        }
+
+        /* Room 3: Connect */
+        .room-connect {
+            background: var(--cream);
+        }
+
+        .connect-content {
+            text-align: center;
+            max-width: 700px;
+            padding: 2rem;
+        }
+
+        .connect-title {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .connect-title em {
+            font-style: italic;
+            background: linear-gradient(135deg, var(--gradient-pink), var(--gradient-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .video-frame {
+            margin-top: 3rem;
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        .video-placeholder {
+            aspect-ratio: 16/9;
+            background: var(--wood-dark);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-placeholder::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.05) 50%, transparent 60%);
+            animation: videoShine 3s infinite;
+        }
+
+        @keyframes videoShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .play-button {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--gradient-pink), var(--gradient-orange));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s;
+        }
+
+        .play-button:hover {
+            transform: scale(1.1);
+        }
+
+        .play-button::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 24px solid white;
+            border-top: 14px solid transparent;
+            border-bottom: 14px solid transparent;
+            margin-left: 6px;
+        }
+
+        /* Room 4: Features */
+        .room-features {
+            background: var(--wall);
+            width: 150vw;
+        }
+
+        .features-content {
+            display: flex;
+            gap: 3rem;
+            padding: 2rem 4rem;
+            align-items: center;
+        }
+
+        .features-title {
+            min-width: 300px;
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+
+        .features-title h2 {
+            margin-bottom: 1rem;
+        }
+
+        .features-title em {
+            background: linear-gradient(135deg, var(--gradient-pink), var(--gradient-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-style: normal;
+        }
+
+        .feature-cards {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .feature-card {
+            width: 280px;
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        .feature-card .frame {
+            padding: 2rem;
+            height: 100%;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--gradient-yellow), var(--gradient-orange));
+            border-radius: 16px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feature-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .feature-card p {
+            font-size: 0.9375rem;
+        }
+
+        /* Room 5: Galleries */
+        .room-galleries {
+            background: var(--cream);
+            width: 130vw;
+        }
+
+        .galleries-content {
+            padding: 2rem 4rem;
+        }
+
+        .galleries-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .galleries-header em {
+            background: linear-gradient(135deg, var(--gradient-pink), var(--gradient-orange));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-style: normal;
+        }
+
+        .gallery-grid {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        .gallery-item {
+            width: 200px;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .gallery-item .frame {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .gallery-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            background: linear-gradient(135deg, var(--gradient-blue), var(--gradient-pink));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: white;
+            font-weight: 600;
+        }
+
+        .gallery-name {
+            font-weight: 500;
+            font-size: 0.9375rem;
+        }
+
+        /* Room 6: Pricing */
+        .room-pricing {
+            background: linear-gradient(135deg, var(--wall) 0%, var(--cream-dark) 100%);
+        }
+
+        .pricing-content {
+            display: flex;
+            gap: 3rem;
+            padding: 2rem;
+            align-items: stretch;
+        }
+
+        .pricing-intro {
+            max-width: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+
+        .pricing-intro h2 {
+            margin-bottom: 1rem;
+        }
+
+        .pricing-card {
+            width: 320px;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .pricing-card .frame {
+            padding: 2.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pricing-card.featured .frame::before {
+            background: linear-gradient(135deg, var(--gradient-pink), var(--gradient-orange), var(--gradient-yellow));
+        }
+
+        .price-label {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .price {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-muted);
+        }
+
+        .price-description {
+            font-size: 0.9375rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--cream-dark);
+        }
+
+        .price-features {
+            list-style: none;
+            margin-bottom: 2rem;
+            flex-grow: 1;
+        }
+
+        .price-features li {
+            padding: 0.5rem 0;
+            font-size: 0.9375rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .price-features li::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, var(--gradient-yellow), var(--gradient-orange));
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .cta-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--wood-dark);
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 50px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .cta-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+
+        /* Room 7: Footer */
+        .room-footer {
+            background: var(--wood-dark);
+            width: 80vw;
+        }
+
+        .footer-content {
+            color: white;
+            padding: 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            opacity: 0;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .footer-logo .logo-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .footer-logo .logo-text {
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .footer-info {
+            text-align: center;
+            opacity: 0.7;
+        }
+
+        .footer-info p {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .footer-copy {
+            text-align: right;
+            font-size: 0.875rem;
+            opacity: 0.5;
+        }
+
+        /* Parallax foreground elements */
+        .parallax-element {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+
+        .parallax-circle {
+            border-radius: 50%;
+            border: 2px solid var(--wood-light);
+        }
+
+        .parallax-line {
+            height: 2px;
+            background: var(--wood-light);
+        }
+
+        /* Mobile fallback */
+        @media (max-width: 1024px) {
+            .gallery-track {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .room {
+                width: 100%;
+                min-height: auto;
+                padding: 4rem 1.5rem;
+            }
+
+            .room-hero {
+                min-height: 100vh;
+            }
+
+            .doorway {
+                display: none;
+            }
+
+            .vision-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .room-features {
+                width: 100%;
+            }
+
+            .features-content {
+                flex-direction: column;
+                padding: 2rem 1.5rem;
+            }
+
+            .feature-cards {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .feature-card {
+                width: 100%;
+            }
+
+            .room-galleries {
+                width: 100%;
+            }
+
+            .galleries-content {
+                padding: 2rem 1.5rem;
+            }
+
+            .gallery-grid {
+                flex-wrap: wrap;
+            }
+
+            .gallery-item {
+                width: calc(50% - 1rem);
+            }
+
+            .pricing-content {
+                flex-direction: column;
+            }
+
+            .pricing-intro {
+                max-width: 100%;
+                text-align: center;
+            }
+
+            .pricing-card {
+                width: 100%;
+            }
+
+            .room-footer {
+                width: 100%;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 2rem;
+                text-align: center;
+            }
+
+            .footer-copy {
+                text-align: center;
+            }
+        }
+
+        /* Progress indicator */
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--gradient-pink), var(--gradient-orange), var(--gradient-yellow), var(--gradient-blue));
+            z-index: 1000;
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+
+        /* Room numbers */
+        .room-number {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            font-family: 'Playfair Display', serif;
+            font-size: 8rem;
+            font-weight: 700;
+            color: var(--wood-dark);
+            opacity: 0.03;
+            line-height: 1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar"></div>
+
+    <div class="gallery-wrapper">
+        <div class="gallery-track">
+            <!-- Room 1: Hero -->
+            <section class="room room-hero">
+                <div class="wall-texture"></div>
+                <div class="ceiling"></div>
+                <div class="floor"></div>
+                <div class="room-number">I</div>
+
+                <div class="hero-content">
+                    <div class="logo">
+                        <div class="logo-icon"></div>
+                        <span class="logo-text">GALLERY TALK</span>
+                    </div>
+                    <h1 class="hero-title">Dive into art galleries<br>or build your own, today</h1>
+                    <a href="#" class="cta hero-cta">Live demo <span>&rarr;</span></a>
+                </div>
+
+                <div class="scroll-hint">
+                    <span>Scroll to explore</span>
+                    <div class="scroll-arrow"></div>
+                </div>
+
+                <div class="doorway">
+                    <div class="doorway-inner"></div>
+                </div>
+            </section>
+
+            <!-- Room 2: Vision -->
+            <section class="room room-vision">
+                <div class="wall-texture"></div>
+                <div class="ceiling"></div>
+                <div class="floor"></div>
+                <div class="room-number">II</div>
+
+                <div class="vision-content">
+                    <div class="vision-text">
+                        <h2>We envision a world where art knows no boundaries.</h2>
+                        <p>Artists around the world should be able to share their art with people all around the world. We empower them by making it easy to set up virtual galleries and connect with collectors, enthusiasts and other artists with a passion for art.</p>
+                        <div class="feature-pills">
+                            <span class="pill">Visit galleries instantly</span>
+                            <span class="pill">Fair commission (0%)</span>
+                            <span class="pill">For All You Love</span>
+                            <span class="pill">Build Gallery in Minutes</span>
+                        </div>
+                    </div>
+                    <div class="vision-frame frame">
+                        <div class="vision-artwork"></div>
+                    </div>
+                </div>
+
+                <div class="doorway">
+                    <div class="doorway-inner"></div>
+                </div>
+            </section>
+
+            <!-- Room 3: Connect -->
+            <section class="room room-connect">
+                <div class="wall-texture"></div>
+                <div class="ceiling"></div>
+                <div class="floor"></div>
+                <div class="room-number">III</div>
+
+                <div class="connect-content">
+                    <h2 class="connect-title">Connect <em>personally</em>,<br>Explore <em>together</em></h2>
+                    <div class="video-frame frame">
+                        <div class="video-placeholder">
+                            <div class="play-button"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="doorway">
+                    <div class="doorway-inner"></div>
+                </div>
+            </section>
+
+            <!-- Room 4: Features -->
+            <section class="room room-features">
+                <div class="wall-texture"></div>
+                <div class="ceiling"></div>
+                <div class="floor"></div>
+                <div class="room-number">IV</div>
+
+                <div class="features-content">
+                    <div class="features-title">
+                        <h2>What makes<br><em>GalleryTalk</em><br>different?</h2>
+                        <p>Four pillars of our vision</p>
+                    </div>
+
+                    <div class="feature-cards">
+                        <div class="feature-card">
+                            <div class="frame">
+                                <div class="feature-icon">
+                                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                                </div>
+                                <h3>Never worry in their own space</h3>
+                                <p>Getting ready to exhibit where you want.</p>
+                            </div>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="frame">
+                                <div class="feature-icon">
+                                    <svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.85"/></svg>
+                                </div>
+                                <h3>Personally get together, and stay connected</h3>
+                                <p>Start connecting with you and your audience.</p>
+                            </div>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="frame">
+                                <div class="feature-icon">
+                                    <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                </div>
+                                <h3>Support your artist vision</h3>
+                                <p>Let your art shine for the price you choose.</p>
+                            </div>
+                        </div>
+
+                        <div class="feature-card">
+                            <div class="frame">
+                                <div class="feature-icon">
+                                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                                </div>
+                                <h3>Be one of a global art community</h3>
+                                <p>Get a full experience of showcases around the world.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="doorway">
+                    <div class="doorway-inner"></div>
+                </div>
+            </section>
+
+            <!-- Room 5: Featured Galleries -->
+            <section class="room room-galleries">
+                <div class="wall-texture"></div>
+                <div class="ceiling"></div>
+                <div class="floor"></div>
+                <div class="room-number">V</div>
+
+                <div class="galleries-content">
+                    <div class="galleries-header">
+                        <h2><em>Featured</em> Galleries</h2>
+                        <p>Discover artists from around the world</p>
+                    </div>
+
+                    <div class="gallery-grid">
+                        <div class="gallery-item">
+                            <div class="frame">
+                                <div class="gallery-avatar">A</div>
+                                <span class="gallery-name">@annaschulz</span>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <div class="frame">
+                                <div class="gallery-avatar">J</div>
+                                <span class="gallery-name">@jusgomo</span>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <div class="frame">
+                                <div class="gallery-avatar">A</div>
+                                <span class="gallery-name">@aryabimbi</span>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <div class="frame">
+                                <div class="gallery-avatar">P</div>
+                                <span class="gallery-name">@patriciawolf</span>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <div class="frame">
+                                <div class="gallery-avatar">B</div>
+                                <span class="gallery-name">@batista_paints</span>
+                            </div>
+                        </div>
+                        <div class="gallery-item">
+                            <div class="frame">
+                                <div class="gallery-avatar">A</div>
+                                <span class="gallery-name">@alanndv</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="doorway">
+                    <div class="doorway-inner"></div>
+                </div>
+            </section>
+
+            <!-- Room 6: Pricing -->
+            <section class="room room-pricing">
+                <div class="wall-texture"></div>
+                <div class="ceiling"></div>
+                <div class="floor"></div>
+                <div class="room-number">VI</div>
+
+                <div class="pricing-content">
+                    <div class="pricing-intro">
+                        <h2>Simple, transparent pricing</h2>
+                        <p>Start for free, upgrade when you're ready to grow your gallery</p>
+                    </div>
+
+                    <div class="pricing-card">
+                        <div class="frame">
+                            <span class="price-label">Free Trial</span>
+                            <div class="price">Free</div>
+                            <p class="price-description">Experiment & explore 14 days of Starter for free</p>
+                            <ul class="price-features">
+                                <li>Full platform access</li>
+                                <li>No credit card required</li>
+                            </ul>
+                            <a href="#" class="cta-secondary">Try now</a>
+                        </div>
+                    </div>
+
+                    <div class="pricing-card featured">
+                        <div class="frame">
+                            <span class="price-label">Starter Plan</span>
+                            <div class="price">6.99<span>/month</span></div>
+                            <p class="price-description">Everything you need to showcase and sell your art</p>
+                            <ul class="price-features">
+                                <li>Display up to 50 artworks</li>
+                                <li>0% commission on sold artworks</li>
+                                <li>Host online art exhibitions</li>
+                                <li>Activate visitor donations</li>
+                                <li>Gallery analytics</li>
+                                <li>Expert curation support</li>
+                            </ul>
+                            <a href="#" class="cta">Start now <span>&rarr;</span></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="doorway">
+                    <div class="doorway-inner"></div>
+                </div>
+            </section>
+
+            <!-- Room 7: Footer -->
+            <section class="room room-footer">
+                <div class="footer-content">
+                    <div class="footer-logo">
+                        <div class="logo-icon"></div>
+                        <span class="logo-text">GALLERY TALK</span>
+                    </div>
+
+                    <div class="footer-info">
+                        <p>BonfireHQ GmbH</p>
+                        <p>Munich, Germany</p>
+                    </div>
+
+                    <div class="footer-copy">
+                        <p>Copyright 2026</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Check if we should use horizontal scroll (desktop only)
+        const isDesktop = window.innerWidth > 1024;
+
+        if (isDesktop) {
+            // Horizontal scroll setup
+            const track = document.querySelector('.gallery-track');
+            const rooms = gsap.utils.toArray('.room');
+
+            // Calculate total width
+            let totalWidth = 0;
+            rooms.forEach(room => {
+                totalWidth += room.offsetWidth;
+            });
+
+            // Main horizontal scroll
+            const horizontalScroll = gsap.to(track, {
+                x: () => -(totalWidth - window.innerWidth),
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: '.gallery-wrapper',
+                    start: 'top top',
+                    end: () => '+=' + (totalWidth - window.innerWidth),
+                    scrub: 1,
+                    pin: true,
+                    anticipatePin: 1,
+                    invalidateOnRefresh: true
+                }
+            });
+
+            // Progress bar
+            gsap.to('.progress-bar', {
+                scaleX: 1,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: '.gallery-wrapper',
+                    start: 'top top',
+                    end: () => '+=' + (totalWidth - window.innerWidth),
+                    scrub: 0.3
+                }
+            });
+
+            // Room 1: Hero animations
+            const heroTl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: '.room-hero',
+                    containerAnimation: horizontalScroll,
+                    start: 'left left',
+                    end: 'right left',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+
+            // Initial hero animations (on load)
+            gsap.to('.logo', {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                delay: 0.3,
+                ease: 'power3.out'
+            });
+
+            gsap.to('.hero-title', {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                delay: 0.5,
+                ease: 'power3.out'
+            });
+
+            gsap.to('.hero-cta', {
+                opacity: 1,
+                y: 0,
+                duration: 1,
+                delay: 0.7,
+                ease: 'power3.out'
+            });
+
+            gsap.to('.scroll-hint', {
+                opacity: 1,
+                duration: 1,
+                delay: 1.2,
+                ease: 'power3.out'
+            });
+
+            // Room 2: Vision animations
+            ScrollTrigger.create({
+                trigger: '.room-vision',
+                containerAnimation: horizontalScroll,
+                start: 'left 80%',
+                onEnter: () => {
+                    gsap.to('.vision-text', {
+                        opacity: 1,
+                        x: 0,
+                        duration: 1,
+                        ease: 'power3.out'
+                    });
+                    gsap.to('.vision-frame', {
+                        opacity: 1,
+                        x: 0,
+                        duration: 1,
+                        delay: 0.2,
+                        ease: 'power3.out'
+                    });
+                    gsap.to('.pill', {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.6,
+                        stagger: 0.1,
+                        delay: 0.4,
+                        ease: 'power3.out'
+                    });
+                }
+            });
+
+            // Room 3: Connect animations
+            ScrollTrigger.create({
+                trigger: '.room-connect',
+                containerAnimation: horizontalScroll,
+                start: 'left 80%',
+                onEnter: () => {
+                    gsap.to('.connect-title', {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1,
+                        ease: 'power3.out'
+                    });
+                    gsap.to('.video-frame', {
+                        opacity: 1,
+                        scale: 1,
+                        duration: 1,
+                        delay: 0.3,
+                        ease: 'power3.out'
+                    });
+                }
+            });
+
+            // Room 4: Features animations
+            ScrollTrigger.create({
+                trigger: '.room-features',
+                containerAnimation: horizontalScroll,
+                start: 'left 80%',
+                onEnter: () => {
+                    gsap.to('.features-title', {
+                        opacity: 1,
+                        x: 0,
+                        duration: 1,
+                        ease: 'power3.out'
+                    });
+                    gsap.to('.feature-card', {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        stagger: 0.15,
+                        delay: 0.3,
+                        ease: 'power3.out'
+                    });
+                }
+            });
+
+            // Room 5: Galleries animations
+            ScrollTrigger.create({
+                trigger: '.room-galleries',
+                containerAnimation: horizontalScroll,
+                start: 'left 80%',
+                onEnter: () => {
+                    gsap.to('.galleries-header', {
+                        opacity: 1,
+                        y: 0,
+                        duration: 1,
+                        ease: 'power3.out'
+                    });
+                    gsap.to('.gallery-item', {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.6,
+                        stagger: 0.1,
+                        delay: 0.3,
+                        ease: 'power3.out'
+                    });
+                }
+            });
+
+            // Room 6: Pricing animations
+            ScrollTrigger.create({
+                trigger: '.room-pricing',
+                containerAnimation: horizontalScroll,
+                start: 'left 80%',
+                onEnter: () => {
+                    gsap.to('.pricing-intro', {
+                        opacity: 1,
+                        x: 0,
+                        duration: 1,
+                        ease: 'power3.out'
+                    });
+                    gsap.to('.pricing-card', {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        stagger: 0.2,
+                        delay: 0.3,
+                        ease: 'power3.out'
+                    });
+                }
+            });
+
+            // Room 7: Footer animations
+            ScrollTrigger.create({
+                trigger: '.room-footer',
+                containerAnimation: horizontalScroll,
+                start: 'left 80%',
+                onEnter: () => {
+                    gsap.to('.footer-content', {
+                        opacity: 1,
+                        duration: 1,
+                        ease: 'power3.out'
+                    });
+                }
+            });
+
+            // Parallax effect for room numbers
+            rooms.forEach((room, i) => {
+                const number = room.querySelector('.room-number');
+                if (number) {
+                    gsap.to(number, {
+                        x: -100,
+                        ease: 'none',
+                        scrollTrigger: {
+                            trigger: room,
+                            containerAnimation: horizontalScroll,
+                            start: 'left right',
+                            end: 'right left',
+                            scrub: 0.5
+                        }
+                    });
+                }
+            });
+
+            // Hide scroll hint after scrolling starts
+            ScrollTrigger.create({
+                trigger: '.gallery-wrapper',
+                start: 'top top',
+                end: '+=100',
+                onLeave: () => {
+                    gsap.to('.scroll-hint', {
+                        opacity: 0,
+                        duration: 0.3
+                    });
+                },
+                onEnterBack: () => {
+                    gsap.to('.scroll-hint', {
+                        opacity: 1,
+                        duration: 0.3
+                    });
+                }
+            });
+
+        } else {
+            // Mobile: Simple vertical scroll animations
+            gsap.set(['.logo', '.hero-title', '.hero-cta', '.scroll-hint'], { opacity: 1, y: 0, x: 0 });
+            gsap.set(['.vision-text', '.vision-frame'], { opacity: 1, x: 0 });
+            gsap.set('.pill', { opacity: 1, y: 0 });
+            gsap.set(['.connect-title', '.video-frame'], { opacity: 1, y: 0, scale: 1 });
+            gsap.set(['.features-title'], { opacity: 1, x: 0 });
+            gsap.set('.feature-card', { opacity: 1, y: 0 });
+            gsap.set('.galleries-header', { opacity: 1, y: 0 });
+            gsap.set('.gallery-item', { opacity: 1, y: 0 });
+            gsap.set('.pricing-intro', { opacity: 1, x: 0 });
+            gsap.set('.pricing-card', { opacity: 1, y: 0 });
+            gsap.set('.footer-content', { opacity: 1 });
+
+            // Hide scroll hint on mobile
+            document.querySelector('.scroll-hint').style.display = 'none';
+        }
+
+        // Refresh ScrollTrigger on resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                ScrollTrigger.refresh();
+            }, 250);
+        });
+    </script>
+</body>
+</html>
