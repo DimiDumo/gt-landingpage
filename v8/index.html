@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GalleryTalk – Ein neues Zeitalter der Kunstpräsentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-bg: #0a0a0a;
+            --color-surface: #141414;
+            --color-surface-elevated: #1a1a1a;
+            --color-text: #ffffff;
+            --color-text-muted: #a0a0a0;
+            --color-accent: #ff6b35;
+            --color-accent-secondary: #ff3366;
+            --color-safe: #22c55e;
+            --gradient-primary: linear-gradient(135deg, #ff6b35 0%, #ff3366 50%, #8b5cf6 100%);
+            --gradient-glow: radial-gradient(ellipse at center, rgba(255,107,53,0.15) 0%, transparent 70%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Utility Classes */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .gradient-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .animate-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 1rem 0;
+            background: rgba(10, 10, 10, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            font-size: 1.25rem;
+            text-decoration: none;
+            color: var(--color-text);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-primary);
+            border-radius: 8px;
+        }
+
+        .nav-links {
+            display: none;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--color-text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--color-text);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 100px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--color-surface-elevated);
+            color: var(--color-text);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding: 6rem 0 4rem;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150%;
+            height: 100%;
+            background: var(--gradient-glow);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 100px;
+            font-size: 0.85rem;
+            color: var(--color-safe);
+            margin-bottom: 2rem;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .hero-badge svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease-out 0.1s backwards;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.1rem, 3vw, 1.35rem);
+            color: var(--color-text-muted);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            animation: fadeInUp 0.6s ease-out 0.2s backwards;
+        }
+
+        .hero-cta {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+            animation: fadeInUp 0.6s ease-out 0.3s backwards;
+        }
+
+        /* Core Values Section */
+        .values {
+            padding: 5rem 0;
+            background: var(--color-surface);
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .value-card {
+            background: var(--color-surface-elevated);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .value-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,107,53,0.3);
+        }
+
+        .value-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1.25rem;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+        }
+
+        .value-icon.orange { background: rgba(255, 107, 53, 0.15); }
+        .value-icon.pink { background: rgba(255, 51, 102, 0.15); }
+        .value-icon.purple { background: rgba(139, 92, 246, 0.15); }
+        .value-icon.green { background: rgba(34, 197, 94, 0.15); }
+
+        .value-card h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .value-card p {
+            font-size: 0.95rem;
+            color: var(--color-text-muted);
+        }
+
+        /* Manifesto Section */
+        .manifesto {
+            padding: 6rem 0;
+            position: relative;
+        }
+
+        .manifesto-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .manifesto h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 2rem;
+            line-height: 1.2;
+        }
+
+        .manifesto-text {
+            font-size: 1.15rem;
+            color: var(--color-text-muted);
+            margin-bottom: 3rem;
+            line-height: 1.8;
+        }
+
+        .manifesto-features {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            text-align: left;
+        }
+
+        .manifesto-feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.25rem;
+            background: var(--color-surface);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .manifesto-feature-icon {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .manifesto-feature h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .manifesto-feature p {
+            font-size: 0.9rem;
+            color: var(--color-text-muted);
+        }
+
+        /* Community Section */
+        .community {
+            padding: 6rem 0;
+            background: var(--color-surface);
+        }
+
+        .community-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .community h2 {
+            font-size: clamp(2rem, 5vw, 2.75rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .community-header p {
+            font-size: 1.1rem;
+            color: var(--color-text-muted);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .community-visual {
+            position: relative;
+            background: var(--color-surface-elevated);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            border: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .community-visual::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(255,107,53,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .avatars {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--gradient-primary);
+            border: 3px solid var(--color-surface-elevated);
+            margin-left: -12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .avatar:first-child { margin-left: 0; animation-delay: 0s; }
+        .avatar:nth-child(2) { animation-delay: 0.2s; }
+        .avatar:nth-child(3) { animation-delay: 0.4s; }
+        .avatar:nth-child(4) { animation-delay: 0.6s; }
+        .avatar:nth-child(5) { animation-delay: 0.8s; }
+
+        .community-visual h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .community-visual p {
+            color: var(--color-text-muted);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Freedom Section */
+        .freedom {
+            padding: 6rem 0;
+        }
+
+        .freedom-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .freedom-card {
+            background: var(--color-surface);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .freedom-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .freedom-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .freedom-card p {
+            color: var(--color-text-muted);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .freedom-card ul {
+            list-style: none;
+        }
+
+        .freedom-card li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            font-size: 0.95rem;
+        }
+
+        .freedom-card li::before {
+            content: '✓';
+            color: var(--color-safe);
+            font-weight: 600;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 6rem 0;
+            background: var(--color-surface);
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .pricing h2 {
+            font-size: clamp(2rem, 5vw, 2.75rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .pricing-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            background: var(--color-surface-elevated);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+        }
+
+        .pricing-card.featured {
+            border-color: rgba(255,107,53,0.5);
+            position: relative;
+        }
+
+        .pricing-card.featured::before {
+            content: 'Empfohlen';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.35rem 1rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .pricing-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-card .price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-card .price span {
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--color-text-muted);
+        }
+
+        .pricing-card .note {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing-card ul {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-card li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0;
+            font-size: 0.95rem;
+            color: var(--color-text-muted);
+        }
+
+        .pricing-card li svg {
+            color: var(--color-safe);
+            flex-shrink: 0;
+        }
+
+        .pricing-card .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 6rem 0;
+            text-align: center;
+        }
+
+        .cta-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .cta h2 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta p {
+            font-size: 1.15rem;
+            color: var(--color-text-muted);
+            margin-bottom: 2rem;
+        }
+
+        /* Footer */
+        footer {
+            padding: 3rem 0;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            align-items: center;
+            text-align: center;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: var(--color-text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--color-text);
+        }
+
+        .footer-info {
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+        }
+
+        .footer-info p {
+            margin-bottom: 0.25rem;
+        }
+
+        /* Responsive Design */
+        @media (min-width: 640px) {
+            .values-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .manifesto-features {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .hero-cta {
+                flex-direction: row;
+            }
+
+            .pricing-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .nav-links {
+                display: flex;
+            }
+
+            .freedom-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-content {
+                flex-direction: row;
+                justify-content: space-between;
+                text-align: left;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .values-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon"></div>
+                GALLERY TALK
+            </a>
+            <ul class="nav-links">
+                <li><a href="#values">Vorteile</a></li>
+                <li><a href="#community">Community</a></li>
+                <li><a href="#pricing">Preise</a></li>
+            </ul>
+            <a href="#signup" class="btn btn-primary">Jetzt starten</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container hero-content">
+            <div class="hero-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                    <path d="m9 12 2 2 4-4"/>
+                </svg>
+                KI-geschützte Galerie
+            </div>
+            <h1>Ein neues Zeitalter der <span class="gradient-text">Kunstpräsentation</span></h1>
+            <p class="hero-subtitle">
+                Digitale Galerien, von Künstlern selbst verwaltet. Deine Kunst bleibt sicher, deine Community trifft sich persönlich.
+            </p>
+            <div class="hero-cta">
+                <a href="#" class="btn btn-primary">Live Demo →</a>
+                <a href="#values" class="btn btn-secondary">Mehr erfahren</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Values Section -->
+    <section class="values" id="values">
+        <div class="container">
+            <div class="values-grid">
+                <div class="value-card animate-on-scroll">
+                    <div class="value-icon green">🛡️</div>
+                    <h3>KI-sicher</h3>
+                    <p>Deine Bilder sind vor KI-Training geschützt und bleiben in deiner Kontrolle.</p>
+                </div>
+                <div class="value-card animate-on-scroll">
+                    <div class="value-icon orange">0%</div>
+                    <h3>Keine Kommission</h3>
+                    <p>Verkaufe deine Kunst und behalte 100% deiner Einnahmen.</p>
+                </div>
+                <div class="value-card animate-on-scroll">
+                    <div class="value-icon pink">👥</div>
+                    <h3>Face-to-Face</h3>
+                    <p>Triff deine Community persönlich in deiner virtuellen Galerie.</p>
+                </div>
+                <div class="value-card animate-on-scroll">
+                    <div class="value-icon purple">⚡</div>
+                    <h3>In Minuten bereit</h3>
+                    <p>Erstelle deine eigene Galerie schnell und unkompliziert.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Manifesto Section -->
+    <section class="manifesto">
+        <div class="container">
+            <div class="manifesto-content animate-on-scroll">
+                <h2>Wir glauben an eine Welt, in der <span class="gradient-text">Kunst keine Grenzen kennt</span></h2>
+                <p class="manifesto-text">
+                    Künstler weltweit sollten ihre Werke mit Menschen überall teilen können. Wir ermöglichen dies durch einfach zu erstellende virtuelle Galerien, die Künstler mit Sammlern, Enthusiasten und anderen Kreativen verbinden.
+                </p>
+                <div class="manifesto-features">
+                    <div class="manifesto-feature">
+                        <div class="manifesto-feature-icon">🎨</div>
+                        <div>
+                            <h4>Volle Kontrolle</h4>
+                            <p>Deine Galerie, deine Regeln. Gestalte und präsentiere wie du willst.</p>
+                        </div>
+                    </div>
+                    <div class="manifesto-feature">
+                        <div class="manifesto-feature-icon">🤝</div>
+                        <div>
+                            <h4>Optionale Kuration</h4>
+                            <p>Lass dich kuratieren wenn du möchtest – aber du entscheidest.</p>
+                        </div>
+                    </div>
+                    <div class="manifesto-feature">
+                        <div class="manifesto-feature-icon">💰</div>
+                        <div>
+                            <h4>Flexibler Verkauf</h4>
+                            <p>Verkaufe analog oder digital – ganz wie es zu dir passt.</p>
+                        </div>
+                    </div>
+                    <div class="manifesto-feature">
+                        <div class="manifesto-feature-icon">🌍</div>
+                        <div>
+                            <h4>Globale Reichweite</h4>
+                            <p>Präsentiere deine Kunst einem weltweiten Publikum.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Section -->
+    <section class="community" id="community">
+        <div class="container">
+            <div class="community-header animate-on-scroll">
+                <h2>Persönlich verbinden, <span class="gradient-text">gemeinsam entdecken</span></h2>
+                <p>Triff deine Besucher in Echtzeit. Führe sie durch deine Ausstellung, beantworte Fragen, schaffe Verbindungen.</p>
+            </div>
+            <div class="community-visual animate-on-scroll">
+                <div class="avatars">
+                    <div class="avatar">🧑‍🎨</div>
+                    <div class="avatar">👩</div>
+                    <div class="avatar">👨</div>
+                    <div class="avatar">👩‍💼</div>
+                    <div class="avatar">🧑</div>
+                </div>
+                <h3>Kein Gatekeeping</h3>
+                <p>Jeder kann eine Galerie eröffnen. Jeder kann Kunst entdecken.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Freedom Section -->
+    <section class="freedom">
+        <div class="container">
+            <div class="freedom-grid">
+                <div class="freedom-card animate-on-scroll">
+                    <h3>Werde frei.<br><span class="gradient-text">Erstelle deine Galerie.</span></h3>
+                    <p>Präsentiere deine Kunst in deinem eigenen virtuellen Raum – ohne Gatekeeper, ohne Kompromisse.</p>
+                    <ul>
+                        <li>Eigener virtueller Galerieraum</li>
+                        <li>Bis zu 50 Kunstwerke ausstellen</li>
+                        <li>Besucher-Spenden aktivieren</li>
+                        <li>Detaillierte Galerie-Analytik</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary">Galerie erstellen →</a>
+                </div>
+                <div class="freedom-card animate-on-scroll">
+                    <h3>Entdecke Kunst.<br><span class="gradient-text">Weltweit.</span></h3>
+                    <p>Besuche Galerien von Künstlern aus der ganzen Welt – direkt von deinem Gerät aus.</p>
+                    <ul>
+                        <li>Zugang zu allen Galerien</li>
+                        <li>Künstler persönlich treffen</li>
+                        <li>Keine Registrierung nötig</li>
+                        <li>Sofort loslegen</li>
+                    </ul>
+                    <a href="#" class="btn btn-secondary">Galerien erkunden →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <div class="pricing-header animate-on-scroll">
+                <h2>Einfache, <span class="gradient-text">faire Preise</span></h2>
+            </div>
+            <div class="pricing-cards">
+                <div class="pricing-card animate-on-scroll">
+                    <h3>Kostenlos testen</h3>
+                    <div class="price">Gratis</div>
+                    <p class="note">14 Tage testen · Keine Kreditkarte nötig</p>
+                    <ul>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                            Alle Features testen
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                            Eigene Galerie erstellen
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                            Unverbindlich erkunden
+                        </li>
+                    </ul>
+                    <a href="#" class="btn btn-secondary">Jetzt testen</a>
+                </div>
+                <div class="pricing-card featured animate-on-scroll">
+                    <h3>Starter</h3>
+                    <div class="price">6,99€ <span>/ Monat</span></div>
+                    <p class="note">0% Kommission auf alle Verkäufe</p>
+                    <ul>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                            Bis zu 50 Kunstwerke
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                            0% Kommission
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                            Online-Ausstellungen
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                            Besucher-Spenden
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                            Galerie-Analytik
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                            Kurations-Support
+                        </li>
+                        <li>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 6L9 17l-5-5"/>
+                            </svg>
+                            Digital Gallery Playbook
+                        </li>
+                    </ul>
+                    <a href="#" class="btn btn-primary">Jetzt starten</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="signup">
+        <div class="container">
+            <div class="cta-content animate-on-scroll">
+                <h2>Bereit für <span class="gradient-text">deine Galerie</span>?</h2>
+                <p>Starte jetzt kostenlos und präsentiere deine Kunst der Welt – ohne Gatekeeping, ohne Kommission.</p>
+                <a href="#" class="btn btn-primary">Kostenlos starten →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <a href="#" class="logo">
+                <div class="logo-icon"></div>
+                GALLERY TALK
+            </a>
+            <div class="footer-links">
+                <a href="#">Instagram</a>
+                <a href="#">LinkedIn</a>
+                <a href="#">Impressum & Datenschutz</a>
+            </div>
+            <div class="footer-info">
+                <p>BonfireHQ GmbH · Waldsaumstr. 3 · 81377 München</p>
+                <p>© 2026 BonfireHQ GmbH</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll Animation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const animatedElements = document.querySelectorAll('.animate-on-scroll');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            animatedElements.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
