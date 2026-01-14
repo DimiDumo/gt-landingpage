@@ -1164,106 +1164,152 @@
         gsap.registerPlugin(ScrollTrigger);
 
         const layers = [
-            { id: 'layer1', startScale: 1, endScale: 50, label: 'CITY VIEW' },
-            { id: 'layer2', startScale: 0.02, endScale: 1, scaleOut: 50, label: 'THE GALLERY' },
-            { id: 'layer3', startScale: 0.02, endScale: 1, scaleOut: 50, label: 'GALLERY ROOM' },
-            { id: 'layer4', startScale: 0.02, endScale: 1, scaleOut: 50, label: 'THE PAINTING' },
-            { id: 'layer5', startScale: 0.02, endScale: 1, scaleOut: 50, label: 'CANVAS TEXTURE' },
-            { id: 'layer6', startScale: 0.02, endScale: 1, scaleOut: 50, label: 'PIGMENTS' },
-            { id: 'layer7', startScale: 0.02, endScale: 1, label: 'YOUR JOURNEY' }
+            { id: 'layer1', label: 'CITY VIEW' },
+            { id: 'layer2', label: 'THE GALLERY' },
+            { id: 'layer3', label: 'GALLERY ROOM' },
+            { id: 'layer4', label: 'THE PAINTING' },
+            { id: 'layer5', label: 'CANVAS TEXTURE' },
+            { id: 'layer6', label: 'PIGMENTS' },
+            { id: 'layer7', label: 'YOUR JOURNEY' }
         ];
 
-        const totalScrollLength = 7000; // Total scroll distance
+        const totalScrollLength = 6000; // Total scroll distance
 
-        // Pin the zoom wrapper
-        ScrollTrigger.create({
-            trigger: '.zoom-wrapper',
-            start: 'top top',
-            end: `+=${totalScrollLength}`,
-            pin: true,
-            pinSpacing: true,
-            onUpdate: (self) => {
-                // Update progress bar
-                document.getElementById('progress').style.width = (self.progress * 100) + '%';
+        // Set initial states - all layers start tiny and invisible except first
+        layers.forEach((layer, index) => {
+            const element = document.getElementById(layer.id);
+            if (index === 0) {
+                gsap.set(element, { scale: 1, opacity: 1, filter: 'blur(0px)' });
+            } else {
+                gsap.set(element, { scale: 0.1, opacity: 0, filter: 'blur(8px)' });
+            }
+        });
 
-                // Hide scroll indicator after scrolling starts
-                if (self.progress > 0.02) {
-                    document.getElementById('scrollIndicator').classList.add('hidden');
-                } else {
-                    document.getElementById('scrollIndicator').classList.remove('hidden');
+        // Create master timeline pinned to viewport
+        const masterTL = gsap.timeline({
+            scrollTrigger: {
+                trigger: '.zoom-wrapper',
+                start: 'top top',
+                end: `+=${totalScrollLength}`,
+                pin: true,
+                pinSpacing: true,
+                scrub: 0.8,
+                onUpdate: (self) => {
+                    // Update progress bar
+                    document.getElementById('progress').style.width = (self.progress * 100) + '%';
+
+                    // Hide scroll indicator after scrolling starts
+                    if (self.progress > 0.02) {
+                        document.getElementById('scrollIndicator').classList.add('hidden');
+                    } else {
+                        document.getElementById('scrollIndicator').classList.remove('hidden');
+                    }
+
+                    // Update depth label
+                    const segmentProgress = self.progress * (layers.length - 1);
+                    const currentLayerIndex = Math.min(Math.floor(segmentProgress + 0.5), layers.length - 1);
+                    document.getElementById('depthLabel').textContent = layers[currentLayerIndex].label;
                 }
-
-                // Update depth label
-                const segmentProgress = self.progress * layers.length;
-                const currentLayerIndex = Math.min(Math.floor(segmentProgress), layers.length - 1);
-                document.getElementById('depthLabel').textContent = layers[currentLayerIndex].label;
             }
         });
 
-        // Animate each layer
-        const segmentDuration = totalScrollLength / layers.length;
+        // Layer 1 (City) - starts visible, zooms out and fades
+        masterTL.to('#layer1', {
+            scale: 8,
+            opacity: 0,
+            filter: 'blur(4px)',
+            duration: 1,
+            ease: 'power1.in'
+        }, 0);
 
-        layers.forEach((layer, index) => {
-            const element = document.getElementById(layer.id);
+        // Layer 2 (Building) - zooms in, stays, zooms out
+        masterTL.to('#layer2', {
+            scale: 1,
+            opacity: 1,
+            filter: 'blur(0px)',
+            duration: 0.5,
+            ease: 'power2.out'
+        }, 0.3);
+        masterTL.to('#layer2', {
+            scale: 8,
+            opacity: 0,
+            filter: 'blur(4px)',
+            duration: 1,
+            ease: 'power1.in'
+        }, 1);
 
-            // Initial state
-            gsap.set(element, {
-                scale: layer.startScale,
-                opacity: index === 0 ? 1 : 0,
-                filter: index === 0 ? 'blur(0px)' : 'blur(10px)'
-            });
+        // Layer 3 (Gallery Room)
+        masterTL.to('#layer3', {
+            scale: 1,
+            opacity: 1,
+            filter: 'blur(0px)',
+            duration: 0.5,
+            ease: 'power2.out'
+        }, 1.3);
+        masterTL.to('#layer3', {
+            scale: 8,
+            opacity: 0,
+            filter: 'blur(4px)',
+            duration: 1,
+            ease: 'power1.in'
+        }, 2);
 
-            // Entry animation (scale in and fade in)
-            if (index > 0) {
-                gsap.to(element, {
-                    scale: 1,
-                    opacity: 1,
-                    filter: 'blur(0px)',
-                    ease: 'power2.out',
-                    scrollTrigger: {
-                        trigger: '.zoom-wrapper',
-                        start: `top+=${(index - 0.3) * segmentDuration} top`,
-                        end: `top+=${index * segmentDuration} top`,
-                        scrub: 1
-                    }
-                });
-            }
+        // Layer 4 (Painting)
+        masterTL.to('#layer4', {
+            scale: 1,
+            opacity: 1,
+            filter: 'blur(0px)',
+            duration: 0.5,
+            ease: 'power2.out'
+        }, 2.3);
+        masterTL.to('#layer4', {
+            scale: 8,
+            opacity: 0,
+            filter: 'blur(4px)',
+            duration: 1,
+            ease: 'power1.in'
+        }, 3);
 
-            // Exit animation (scale out and fade out) - not for last layer
-            if (layer.scaleOut) {
-                gsap.to(element, {
-                    scale: layer.scaleOut,
-                    opacity: 0,
-                    filter: 'blur(5px)',
-                    ease: 'power2.in',
-                    scrollTrigger: {
-                        trigger: '.zoom-wrapper',
-                        start: `top+=${index * segmentDuration + segmentDuration * 0.5} top`,
-                        end: `top+=${(index + 1) * segmentDuration} top`,
-                        scrub: 1
-                    }
-                });
-            }
-        });
+        // Layer 5 (Canvas)
+        masterTL.to('#layer5', {
+            scale: 1,
+            opacity: 1,
+            filter: 'blur(0px)',
+            duration: 0.5,
+            ease: 'power2.out'
+        }, 3.3);
+        masterTL.to('#layer5', {
+            scale: 8,
+            opacity: 0,
+            filter: 'blur(4px)',
+            duration: 1,
+            ease: 'power1.in'
+        }, 4);
 
-        // Subtle parallax on layers for depth
-        layers.forEach((layer, index) => {
-            const element = document.getElementById(layer.id);
-            const children = element.querySelectorAll('h1, h2, h3, p, .cta-btn, .feature-card, .diff-card, .pricing-card');
+        // Layer 6 (Pigments)
+        masterTL.to('#layer6', {
+            scale: 1,
+            opacity: 1,
+            filter: 'blur(0px)',
+            duration: 0.5,
+            ease: 'power2.out'
+        }, 4.3);
+        masterTL.to('#layer6', {
+            scale: 8,
+            opacity: 0,
+            filter: 'blur(4px)',
+            duration: 1,
+            ease: 'power1.in'
+        }, 5);
 
-            children.forEach((child, childIndex) => {
-                gsap.to(child, {
-                    y: -30 * (childIndex + 1) * 0.3,
-                    ease: 'none',
-                    scrollTrigger: {
-                        trigger: '.zoom-wrapper',
-                        start: `top+=${index * segmentDuration} top`,
-                        end: `top+=${(index + 1) * segmentDuration} top`,
-                        scrub: 1
-                    }
-                });
-            });
-        });
+        // Layer 7 (Final) - zooms in and stays
+        masterTL.to('#layer7', {
+            scale: 1,
+            opacity: 1,
+            filter: 'blur(0px)',
+            duration: 0.8,
+            ease: 'power2.out'
+        }, 5.3);
 
         // Smooth scroll
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
