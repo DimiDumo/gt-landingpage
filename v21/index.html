@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GalleryTalk - Walk Through Art</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        .nav-cta {
+            background: white;
+            color: black;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 500;
+        }
+
+        /* Scroll container */
+        .scroll-container {
+            height: 100vh;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* 3D Gallery Scene */
+        .gallery-scene {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            perspective: 1000px;
+            perspective-origin: 50% 50%;
+            overflow: hidden;
+        }
+
+        .corridor {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        /* Floor */
+        .floor {
+            position: absolute;
+            width: 400px;
+            height: 4000px;
+            left: 50%;
+            top: 50%;
+            transform: translateX(-50%) translateY(-50%) rotateX(90deg) translateZ(-200px);
+            background: linear-gradient(to top,
+                #1a1a1a 0%,
+                #2a2a2a 50%,
+                #1a1a1a 100%);
+            background-size: 100% 200px;
+        }
+
+        .floor::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                to top,
+                transparent 0px,
+                transparent 95px,
+                rgba(255,255,255,0.03) 95px,
+                rgba(255,255,255,0.03) 100px
+            );
+        }
+
+        /* Ceiling */
+        .ceiling {
+            position: absolute;
+            width: 400px;
+            height: 4000px;
+            left: 50%;
+            top: 50%;
+            transform: translateX(-50%) translateY(-50%) rotateX(90deg) translateZ(200px);
+            background: linear-gradient(to top, #f5f5f5, #ffffff);
+        }
+
+        /* Walls */
+        .wall {
+            position: absolute;
+            width: 4000px;
+            height: 400px;
+            top: 50%;
+            transform-style: preserve-3d;
+        }
+
+        .wall-left {
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%) rotateY(90deg) translateZ(-200px);
+            background: linear-gradient(to right, #f8f8f8, #ffffff);
+        }
+
+        .wall-right {
+            left: 50%;
+            transform: translateX(-50%) translateY(-50%) rotateY(-90deg) translateZ(-200px);
+            background: linear-gradient(to left, #f8f8f8, #ffffff);
+        }
+
+        /* LED Strips */
+        .led-strip {
+            position: absolute;
+            height: 3px;
+            background: linear-gradient(90deg,
+                rgba(255,255,255,0.1) 0%,
+                rgba(255,255,255,0.8) 20%,
+                rgba(255,255,255,1) 50%,
+                rgba(255,255,255,0.8) 80%,
+                rgba(255,255,255,0.1) 100%
+            );
+            box-shadow: 0 0 20px rgba(255,255,255,0.5),
+                        0 0 40px rgba(255,255,255,0.3),
+                        0 0 60px rgba(255,255,255,0.2);
+        }
+
+        .led-top-left {
+            width: 4000px;
+            top: 3px;
+            left: 0;
+        }
+
+        .led-bottom-left {
+            width: 4000px;
+            bottom: 3px;
+            left: 0;
+        }
+
+        .led-top-right {
+            width: 4000px;
+            top: 3px;
+            left: 0;
+        }
+
+        .led-bottom-right {
+            width: 4000px;
+            bottom: 3px;
+            left: 0;
+        }
+
+        /* Artwork frames on walls */
+        .artwork {
+            position: absolute;
+            background: #111;
+            border: 8px solid #8B4513;
+            box-shadow:
+                inset 0 0 20px rgba(0,0,0,0.5),
+                0 0 30px rgba(0,0,0,0.3),
+                5px 5px 20px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .artwork:hover {
+            box-shadow:
+                inset 0 0 20px rgba(0,0,0,0.5),
+                0 0 50px rgba(255,255,255,0.3),
+                5px 5px 30px rgba(0,0,0,0.5);
+        }
+
+        .artwork-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 15px;
+        }
+
+        .artwork h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .artwork p {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            line-height: 1.4;
+        }
+
+        .artwork .icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        /* Position artworks on left wall */
+        .wall-left .artwork {
+            transform: translateZ(5px);
+        }
+
+        /* Position artworks on right wall */
+        .wall-right .artwork {
+            transform: translateZ(5px);
+        }
+
+        /* Scroll content (invisible, just for scrolling) */
+        .scroll-content {
+            position: relative;
+            z-index: 1;
+            height: 6000px;
+            pointer-events: none;
+        }
+
+        /* Hero overlay at start */
+        .hero-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 100;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        .hero-overlay h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(0,0,0,0.8);
+        }
+
+        .hero-overlay p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .scroll-hint {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 101;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            animation: bounce 2s infinite;
+            pointer-events: none;
+        }
+
+        .scroll-hint span {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .scroll-hint .arrow {
+            width: 30px;
+            height: 30px;
+            border-right: 2px solid white;
+            border-bottom: 2px solid white;
+            transform: rotate(45deg);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(10px); }
+        }
+
+        /* Modal for 2D view */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 3px solid #8B4513;
+            border-radius: 20px;
+            padding: 50px;
+            max-width: 700px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 60px rgba(255,107,107,0.2);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .modal-content h2 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .modal-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .modal-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .modal-content li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .modal-content li::before {
+            content: '✓';
+            color: #48dbfb;
+            font-weight: bold;
+        }
+
+        .modal-cta {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+            color: black;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .modal-cta:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(255,107,107,0.5);
+        }
+
+        /* End of corridor */
+        .corridor-end {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 50;
+            opacity: 0;
+            transition: opacity 0.5s;
+            pointer-events: none;
+        }
+
+        .corridor-end.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .corridor-end h2 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .corridor-end a {
+            display: inline-block;
+            padding: 20px 40px;
+            background: white;
+            color: black;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+        }
+
+        .corridor-end a:hover {
+            transform: scale(1.1);
+        }
+
+        /* Progress indicator */
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb);
+            z-index: 1001;
+            transition: width 0.1s;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">GALLERY TALK</div>
+        <div class="nav-links">
+            <a href="#">Artists</a>
+            <a href="#">Galleries</a>
+            <a href="#">Pricing</a>
+            <a href="#" class="nav-cta">Sign Up</a>
+        </div>
+    </nav>
+
+    <div class="hero-overlay" id="heroOverlay">
+        <h1>Dive into art galleries</h1>
+        <p>Scroll to walk through our virtual gallery</p>
+    </div>
+
+    <div class="scroll-hint" id="scrollHint">
+        <span>Scroll to explore</span>
+        <div class="arrow"></div>
+    </div>
+
+    <div class="progress-bar" id="progressBar"></div>
+
+    <div class="gallery-scene" id="galleryScene">
+        <div class="corridor" id="corridor">
+            <!-- Floor -->
+            <div class="floor"></div>
+
+            <!-- Ceiling -->
+            <div class="ceiling"></div>
+
+            <!-- Left Wall -->
+            <div class="wall wall-left" id="wallLeft">
+                <div class="led-strip led-top-left"></div>
+                <div class="led-strip led-bottom-left"></div>
+
+                <!-- Artwork 1 - Vision -->
+                <div class="artwork" data-section="vision" style="width: 250px; height: 180px; top: 110px; left: 200px;">
+                    <div class="artwork-content">
+                        <div class="icon">🌍</div>
+                        <h3>Our Vision</h3>
+                        <p>Art knows no boundaries</p>
+                    </div>
+                </div>
+
+                <!-- Artwork 3 - Gallery Builder -->
+                <div class="artwork" data-section="builder" style="width: 220px; height: 160px; top: 120px; left: 700px;">
+                    <div class="artwork-content">
+                        <div class="icon">🏛️</div>
+                        <h3>Build Your Gallery</h3>
+                        <p>Become free. Get your own space.</p>
+                    </div>
+                </div>
+
+                <!-- Artwork 5 - News -->
+                <div class="artwork" data-section="news" style="width: 200px; height: 150px; top: 125px; left: 1200px;">
+                    <div class="artwork-content">
+                        <div class="icon">📰</div>
+                        <h3>What's New</h3>
+                        <p>Latest updates & exhibitions</p>
+                    </div>
+                </div>
+
+                <!-- Artwork 7 - Artists -->
+                <div class="artwork" data-section="artists" style="width: 230px; height: 170px; top: 115px; left: 1700px;">
+                    <div class="artwork-content">
+                        <div class="icon">🎨</div>
+                        <h3>Meet the Artists</h3>
+                        <p>Discover creative minds</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Wall -->
+            <div class="wall wall-right" id="wallRight">
+                <div class="led-strip led-top-right"></div>
+                <div class="led-strip led-bottom-right"></div>
+
+                <!-- Artwork 2 - Features -->
+                <div class="artwork" data-section="features" style="width: 240px; height: 175px; top: 112px; left: 400px;">
+                    <div class="artwork-content">
+                        <div class="icon">✨</div>
+                        <h3>Why GalleryTalk?</h3>
+                        <p>What makes us different</p>
+                    </div>
+                </div>
+
+                <!-- Artwork 4 - Connect -->
+                <div class="artwork" data-section="connect" style="width: 210px; height: 155px; top: 122px; left: 900px;">
+                    <div class="artwork-content">
+                        <div class="icon">🤝</div>
+                        <h3>Connect Together</h3>
+                        <p>Explore personally</p>
+                    </div>
+                </div>
+
+                <!-- Artwork 6 - Featured -->
+                <div class="artwork" data-section="featured" style="width: 225px; height: 165px; top: 117px; left: 1400px;">
+                    <div class="artwork-content">
+                        <div class="icon">⭐</div>
+                        <h3>Featured Galleries</h3>
+                        <p>Curated collections</p>
+                    </div>
+                </div>
+
+                <!-- Artwork 8 - Pricing -->
+                <div class="artwork" data-section="pricing" style="width: 235px; height: 172px; top: 114px; left: 1900px;">
+                    <div class="artwork-content">
+                        <div class="icon">💎</div>
+                        <h3>Pricing</h3>
+                        <p>Start for free</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="scroll-content" id="scrollContent"></div>
+
+    <div class="corridor-end" id="corridorEnd">
+        <h2>Begin Your Journey</h2>
+        <a href="#">Start Creating →</a>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content" id="modalContent">
+            <button class="modal-close" id="modalClose">×</button>
+            <!-- Content injected by JS -->
+        </div>
+    </div>
+
+    <script>
+        // Content data for each section
+        const sectionContent = {
+            vision: {
+                title: "We envision a world where art knows no boundaries",
+                content: `
+                    <p>Artists around the world should be able to share their art with people all around the world. We empower them by making it easy to set up virtual galleries and connect with collectors, enthusiasts and other artists with a passion for art.</p>
+                    <p>Our mission is to democratize art, breaking down barriers and making it accessible to all. We achieve this by creating virtual galleries that allow artists worldwide to showcase their creations.</p>
+                    <ul>
+                        <li>Visit galleries instantly</li>
+                        <li>Fair commission (0%)</li>
+                        <li>For All You Love</li>
+                        <li>Build Gallery in Minutes</li>
+                    </ul>
+                    <a href="#" class="modal-cta">Try it now →</a>
+                `
+            },
+            features: {
+                title: "What makes GalleryTalk different?",
+                content: `
+                    <ul>
+                        <li><strong>Your Own Space</strong> - Getting ready to exhibit where you want.</li>
+                        <li><strong>Stay Connected</strong> - Start connecting with your audience personally.</li>
+                        <li><strong>Support Your Vision</strong> - Let your art shine for the price you choose.</li>
+                        <li><strong>Global Community</strong> - Get a full experience of showcases around the world.</li>
+                    </ul>
+                    <a href="#" class="modal-cta">Explore Gallery →</a>
+                `
+            },
+            builder: {
+                title: "Become free. Get your own gallery.",
+                content: `
+                    <p>Create your virtual gallery space in minutes. No technical skills required. Just your art and your vision.</p>
+                    <p>Display up to 50 artworks, host online exhibitions, and connect with art lovers worldwide.</p>
+                    <a href="#" class="modal-cta">Start creating →</a>
+                `
+            },
+            connect: {
+                title: "Connect personally, Explore together",
+                content: `
+                    <p>GalleryTalk brings people together around art. Walk through galleries with friends, meet artists in virtual spaces, and discover new perspectives.</p>
+                    <p>Our platform enables real-time connections between artists and art enthusiasts from around the globe.</p>
+                    <a href="#" class="modal-cta">Join the community →</a>
+                `
+            },
+            news: {
+                title: "What's New",
+                content: `
+                    <ul>
+                        <li><strong>Scalecast Podcast Interview</strong> - Learn more about our journey and vision.</li>
+                        <li><strong>Open Call for Artists</strong> - Learn more about how you can participate.</li>
+                        <li><strong>Announcing Curation Support</strong> - Our new curation support feature.</li>
+                        <li><strong>"From virtual to reality" Exhibition</strong> - Our first physical exhibition featuring digital artists.</li>
+                    </ul>
+                    <a href="#" class="modal-cta">Read more →</a>
+                `
+            },
+            featured: {
+                title: "Featured Galleries",
+                content: `
+                    <p>Discover curated galleries from talented artists around the world:</p>
+                    <ul>
+                        <li>annaschulz</li>
+                        <li>jusgomo</li>
+                        <li>aryabimbi</li>
+                        <li>patriciawolf</li>
+                        <li>batista_paints</li>
+                        <li>alanndv</li>
+                        <li>artdast</li>
+                    </ul>
+                    <a href="#" class="modal-cta">Load more →</a>
+                `
+            },
+            artists: {
+                title: "All Artists",
+                content: `
+                    <p>Meet the creative minds behind our galleries:</p>
+                    <ul>
+                        <li>Anna Schulz - Munich-based artist exploring music and painting</li>
+                        <li>Gomolemo Mokete</li>
+                        <li>Arya Bimbi</li>
+                        <li>Alvaro Daza</li>
+                        <li>Patricia Wolf</li>
+                        <li>Pedro Batista</li>
+                        <li>Alann De Vuyst</li>
+                    </ul>
+                    <a href="#" class="modal-cta">Visit Gallery →</a>
+                `
+            },
+            pricing: {
+                title: "Simple, Fair Pricing",
+                content: `
+                    <h3 style="margin-top: 20px; color: #48dbfb;">Trial Plan - Free</h3>
+                    <p>Experiment & explore 14 days of Starter for free. No credit card required.</p>
+
+                    <h3 style="margin-top: 30px; color: #feca57;">Starter Plan - €6.99/month</h3>
+                    <ul>
+                        <li>Display up to 50 artworks</li>
+                        <li>0% commission on sold artworks</li>
+                        <li>Host online art exhibitions</li>
+                        <li>Activate visitor donations</li>
+                        <li>Gallery analytics</li>
+                        <li>Access to expert curation support</li>
+                        <li>Digital Gallery Playbook</li>
+                    </ul>
+                    <a href="#" class="modal-cta">Start now →</a>
+                `
+            }
+        };
+
+        // Elements
+        const scrollContent = document.getElementById('scrollContent');
+        const corridor = document.getElementById('corridor');
+        const heroOverlay = document.getElementById('heroOverlay');
+        const scrollHint = document.getElementById('scrollHint');
+        const corridorEnd = document.getElementById('corridorEnd');
+        const progressBar = document.getElementById('progressBar');
+        const modal = document.getElementById('modal');
+        const modalContent = document.getElementById('modalContent');
+        const modalClose = document.getElementById('modalClose');
+        const artworks = document.querySelectorAll('.artwork');
+
+        // Scroll handling
+        let scrollY = 0;
+        const maxScroll = 5000;
+
+        window.addEventListener('scroll', () => {
+            scrollY = window.scrollY;
+            const progress = Math.min(scrollY / maxScroll, 1);
+
+            // Move camera through corridor (translateZ)
+            const zTranslate = progress * 2000;
+            corridor.style.transform = `translate(-50%, -50%) translateZ(${zTranslate}px)`;
+
+            // Update progress bar
+            progressBar.style.width = `${progress * 100}%`;
+
+            // Fade hero overlay
+            heroOverlay.style.opacity = Math.max(0, 1 - scrollY / 300);
+
+            // Hide scroll hint
+            scrollHint.style.opacity = Math.max(0, 1 - scrollY / 200);
+
+            // Show end section
+            if (progress > 0.9) {
+                corridorEnd.classList.add('visible');
+            } else {
+                corridorEnd.classList.remove('visible');
+            }
+        });
+
+        // Artwork click handling
+        artworks.forEach(artwork => {
+            artwork.style.pointerEvents = 'auto';
+            artwork.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const section = artwork.dataset.section;
+                const content = sectionContent[section];
+
+                if (content) {
+                    modalContent.innerHTML = `
+                        <button class="modal-close" onclick="closeModal()">×</button>
+                        <h2>${content.title}</h2>
+                        ${content.content}
+                    `;
+                    modal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+            });
+        });
+
+        // Close modal
+        function closeModal() {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
