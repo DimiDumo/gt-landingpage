@@ -1802,6 +1802,25 @@
 
         // Register ScrollToPlugin
         gsap.registerPlugin(ScrollToPlugin);
+
+        // Mouse wheel / trackpad scroll handler
+        // This converts wheel events to scroll position changes
+        document.addEventListener('wheel', (e) => {
+            e.preventDefault();
+
+            // Calculate scroll amount from wheel delta
+            // Use deltaY for vertical scroll, or deltaX for horizontal trackpad gestures
+            const delta = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+
+            // Get current scroll position
+            const currentScroll = window.scrollY || window.pageYOffset;
+
+            // Calculate new scroll position (multiply delta for faster scroll)
+            const newScroll = Math.max(0, Math.min(currentScroll + delta, totalWidth - window.innerWidth));
+
+            // Apply scroll
+            window.scrollTo(0, newScroll);
+        }, { passive: false });
     </script>
 </body>
 </html>
