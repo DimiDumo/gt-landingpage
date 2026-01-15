@@ -6,7 +6,7 @@
     <title>GalleryTalk - The Infinite Gallery</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         * {
@@ -16,27 +16,12 @@
         }
 
         html, body {
-            overflow: hidden;
-            height: 100%;
-            width: 100%;
             background: #0a0a0a;
             font-family: 'Inter', sans-serif;
         }
 
-        html.lenis, html.lenis body {
-            height: auto;
-        }
-
-        .lenis.lenis-smooth {
-            scroll-behavior: auto !important;
-        }
-
-        .lenis.lenis-smooth [data-lenis-prevent] {
-            overscroll-behavior: contain;
-        }
-
-        .lenis.lenis-stopped {
-            overflow: hidden;
+        body {
+            overflow-x: hidden;
         }
 
         /* Atmosphere themes */
@@ -1488,25 +1473,6 @@
     <div class="transition-overlay"></div>
 
     <script>
-        // Initialize Lenis for smooth scrolling
-        const lenis = new Lenis({
-            orientation: 'horizontal',
-            gestureOrientation: 'both',
-            smoothWheel: true,
-            wheelMultiplier: 1.5,
-            touchMultiplier: 2,
-            infinite: false,
-        });
-
-        // GSAP + Lenis integration
-        lenis.on('scroll', ScrollTrigger.update);
-
-        gsap.ticker.add((time) => {
-            lenis.raf(time * 1000);
-        });
-
-        gsap.ticker.lagSmoothing(0);
-
         // Register ScrollTrigger
         gsap.registerPlugin(ScrollTrigger);
 
@@ -1526,7 +1492,7 @@
         // Current room tracking
         let currentRoom = 0;
 
-        // Horizontal scroll with GSAP
+        // Horizontal scroll with GSAP ScrollTrigger
         const scrollTween = gsap.to(wrapper, {
             x: () => -(totalWidth - window.innerWidth),
             ease: 'none',
@@ -1534,7 +1500,7 @@
                 trigger: wrapper,
                 start: 'top top',
                 end: () => `+=${totalWidth}`,
-                scrub: 1,
+                scrub: 0.5,
                 pin: true,
                 anticipatePin: 1,
                 invalidateOnRefresh: true,
@@ -1834,9 +1800,8 @@
             ScrollTrigger.refresh();
         });
 
-        // Load GSAP ScrollToPlugin for smooth navigation
+        // Register ScrollToPlugin
         gsap.registerPlugin(ScrollToPlugin);
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollToPlugin.min.js"></script>
 </body>
 </html>
