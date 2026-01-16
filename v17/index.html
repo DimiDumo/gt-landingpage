@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GalleryTalk - Discover Art Your Way</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0F0F0F;
+            --bg-secondary: #1A1A1A;
+            --bg-card: #242424;
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255,255,255,0.7);
+            --text-muted: rgba(255,255,255,0.5);
+            --accent-warm: #F5A623;
+            --accent-coral: #FF6B6B;
+            --accent-blue: #4ECDC4;
+            --accent-purple: #A855F7;
+            --accent-pink: #EC4899;
+            --border-subtle: rgba(255,255,255,0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== MOBILE NAV ===== */
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 15, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--accent-coral), var(--accent-warm), var(--accent-pink), var(--accent-blue));
+            border-radius: 8px;
+        }
+
+        .logo-text {
+            font-family: 'Fraunces', serif;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .nav-btn-primary {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            font-weight: 500;
+        }
+
+        /* ===== HERO - FULL SCREEN ===== */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 6rem 1.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 30%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(245, 166, 35, 0.1) 0%, transparent 50%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            max-width: 600px;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            background: var(--bg-card);
+            border-radius: 100px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-eyebrow-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+        }
+
+        .hero-title {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(2.5rem, 10vw, 4rem);
+            font-weight: 400;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title em {
+            font-style: italic;
+            background: linear-gradient(135deg, var(--accent-coral), var(--accent-warm));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 400px;
+        }
+
+        .hero-cta-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255,255,255,0.1);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 1.5rem;
+            background: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--text-secondary);
+            background: var(--bg-card);
+        }
+
+        .hero-scroll {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .scroll-indicator {
+            width: 24px;
+            height: 40px;
+            border: 2px solid var(--text-muted);
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .scroll-indicator::before {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 8px;
+            background: var(--text-muted);
+            border-radius: 2px;
+            animation: scrollBounce 1.5s infinite;
+        }
+
+        @keyframes scrollBounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+            50% { transform: translateX(-50%) translateY(10px); opacity: 0.5; }
+        }
+
+        /* ===== PREFERENCE SELECTOR ===== */
+        .preference-section {
+            padding: 2rem 1.5rem;
+            position: sticky;
+            top: 60px;
+            z-index: 100;
+            background: var(--bg-primary);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .pref-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .pref-title {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .pref-clear {
+            font-size: 0.8rem;
+            color: var(--accent-warm);
+            background: none;
+            border: none;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .pref-clear.visible {
+            opacity: 1;
+        }
+
+        .pref-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .pref-tag {
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 100px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pref-tag:hover {
+            border-color: var(--text-muted);
+        }
+
+        .pref-tag.active {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border-color: var(--text-primary);
+        }
+
+        /* ===== MASONRY GALLERY ===== */
+        .gallery-section {
+            padding: 1rem;
+        }
+
+        .masonry-grid {
+            columns: 2;
+            column-gap: 0.75rem;
+        }
+
+        @media (min-width: 600px) {
+            .masonry-grid {
+                columns: 3;
+                column-gap: 1rem;
+            }
+        }
+
+        @media (min-width: 900px) {
+            .masonry-grid {
+                columns: 4;
+            }
+        }
+
+        .gallery-item {
+            break-inside: avoid;
+            margin-bottom: 0.75rem;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        @media (min-width: 600px) {
+            .gallery-item {
+                margin-bottom: 1rem;
+            }
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            z-index: 10;
+        }
+
+        .gallery-item-image {
+            width: 100%;
+            aspect-ratio: var(--aspect, 3/4);
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.4s;
+        }
+
+        .gallery-item:hover .gallery-item-image {
+            transform: scale(1.1);
+        }
+
+        .gallery-item-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 40%, transparent 70%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .gallery-item:hover .gallery-item-overlay {
+            opacity: 1;
+        }
+
+        .gallery-artist {
+            font-family: 'Fraunces', serif;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .gallery-style {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+        }
+
+        .gallery-enter {
+            margin-top: 0.75rem;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: var(--accent-warm);
+        }
+
+        /* Filter states */
+        .gallery-item.filtered-out {
+            opacity: 0.15;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+
+        /* ===== ZOOM PORTAL MODAL ===== */
+        .portal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s;
+        }
+
+        .portal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .portal-content {
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.4s;
+        }
+
+        .portal-overlay.active .portal-content {
+            transform: scale(1);
+        }
+
+        .portal-image {
+            width: 200px;
+            height: 250px;
+            border-radius: 16px;
+            margin: 0 auto 2rem;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            animation: portalPulse 2s infinite;
+        }
+
+        @keyframes portalPulse {
+            0%, 100% { box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 0 rgba(245,166,35,0.4); }
+            50% { box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 20px rgba(245,166,35,0); }
+        }
+
+        .portal-artist {
+            font-family: 'Fraunces', serif;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .portal-message {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .portal-close {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            width: 48px;
+            height: 48px;
+            background: var(--bg-card);
+            border: none;
+            border-radius: 50%;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* ===== EVENTS SECTION ===== */
+        .events-section {
+            padding: 3rem 1.5rem;
+            background: var(--bg-secondary);
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+        }
+
+        .section-header h2 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(1.5rem, 5vw, 2rem);
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .events-scroll {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .events-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .event-card {
+            flex: 0 0 280px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            overflow: hidden;
+            scroll-snap-align: start;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .event-image {
+            height: 140px;
+            position: relative;
+        }
+
+        .event-image-bg {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .event-type-pill {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.25rem 0.6rem;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 100px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .event-date {
+            position: absolute;
+            bottom: -20px;
+            right: 1rem;
+            width: 50px;
+            height: 50px;
+            background: var(--accent-warm);
+            color: var(--bg-primary);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .event-date-day {
+            font-size: 1.3rem;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .event-date-month {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+        }
+
+        .event-content {
+            padding: 1.75rem 1rem 1rem;
+        }
+
+        .event-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .event-artist {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .event-meta {
+            display: flex;
+            gap: 0.75rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .event-live {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.15rem 0.5rem;
+            background: rgba(78, 205, 196, 0.2);
+            color: var(--accent-blue);
+            border-radius: 100px;
+            font-size: 0.65rem;
+            font-weight: 500;
+        }
+
+        .event-live::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            animation: livePulse 1.5s infinite;
+        }
+
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* ===== FEATURES ===== */
+        .features-section {
+            padding: 3rem 1.5rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        @media (min-width: 600px) {
+            .features-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--text-muted);
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--accent-coral), var(--accent-warm));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        /* ===== VISION ===== */
+        .vision-section {
+            padding: 4rem 1.5rem;
+            text-align: center;
+            background: linear-gradient(to bottom, var(--bg-primary), var(--bg-secondary));
+        }
+
+        .vision-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .vision-section h2 {
+            font-family: 'Fraunces', serif;
+            font-size: clamp(1.5rem, 5vw, 2.5rem);
+            font-weight: 400;
+            font-style: italic;
+            line-height: 1.4;
+            margin-bottom: 1.5rem;
+        }
+
+        .vision-section p {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        /* ===== PRICING ===== */
+        .pricing-section {
+            padding: 3rem 1.5rem;
+            background: var(--bg-secondary);
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 600px) {
+            .pricing-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: transform 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .pricing-card.featured {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border-color: var(--text-primary);
+        }
+
+        .pricing-name {
+            font-family: 'Fraunces', serif;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-price {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.25rem;
+        }
+
+        .pricing-card.featured .pricing-price {
+            color: var(--accent-warm);
+        }
+
+        .pricing-period {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing-card.featured .pricing-period {
+            color: rgba(0,0,0,0.5);
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .pricing-features li {
+            padding: 0.4rem 0;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pricing-features li::before {
+            content: '✓';
+            color: var(--accent-warm);
+            font-weight: bold;
+        }
+
+        .pricing-card.featured .pricing-features li {
+            color: rgba(0,0,0,0.8);
+        }
+
+        .pricing-btn {
+            width: 100%;
+            padding: 0.9rem;
+            border: 1px solid var(--border-subtle);
+            background: transparent;
+            color: var(--text-primary);
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pricing-btn:hover {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+        }
+
+        .pricing-card.featured .pricing-btn {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            border-color: var(--bg-primary);
+        }
+
+        .pricing-card.featured .pricing-btn:hover {
+            background: var(--bg-secondary);
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            padding: 3rem 1.5rem 2rem;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (min-width: 600px) {
+            .footer-content {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+        }
+
+        .footer-brand h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.3rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-brand p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .footer-bottom {
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-subtle);
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== HISTORY DRAWER (MOBILE FIRST) ===== */
+        .history-drawer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1500;
+            background: var(--bg-card);
+            border-radius: 20px 20px 0 0;
+            transform: translateY(calc(100% - 60px));
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 80vh;
+        }
+
+        .history-drawer.open {
+            transform: translateY(0);
+        }
+
+        .history-handle {
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .history-handle-bar {
+            width: 40px;
+            height: 4px;
+            background: var(--text-muted);
+            border-radius: 2px;
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .history-title {
+            font-family: 'Fraunces', serif;
+            font-size: 1rem;
+        }
+
+        .history-count {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .history-list {
+            padding: 1rem;
+            max-height: calc(80vh - 80px);
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .history-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .history-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            flex-shrink: 0;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .history-info h4 {
+            font-size: 0.95rem;
+            margin-bottom: 0.15rem;
+        }
+
+        .history-info p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Nav -->
+    <nav class="mobile-nav">
+        <a href="#" class="nav-logo">
+            <div class="logo-icon"></div>
+            <span class="logo-text">GalleryTalk</span>
+        </a>
+        <div class="nav-actions">
+            <button class="nav-btn nav-btn-ghost">Demo</button>
+            <button class="nav-btn nav-btn-primary">Sign Up</button>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content fade-in">
+            <div class="hero-eyebrow">
+                <span class="hero-eyebrow-dot"></span>
+                Walk Through Art
+            </div>
+            <h1 class="hero-title">Every artwork is a <em>doorway</em></h1>
+            <p class="hero-subtitle">
+                Discover art that speaks to you. Click any piece to enter the artist's gallery. Your preferences shape your journey.
+            </p>
+            <div class="hero-cta-row">
+                <a href="#gallery" class="btn-primary">
+                    Start Exploring
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12l7 7 7-7"/>
+                    </svg>
+                </a>
+                <a href="#" class="btn-secondary">Watch Demo</a>
+            </div>
+        </div>
+        <div class="hero-scroll">
+            <div class="scroll-indicator"></div>
+            <span>Scroll to explore</span>
+        </div>
+    </section>
+
+    <!-- Preference Selector -->
+    <div class="preference-section" id="preferences">
+        <div class="pref-header">
+            <span class="pref-title">What art speaks to you?</span>
+            <button class="pref-clear" id="prefClear">Clear Filter</button>
+        </div>
+        <div class="pref-tags" id="prefTags">
+            <button class="pref-tag" data-style="abstract">Abstract</button>
+            <button class="pref-tag" data-style="photography">Photography</button>
+            <button class="pref-tag" data-style="impressionism">Impressionism</button>
+            <button class="pref-tag" data-style="minimalist">Minimalist</button>
+            <button class="pref-tag" data-style="contemporary">Contemporary</button>
+            <button class="pref-tag" data-style="realism">Realism</button>
+            <button class="pref-tag" data-style="surrealism">Surrealism</button>
+        </div>
+    </div>
+
+    <!-- Masonry Gallery -->
+    <section class="gallery-section" id="gallery">
+        <div class="masonry-grid" id="masonryGrid">
+            <div class="gallery-item" data-style="abstract" data-artist="Anna Schulz" style="--aspect: 4/5;">
+                <div class="gallery-item-image" style="background: linear-gradient(135deg, #E87C9A, #FFB6C1, #D45A7A);"></div>
+                <div class="gallery-item-overlay">
+                    <span class="gallery-artist">Anna Schulz</span>
+                    <span class="gallery-style">Abstract</span>
+                    <span class="gallery-enter">Enter Gallery →</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-style="photography" data-artist="Gomolemo Mokete" style="--aspect: 3/4;">
+                <div class="gallery-item-image" style="background: linear-gradient(135deg, #7CB5E8, #A5D4F5, #5A9BD4);"></div>
+                <div class="gallery-item-overlay">
+                    <span class="gallery-artist">Gomolemo Mokete</span>
+                    <span class="gallery-style">Photography</span>
+                    <span class="gallery-enter">Enter Gallery →</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-style="impressionism" data-artist="Arya Bimbi" style="--aspect: 1/1;">
+                <div class="gallery-item-image" style="background: linear-gradient(135deg, #9CE87C, #C4E8A5, #7BC85A);"></div>
+                <div class="gallery-item-overlay">
+                    <span class="gallery-artist">Arya Bimbi</span>
+                    <span class="gallery-style">Impressionism</span>
+                    <span class="gallery-enter">Enter Gallery →</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-style="minimalist" data-artist="Alvaro Daza" style="--aspect: 5/7;">
+                <div class="gallery-item-image" style="background: linear-gradient(180deg, #E8D47C, #F5E6A3, #D4C088);"></div>
+                <div class="gallery-item-overlay">
+                    <span class="gallery-artist">Alvaro Daza</span>
+                    <span class="gallery-style">Minimalist</span>
+                    <span class="gallery-enter">Enter Gallery →</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-style="contemporary" data-artist="Patricia Wolf" style="--aspect: 4/5;">
+                <div class="gallery-item-image" style="background: linear-gradient(135deg, #C97BE8, #DDA0DD, #A855F7);"></div>
+                <div class="gallery-item-overlay">
+                    <span class="gallery-artist">Patricia Wolf</span>
+                    <span class="gallery-style">Contemporary</span>
+                    <span class="gallery-enter">Enter Gallery →</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-style="realism" data-artist="Pedro Batista" style="--aspect: 3/4;">
+                <div class="gallery-item-image" style="background: linear-gradient(45deg, #E8927C, #F5B89A, #D47C5A);"></div>
+                <div class="gallery-item-overlay">
+                    <span class="gallery-artist">Pedro Batista</span>
+                    <span class="gallery-style">Realism</span>
+                    <span class="gallery-enter">Enter Gallery →</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-style="surrealism" data-artist="Alann De Vuyst" style="--aspect: 5/6;">
+                <div class="gallery-item-image" style="background: linear-gradient(135deg, #7CE8D4, #A5E8E2, #4ECDC4);"></div>
+                <div class="gallery-item-overlay">
+                    <span class="gallery-artist">Alann De Vuyst</span>
+                    <span class="gallery-style">Surrealism</span>
+                    <span class="gallery-enter">Enter Gallery →</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-style="abstract" data-artist="Dastagir Syed" style="--aspect: 4/5;">
+                <div class="gallery-item-image" style="background: linear-gradient(90deg, #E87CB5, #F5A0C8, #EC4899);"></div>
+                <div class="gallery-item-overlay">
+                    <span class="gallery-artist">Dastagir Syed</span>
+                    <span class="gallery-style">Abstract</span>
+                    <span class="gallery-enter">Enter Gallery →</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-style="photography" data-artist="Antonio Maia" style="--aspect: 1/1;">
+                <div class="gallery-item-image" style="background: linear-gradient(135deg, #5A9BD4, #7CB5E8, #A5D4F5);"></div>
+                <div class="gallery-item-overlay">
+                    <span class="gallery-artist">Antonio Maia</span>
+                    <span class="gallery-style">Photography</span>
+                    <span class="gallery-enter">Enter Gallery →</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-style="contemporary" data-artist="Maria Chen" style="--aspect: 3/4;">
+                <div class="gallery-item-image" style="background: linear-gradient(135deg, #A855F7, #C97BE8, #EC4899);"></div>
+                <div class="gallery-item-overlay">
+                    <span class="gallery-artist">Maria Chen</span>
+                    <span class="gallery-style">Contemporary</span>
+                    <span class="gallery-enter">Enter Gallery →</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-style="minimalist" data-artist="Lars Erikson" style="--aspect: 5/4;">
+                <div class="gallery-item-image" style="background: linear-gradient(180deg, #F5E6A3, #E8D47C, #C9A868);"></div>
+                <div class="gallery-item-overlay">
+                    <span class="gallery-artist">Lars Erikson</span>
+                    <span class="gallery-style">Minimalist</span>
+                    <span class="gallery-enter">Enter Gallery →</span>
+                </div>
+            </div>
+
+            <div class="gallery-item" data-style="impressionism" data-artist="Sophie Martin" style="--aspect: 4/5;">
+                <div class="gallery-item-image" style="background: linear-gradient(135deg, #7BC85A, #9CE87C, #C4E8A5);"></div>
+                <div class="gallery-item-overlay">
+                    <span class="gallery-artist">Sophie Martin</span>
+                    <span class="gallery-style">Impressionism</span>
+                    <span class="gallery-enter">Enter Gallery →</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section class="events-section" id="events">
+        <div class="section-header fade-in">
+            <h2>Upcoming Events</h2>
+            <p>Vernissages, openings, and live exhibitions</p>
+        </div>
+        <div class="events-scroll">
+            <div class="event-card">
+                <div class="event-image">
+                    <div class="event-image-bg" style="background: linear-gradient(135deg, #E87C9A, #C97B84);"></div>
+                    <span class="event-type-pill">Vernissage</span>
+                    <div class="event-date">
+                        <span class="event-date-day">24</span>
+                        <span class="event-date-month">Jan</span>
+                    </div>
+                </div>
+                <div class="event-content">
+                    <h3 class="event-title">Colors of Silence</h3>
+                    <p class="event-artist">by Anna Schulz</p>
+                    <div class="event-meta">
+                        <span>7:00 PM CET</span>
+                        <span class="event-live">Live Now</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-card">
+                <div class="event-image">
+                    <div class="event-image-bg" style="background: linear-gradient(135deg, #7CB5E8, #5A9BD4);"></div>
+                    <span class="event-type-pill">Opening</span>
+                    <div class="event-date">
+                        <span class="event-date-day">28</span>
+                        <span class="event-date-month">Jan</span>
+                    </div>
+                </div>
+                <div class="event-content">
+                    <h3 class="event-title">Urban Perspectives</h3>
+                    <p class="event-artist">by Gomolemo Mokete</p>
+                    <div class="event-meta">
+                        <span>6:00 PM CET</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-card">
+                <div class="event-image">
+                    <div class="event-image-bg" style="background: linear-gradient(135deg, #9CE87C, #7BC85A);"></div>
+                    <span class="event-type-pill">Finissage</span>
+                    <div class="event-date">
+                        <span class="event-date-day">02</span>
+                        <span class="event-date-month">Feb</span>
+                    </div>
+                </div>
+                <div class="event-content">
+                    <h3 class="event-title">Nature's Whispers</h3>
+                    <p class="event-artist">by Arya Bimbi</p>
+                    <div class="event-meta">
+                        <span>5:00 PM CET</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-card">
+                <div class="event-image">
+                    <div class="event-image-bg" style="background: linear-gradient(135deg, #C97BE8, #A855F7);"></div>
+                    <span class="event-type-pill">Live Talk</span>
+                    <div class="event-date">
+                        <span class="event-date-day">10</span>
+                        <span class="event-date-month">Feb</span>
+                    </div>
+                </div>
+                <div class="event-content">
+                    <h3 class="event-title">The Digital Canvas</h3>
+                    <p class="event-artist">Panel Discussion</p>
+                    <div class="event-meta">
+                        <span>8:00 PM CET</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features-section">
+        <div class="section-header fade-in">
+            <h2>What makes GalleryTalk different?</h2>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card fade-in">
+                <div class="feature-icon">&#127970;</div>
+                <h3>Your Own Space</h3>
+                <p>Build and customize your virtual gallery exactly how you envision it.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon">&#129309;</div>
+                <h3>Real Connections</h3>
+                <p>Meet visitors in real-time and build lasting relationships with collectors.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon">&#128176;</div>
+                <h3>0% Commission</h3>
+                <p>Keep 100% of your sales. Your art, your prices, your profits.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon">&#127760;</div>
+                <h3>Global Reach</h3>
+                <p>Connect with art lovers worldwide. No borders, no boundaries.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision -->
+    <section class="vision-section">
+        <div class="vision-content fade-in">
+            <h2>We envision a world where art knows no boundaries.</h2>
+            <p>
+                Artists around the world should be able to share their art with people everywhere.
+                We empower them by making it easy to set up virtual galleries and connect with collectors,
+                enthusiasts and other artists with a passion for art.
+            </p>
+            <a href="#" class="btn-primary">
+                Start Creating
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing-section" id="pricing">
+        <div class="section-header fade-in">
+            <h2>Simple, transparent pricing</h2>
+        </div>
+        <div class="pricing-grid">
+            <div class="pricing-card fade-in">
+                <h3 class="pricing-name">Trial</h3>
+                <div class="pricing-price">Free</div>
+                <p class="pricing-period">14 days to explore</p>
+                <ul class="pricing-features">
+                    <li>Full feature access</li>
+                    <li>Create your gallery</li>
+                    <li>No credit card needed</li>
+                </ul>
+                <button class="pricing-btn">Try Now</button>
+            </div>
+            <div class="pricing-card featured fade-in">
+                <h3 class="pricing-name">Starter</h3>
+                <div class="pricing-price">€6.99</div>
+                <p class="pricing-period">per month</p>
+                <ul class="pricing-features">
+                    <li>Display up to 50 artworks</li>
+                    <li>0% commission on sales</li>
+                    <li>Host online exhibitions</li>
+                    <li>Visitor donations</li>
+                    <li>Gallery analytics</li>
+                    <li>Expert curation support</li>
+                </ul>
+                <button class="pricing-btn">Start Now</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>
+                    <div class="logo-icon" style="width:24px;height:24px;border-radius:6px;"></div>
+                    GalleryTalk
+                </h3>
+                <p>Your art. Your gallery. Your world.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#">Product</a>
+                <a href="#">Artists</a>
+                <a href="#">Pricing</a>
+                <a href="#">Instagram</a>
+                <a href="#">LinkedIn</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 BonfireHQ GmbH, Munich</span>
+            <a href="#" style="color:inherit;">Imprint & Privacy</a>
+        </div>
+    </footer>
+
+    <!-- History Drawer -->
+    <div class="history-drawer" id="historyDrawer">
+        <div class="history-handle-bar"></div>
+        <div class="history-handle" id="historyHandle">
+            <span class="history-title">Recently Visited</span>
+            <span class="history-count" id="historyCount">0 galleries</span>
+        </div>
+        <div class="history-list" id="historyList">
+            <div class="history-empty">
+                Tap any artwork to start exploring galleries.
+            </div>
+        </div>
+    </div>
+
+    <!-- Portal Overlay -->
+    <div class="portal-overlay" id="portalOverlay">
+        <button class="portal-close" id="portalClose">&times;</button>
+        <div class="portal-content">
+            <div class="portal-image" id="portalImage"></div>
+            <h2 class="portal-artist" id="portalArtist"></h2>
+            <p class="portal-message">Entering gallery...</p>
+        </div>
+    </div>
+
+    <script>
+        // ===== STORAGE =====
+        const PREFS_KEY = 'gt_masonry_prefs';
+        const HISTORY_KEY = 'gt_masonry_history';
+
+        let preferences = { styles: [] };
+        let visitHistory = [];
+
+        function loadData() {
+            try {
+                const p = localStorage.getItem(PREFS_KEY);
+                if (p) preferences = JSON.parse(p);
+                const h = localStorage.getItem(HISTORY_KEY);
+                if (h) visitHistory = JSON.parse(h);
+            } catch (e) {}
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem(PREFS_KEY, JSON.stringify(preferences));
+                localStorage.setItem(HISTORY_KEY, JSON.stringify(visitHistory));
+            } catch (e) {}
+        }
+
+        loadData();
+
+        // ===== PREFERENCE TAGS =====
+        const prefTags = document.querySelectorAll('.pref-tag');
+        const prefClear = document.getElementById('prefClear');
+        const galleryItems = document.querySelectorAll('.gallery-item');
+
+        function applyFilters() {
+            const activeStyles = preferences.styles;
+
+            galleryItems.forEach(item => {
+                if (activeStyles.length === 0 || activeStyles.includes(item.dataset.style)) {
+                    item.classList.remove('filtered-out');
+                } else {
+                    item.classList.add('filtered-out');
+                }
+            });
+
+            // Update clear button visibility
+            prefClear.classList.toggle('visible', activeStyles.length > 0);
+        }
+
+        prefTags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                const style = tag.dataset.style;
+                const idx = preferences.styles.indexOf(style);
+
+                if (idx > -1) {
+                    preferences.styles.splice(idx, 1);
+                    tag.classList.remove('active');
+                } else {
+                    preferences.styles.push(style);
+                    tag.classList.add('active');
+                }
+
+                saveData();
+                applyFilters();
+            });
+        });
+
+        prefClear.addEventListener('click', () => {
+            preferences.styles = [];
+            prefTags.forEach(tag => tag.classList.remove('active'));
+            saveData();
+            applyFilters();
+        });
+
+        // Apply saved preferences
+        preferences.styles.forEach(style => {
+            const tag = document.querySelector(`.pref-tag[data-style="${style}"]`);
+            if (tag) tag.classList.add('active');
+        });
+        applyFilters();
+
+        // ===== GALLERY ITEM CLICK (PORTAL) =====
+        const portalOverlay = document.getElementById('portalOverlay');
+        const portalImage = document.getElementById('portalImage');
+        const portalArtist = document.getElementById('portalArtist');
+        const portalClose = document.getElementById('portalClose');
+
+        function getColorForStyle(style) {
+            const colors = {
+                abstract: 'linear-gradient(135deg, #E87C9A, #FFB6C1)',
+                photography: 'linear-gradient(135deg, #7CB5E8, #A5D4F5)',
+                impressionism: 'linear-gradient(135deg, #9CE87C, #C4E8A5)',
+                minimalist: 'linear-gradient(180deg, #E8D47C, #F5E6A3)',
+                contemporary: 'linear-gradient(135deg, #C97BE8, #DDA0DD)',
+                realism: 'linear-gradient(45deg, #E8927C, #F5B89A)',
+                surrealism: 'linear-gradient(135deg, #7CE8D4, #A5E8E2)'
+            };
+            return colors[style] || 'linear-gradient(135deg, #666, #888)';
+        }
+
+        galleryItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const artist = item.dataset.artist;
+                const style = item.dataset.style;
+
+                // Show portal animation
+                portalImage.style.background = getColorForStyle(style);
+                portalArtist.textContent = artist;
+                portalOverlay.classList.add('active');
+
+                // Add to history
+                visitHistory.unshift({
+                    artist,
+                    style,
+                    timestamp: Date.now()
+                });
+                visitHistory = visitHistory.slice(0, 15);
+                saveData();
+                renderHistory();
+
+                // Simulate navigation delay
+                setTimeout(() => {
+                    portalOverlay.classList.remove('active');
+                    // In production: window.location.href = `/gallery/${artist.toLowerCase().replace(' ', '-')}`;
+                    alert(`Welcome to ${artist}'s gallery!\n\nIn the full app, you'd now be inside their virtual gallery space.`);
+                }, 2000);
+            });
+        });
+
+        portalClose.addEventListener('click', () => {
+            portalOverlay.classList.remove('active');
+        });
+
+        // ===== HISTORY DRAWER =====
+        const historyDrawer = document.getElementById('historyDrawer');
+        const historyHandle = document.getElementById('historyHandle');
+        const historyList = document.getElementById('historyList');
+        const historyCount = document.getElementById('historyCount');
+
+        function formatTimeAgo(ts) {
+            const diff = Date.now() - ts;
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'Just now';
+            if (mins < 60) return `${mins}m ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return `${hrs}h ago`;
+            return `${Math.floor(hrs / 24)}d ago`;
+        }
+
+        function renderHistory() {
+            historyCount.textContent = `${visitHistory.length} ${visitHistory.length === 1 ? 'gallery' : 'galleries'}`;
+
+            if (visitHistory.length === 0) {
+                historyList.innerHTML = '<div class="history-empty">Tap any artwork to start exploring galleries.</div>';
+                return;
+            }
+
+            historyList.innerHTML = visitHistory.map(item => `
+                <div class="history-item" data-artist="${item.artist}">
+                    <div class="history-thumb" style="background: ${getColorForStyle(item.style)};"></div>
+                    <div class="history-info">
+                        <h4>${item.artist}</h4>
+                        <p>${item.style} • ${formatTimeAgo(item.timestamp)}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.history-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    alert(`Returning to ${item.dataset.artist}'s gallery...`);
+                });
+            });
+        }
+
+        historyHandle.addEventListener('click', () => {
+            historyDrawer.classList.toggle('open');
+        });
+
+        // Swipe to close
+        let touchStartY = 0;
+        historyDrawer.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        });
+
+        historyDrawer.addEventListener('touchmove', (e) => {
+            const touchY = e.touches[0].clientY;
+            if (touchY - touchStartY > 50 && historyDrawer.classList.contains('open')) {
+                historyDrawer.classList.remove('open');
+            }
+        });
+
+        renderHistory();
+
+        // ===== FADE IN ANIMATIONS =====
+        const fadeElements = document.querySelectorAll('.fade-in');
+
+        const fadeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        fadeElements.forEach(el => fadeObserver.observe(el));
+
+        // Initial hero fade
+        setTimeout(() => {
+            document.querySelector('.hero-content').classList.add('visible');
+        }, 200);
+    </script>
+</body>
+</html>

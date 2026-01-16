@@ -1,0 +1,1762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GalleryTalk - Walk Through Art</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --museum-white: #FAFAF8;
+            --gallery-cream: #F5F3EF;
+            --frame-gold: #C9A868;
+            --frame-dark: #2C2416;
+            --text-dark: #1A1A1A;
+            --text-muted: #6B6B6B;
+            --accent-warm: #E8C4A0;
+            --shadow-soft: rgba(0,0,0,0.08);
+            --shadow-medium: rgba(0,0,0,0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--museum-white);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* ===== NAVIGATION ===== */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(250,250,248,0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .nav.hidden {
+            transform: translateY(-100%);
+        }
+
+        .nav-logo {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #E8927C, #D4A574, #C97B84, #7CB5E8);
+            border-radius: 50%;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-dark);
+        }
+
+        .nav-cta {
+            padding: 0.6rem 1.2rem;
+            background: var(--text-dark);
+            color: white !important;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .nav-cta:hover {
+            background: #333 !important;
+        }
+
+        /* ===== PREFERENCE SELECTOR ===== */
+        .preference-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+            padding: 1rem;
+            background: rgba(250,250,248,0.98);
+            backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(0,0,0,0.08);
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .preference-bar.visible {
+            transform: translateY(0);
+        }
+
+        .preference-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .preference-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .preference-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .pref-tag {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pref-tag:hover {
+            border-color: var(--frame-gold);
+            background: rgba(201, 168, 104, 0.1);
+        }
+
+        .pref-tag.active {
+            background: var(--text-dark);
+            color: white;
+            border-color: var(--text-dark);
+        }
+
+        /* ===== HERO / ENTRANCE HALL ===== */
+        .entrance-hall {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            perspective: 1500px;
+            overflow: hidden;
+            padding: 6rem 2rem 4rem;
+        }
+
+        .hall-floor {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40%;
+            background: linear-gradient(to top, #E8E2D9, var(--gallery-cream) 70%, transparent);
+            transform: rotateX(60deg);
+            transform-origin: bottom center;
+        }
+
+        .hall-walls {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                linear-gradient(90deg, rgba(0,0,0,0.03) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.03) 100%),
+                linear-gradient(to bottom, var(--gallery-cream), var(--museum-white) 60%);
+        }
+
+        .entrance-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            max-width: 800px;
+        }
+
+        .entrance-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.5rem, 7vw, 5rem);
+            font-weight: 300;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .entrance-title em {
+            font-style: italic;
+            color: var(--frame-gold);
+        }
+
+        .entrance-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto 2rem;
+            line-height: 1.7;
+        }
+
+        .entrance-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--text-dark);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .entrance-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--shadow-medium);
+        }
+
+        .scroll-hint {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            animation: float 2s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(8px); }
+        }
+
+        .scroll-hint svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* ===== MUSEUM GALLERY / WALKABLE SPACE ===== */
+        .museum-gallery {
+            position: relative;
+            padding: 4rem 0;
+            background: var(--gallery-cream);
+        }
+
+        .gallery-intro {
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+
+        .gallery-intro h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 400;
+            margin-bottom: 1rem;
+        }
+
+        .gallery-intro p {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* 3D Perspective Gallery Walk */
+        .perspective-gallery {
+            position: relative;
+            height: 80vh;
+            min-height: 500px;
+            max-height: 800px;
+            perspective: 2000px;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #E8E2D9 0%, #D8D2C9 100%);
+        }
+
+        .gallery-hallway {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotateX(5deg);
+            width: 100%;
+            max-width: 1400px;
+            height: 100%;
+            transform-style: preserve-3d;
+        }
+
+        /* Gallery Walls */
+        .wall {
+            position: absolute;
+            background: var(--museum-white);
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.05);
+        }
+
+        .wall-left {
+            left: 0;
+            top: 10%;
+            width: 35%;
+            height: 70%;
+            transform: rotateY(75deg) translateZ(-200px);
+            transform-origin: right center;
+        }
+
+        .wall-right {
+            right: 0;
+            top: 10%;
+            width: 35%;
+            height: 70%;
+            transform: rotateY(-75deg) translateZ(-200px);
+            transform-origin: left center;
+        }
+
+        .wall-back {
+            left: 25%;
+            top: 15%;
+            width: 50%;
+            height: 60%;
+            transform: translateZ(-400px);
+        }
+
+        /* Floor */
+        .gallery-floor {
+            position: absolute;
+            bottom: 0;
+            left: 10%;
+            width: 80%;
+            height: 30%;
+            background: linear-gradient(to top, #C4B8A8, #D8D2C9);
+            transform: rotateX(80deg);
+            transform-origin: bottom center;
+        }
+
+        /* Paintings on walls - these are the portals */
+        .painting-frame {
+            position: absolute;
+            background: white;
+            box-shadow:
+                0 5px 20px rgba(0,0,0,0.2),
+                inset 0 0 0 8px var(--frame-dark),
+                inset 0 0 0 12px var(--frame-gold);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        .painting-frame::before {
+            content: '';
+            position: absolute;
+            inset: 15px;
+            background: linear-gradient(135deg, #f0e6d8 0%, #e8dcc8 100%);
+        }
+
+        .painting-frame:hover {
+            transform: scale(1.05);
+            box-shadow:
+                0 15px 50px rgba(0,0,0,0.3),
+                inset 0 0 0 8px var(--frame-dark),
+                inset 0 0 0 12px var(--frame-gold);
+            z-index: 100;
+        }
+
+        .painting-frame .painting-image {
+            position: absolute;
+            inset: 15px;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.4s;
+        }
+
+        .painting-frame:hover .painting-image {
+            transform: scale(1.1);
+        }
+
+        .painting-frame .painting-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.5rem;
+            color: white;
+        }
+
+        .painting-frame:hover .painting-overlay {
+            opacity: 1;
+        }
+
+        .painting-artist {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .painting-enter {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-top: 0.25rem;
+        }
+
+        /* Position paintings */
+        .painting-1 { left: 5%; top: 25%; width: 120px; height: 150px; transform: rotateY(20deg); }
+        .painting-2 { left: 20%; top: 20%; width: 100px; height: 130px; transform: rotateY(15deg); }
+        .painting-3 { left: 38%; top: 18%; width: 140px; height: 100px; }
+        .painting-4 { right: 38%; top: 22%; width: 110px; height: 140px; }
+        .painting-5 { right: 20%; top: 20%; width: 130px; height: 100px; transform: rotateY(-15deg); }
+        .painting-6 { right: 5%; top: 25%; width: 100px; height: 120px; transform: rotateY(-20deg); }
+        .painting-7 { left: 12%; top: 55%; width: 90px; height: 110px; transform: rotateY(18deg); }
+        .painting-8 { right: 12%; top: 55%; width: 110px; height: 90px; transform: rotateY(-18deg); }
+
+        /* Art style tags */
+        .painting-frame[data-style="abstract"] { --accent: #E87C9A; }
+        .painting-frame[data-style="photography"] { --accent: #7CB5E8; }
+        .painting-frame[data-style="impressionism"] { --accent: #9CE87C; }
+        .painting-frame[data-style="minimalist"] { --accent: #E8D47C; }
+        .painting-frame[data-style="contemporary"] { --accent: #C97BE8; }
+
+        /* ===== MOBILE GALLERY GRID ===== */
+        .mobile-gallery {
+            display: none;
+            padding: 2rem 1rem;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .gallery-card {
+            aspect-ratio: 3/4;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 4px 20px var(--shadow-soft);
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .gallery-card:nth-child(2n) {
+            margin-top: 2rem;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px var(--shadow-medium);
+        }
+
+        .gallery-card-image {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.4s;
+        }
+
+        .gallery-card:hover .gallery-card-image {
+            transform: scale(1.1);
+        }
+
+        .gallery-card-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent 60%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1rem;
+            color: white;
+        }
+
+        .gallery-card-artist {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .gallery-card-style {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ===== EVENTS SECTION ===== */
+        .events-section {
+            padding: 5rem 2rem;
+            background: var(--museum-white);
+        }
+
+        .events-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .events-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .events-header p {
+            color: var(--text-muted);
+        }
+
+        .events-scroll {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding: 1rem 0 2rem;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .events-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .event-card {
+            flex: 0 0 300px;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px var(--shadow-soft);
+            scroll-snap-align: start;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .event-card:first-child {
+            margin-left: max(2rem, calc((100vw - 1200px) / 2));
+        }
+
+        .event-card:last-child {
+            margin-right: 2rem;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px var(--shadow-medium);
+        }
+
+        .event-image {
+            height: 180px;
+            background: linear-gradient(135deg, #E8927C, #D4A574);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .event-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .event-type {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.3rem 0.8rem;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-radius: 100px;
+        }
+
+        .event-date-badge {
+            position: absolute;
+            bottom: -20px;
+            right: 1rem;
+            width: 60px;
+            height: 60px;
+            background: var(--text-dark);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .event-date-day {
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .event-date-month {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .event-content {
+            padding: 2rem 1.5rem 1.5rem;
+        }
+
+        .event-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .event-artist {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .event-details {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .event-details span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .event-live {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.2rem 0.6rem;
+            background: #E8F5E8;
+            color: #2E7D32;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .event-live::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ===== FEATURES CORRIDOR ===== */
+        .features-corridor {
+            padding: 5rem 2rem;
+            background: linear-gradient(to bottom, var(--gallery-cream), var(--museum-white));
+        }
+
+        .corridor-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .corridor-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 400;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px var(--shadow-soft);
+            transition: transform 0.3s;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1.5rem;
+            background: var(--gallery-cream);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .feature-item h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-item p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* ===== VISION GALLERY ROOM ===== */
+        .vision-room {
+            padding: 5rem 2rem;
+            background: var(--text-dark);
+            color: white;
+            text-align: center;
+        }
+
+        .vision-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .vision-room h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 300;
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+        }
+
+        .vision-room p {
+            font-size: 1rem;
+            opacity: 0.8;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .vision-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--frame-gold);
+            color: var(--text-dark);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        .vision-cta:hover {
+            transform: scale(1.05);
+            background: #D4B578;
+        }
+
+        /* ===== PRICING EXHIBIT ===== */
+        .pricing-exhibit {
+            padding: 5rem 2rem;
+            background: var(--museum-white);
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 400;
+        }
+
+        .pricing-cards {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .price-card {
+            flex: 1;
+            min-width: 280px;
+            max-width: 350px;
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 30px var(--shadow-soft);
+            transition: transform 0.3s;
+        }
+
+        .price-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .price-card.featured {
+            background: var(--text-dark);
+            color: white;
+        }
+
+        .price-card-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-card-price {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+
+        .price-card.featured .price-card-price {
+            color: var(--frame-gold);
+        }
+
+        .price-card-period {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .price-card.featured .price-card-period {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .price-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .price-features li {
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .price-features li::before {
+            content: '✓';
+            color: var(--frame-gold);
+            font-weight: bold;
+        }
+
+        .price-card.featured .price-features li {
+            color: rgba(255,255,255,0.9);
+        }
+
+        .price-cta {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--text-dark);
+            background: transparent;
+            color: var(--text-dark);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .price-cta:hover {
+            background: var(--text-dark);
+            color: white;
+        }
+
+        .price-card.featured .price-cta {
+            border-color: var(--frame-gold);
+            background: var(--frame-gold);
+            color: var(--text-dark);
+        }
+
+        .price-card.featured .price-cta:hover {
+            background: #D4B578;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            padding: 4rem 2rem 2rem;
+            background: var(--gallery-cream);
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 2rem;
+        }
+
+        .footer-brand {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .footer-brand h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-brand p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 3rem;
+        }
+
+        .footer-links a {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--text-dark);
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(0,0,0,0.08);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        /* ===== HISTORY SIDEBAR ===== */
+        .history-sidebar {
+            position: fixed;
+            right: -300px;
+            top: 0;
+            bottom: 0;
+            width: 300px;
+            background: white;
+            box-shadow: -5px 0 30px var(--shadow-medium);
+            z-index: 1001;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 5rem 1.5rem 2rem;
+            overflow-y: auto;
+        }
+
+        .history-sidebar.open {
+            right: 0;
+        }
+
+        .history-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: var(--gallery-cream);
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .history-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .history-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--gallery-cream);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .history-item:hover {
+            background: #E8E2D9;
+        }
+
+        .history-thumb {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #E8927C, #D4A574);
+        }
+
+        .history-info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .history-info p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .history-toggle {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 20px var(--shadow-medium);
+            cursor: pointer;
+            z-index: 998;
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+        }
+
+        .history-toggle:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .perspective-gallery {
+                display: none;
+            }
+
+            .mobile-gallery {
+                display: block;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .history-toggle {
+                display: none;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-card:nth-child(2n) {
+                margin-top: 0;
+            }
+
+            .event-card:first-child {
+                margin-left: 1rem;
+            }
+
+            .pricing-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .footer-content {
+                flex-direction: column;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Filter animation */
+        .painting-frame.filtered-out {
+            opacity: 0.2;
+            transform: scale(0.9);
+            pointer-events: none;
+        }
+
+        .gallery-card.filtered-out {
+            opacity: 0.2;
+            transform: scale(0.95);
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <a href="#" class="nav-logo">
+            <div class="logo-icon"></div>
+            Gallery Talk
+        </a>
+        <div class="nav-links">
+            <a href="#galleries">Explore</a>
+            <a href="#events">Events</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#" class="nav-cta">Artist Sign Up</a>
+        </div>
+    </nav>
+
+    <!-- Preference Selector -->
+    <div class="preference-bar" id="preferenceBar">
+        <div class="preference-content">
+            <span class="preference-label">What art speaks to you?</span>
+            <div class="preference-tags" id="prefTags">
+                <button class="pref-tag" data-style="all">All Styles</button>
+                <button class="pref-tag" data-style="abstract">Abstract</button>
+                <button class="pref-tag" data-style="photography">Photography</button>
+                <button class="pref-tag" data-style="impressionism">Impressionism</button>
+                <button class="pref-tag" data-style="minimalist">Minimalist</button>
+                <button class="pref-tag" data-style="contemporary">Contemporary</button>
+                <button class="pref-tag" data-style="realism">Realism</button>
+                <button class="pref-tag" data-style="surrealism">Surrealism</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Sidebar -->
+    <div class="history-sidebar" id="historySidebar">
+        <button class="history-close" id="historyClose">&times;</button>
+        <h3 class="history-title">Recently Visited</h3>
+        <div class="history-list" id="historyList">
+            <!-- Populated by JS -->
+        </div>
+    </div>
+    <button class="history-toggle" id="historyToggle" title="View History">&#128214;</button>
+
+    <!-- Hero / Entrance Hall -->
+    <section class="entrance-hall">
+        <div class="hall-walls"></div>
+        <div class="hall-floor"></div>
+        <div class="entrance-content fade-in">
+            <h1 class="entrance-title">Walk through <em>art</em>,<br>discover your world</h1>
+            <p class="entrance-subtitle">Every painting is a portal to an artist's gallery. Explore freely or tell us what you love.</p>
+            <a href="#galleries" class="entrance-cta">
+                Enter the Gallery
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+        <div class="scroll-hint">
+            <span>Scroll to explore</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12l7 7 7-7"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Museum Gallery - 3D Perspective -->
+    <section class="museum-gallery" id="galleries">
+        <div class="gallery-intro fade-in">
+            <h2>The Gallery Halls</h2>
+            <p>Each frame is a doorway. Click to enter an artist's world.</p>
+        </div>
+
+        <!-- Desktop: 3D Perspective Gallery -->
+        <div class="perspective-gallery">
+            <div class="gallery-hallway">
+                <div class="gallery-floor"></div>
+
+                <div class="painting-frame painting-1" data-style="abstract" data-artist="Anna Schulz" data-gallery="/gallery/annaschulz">
+                    <div class="painting-image" style="background: linear-gradient(135deg, #E87C9A, #FFB6C1);"></div>
+                    <div class="painting-overlay">
+                        <span class="painting-artist">Anna Schulz</span>
+                        <span class="painting-enter">Enter Gallery →</span>
+                    </div>
+                </div>
+
+                <div class="painting-frame painting-2" data-style="photography" data-artist="Gomolemo Mokete" data-gallery="/gallery/jusgomo">
+                    <div class="painting-image" style="background: linear-gradient(135deg, #7CB5E8, #A5D4F5);"></div>
+                    <div class="painting-overlay">
+                        <span class="painting-artist">Gomolemo Mokete</span>
+                        <span class="painting-enter">Enter Gallery →</span>
+                    </div>
+                </div>
+
+                <div class="painting-frame painting-3" data-style="impressionism" data-artist="Arya Bimbi" data-gallery="/gallery/aryabimbi">
+                    <div class="painting-image" style="background: linear-gradient(135deg, #9CE87C, #C4E8A5);"></div>
+                    <div class="painting-overlay">
+                        <span class="painting-artist">Arya Bimbi</span>
+                        <span class="painting-enter">Enter Gallery →</span>
+                    </div>
+                </div>
+
+                <div class="painting-frame painting-4" data-style="minimalist" data-artist="Alvaro Daza" data-gallery="/gallery/justforyou">
+                    <div class="painting-image" style="background: linear-gradient(135deg, #E8D47C, #F5E6A3);"></div>
+                    <div class="painting-overlay">
+                        <span class="painting-artist">Alvaro Daza</span>
+                        <span class="painting-enter">Enter Gallery →</span>
+                    </div>
+                </div>
+
+                <div class="painting-frame painting-5" data-style="contemporary" data-artist="Patricia Wolf" data-gallery="/gallery/patriciawolf">
+                    <div class="painting-image" style="background: linear-gradient(135deg, #C97BE8, #DDA0DD);"></div>
+                    <div class="painting-overlay">
+                        <span class="painting-artist">Patricia Wolf</span>
+                        <span class="painting-enter">Enter Gallery →</span>
+                    </div>
+                </div>
+
+                <div class="painting-frame painting-6" data-style="realism" data-artist="Pedro Batista" data-gallery="/gallery/batista_paints">
+                    <div class="painting-image" style="background: linear-gradient(135deg, #E8927C, #F5B89A);"></div>
+                    <div class="painting-overlay">
+                        <span class="painting-artist">Pedro Batista</span>
+                        <span class="painting-enter">Enter Gallery →</span>
+                    </div>
+                </div>
+
+                <div class="painting-frame painting-7" data-style="surrealism" data-artist="Alann De Vuyst" data-gallery="/gallery/alanndv">
+                    <div class="painting-image" style="background: linear-gradient(135deg, #7CE8D4, #A5E8E2);"></div>
+                    <div class="painting-overlay">
+                        <span class="painting-artist">Alann De Vuyst</span>
+                        <span class="painting-enter">Enter Gallery →</span>
+                    </div>
+                </div>
+
+                <div class="painting-frame painting-8" data-style="abstract" data-artist="Dastagir Syed" data-gallery="/gallery/artdast">
+                    <div class="painting-image" style="background: linear-gradient(135deg, #E87CB5, #F5A0C8);"></div>
+                    <div class="painting-overlay">
+                        <span class="painting-artist">Dastagir Syed</span>
+                        <span class="painting-enter">Enter Gallery →</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile: Card Grid -->
+        <div class="mobile-gallery">
+            <div class="gallery-grid" id="galleryGrid">
+                <div class="gallery-card" data-style="abstract" data-artist="Anna Schulz" data-gallery="/gallery/annaschulz">
+                    <div class="gallery-card-image" style="background: linear-gradient(135deg, #E87C9A, #FFB6C1);"></div>
+                    <div class="gallery-card-overlay">
+                        <span class="gallery-card-style">Abstract</span>
+                        <span class="gallery-card-artist">Anna Schulz</span>
+                    </div>
+                </div>
+                <div class="gallery-card" data-style="photography" data-artist="Gomolemo Mokete" data-gallery="/gallery/jusgomo">
+                    <div class="gallery-card-image" style="background: linear-gradient(135deg, #7CB5E8, #A5D4F5);"></div>
+                    <div class="gallery-card-overlay">
+                        <span class="gallery-card-style">Photography</span>
+                        <span class="gallery-card-artist">Gomolemo Mokete</span>
+                    </div>
+                </div>
+                <div class="gallery-card" data-style="impressionism" data-artist="Arya Bimbi" data-gallery="/gallery/aryabimbi">
+                    <div class="gallery-card-image" style="background: linear-gradient(135deg, #9CE87C, #C4E8A5);"></div>
+                    <div class="gallery-card-overlay">
+                        <span class="gallery-card-style">Impressionism</span>
+                        <span class="gallery-card-artist">Arya Bimbi</span>
+                    </div>
+                </div>
+                <div class="gallery-card" data-style="minimalist" data-artist="Alvaro Daza" data-gallery="/gallery/justforyou">
+                    <div class="gallery-card-image" style="background: linear-gradient(135deg, #E8D47C, #F5E6A3);"></div>
+                    <div class="gallery-card-overlay">
+                        <span class="gallery-card-style">Minimalist</span>
+                        <span class="gallery-card-artist">Alvaro Daza</span>
+                    </div>
+                </div>
+                <div class="gallery-card" data-style="contemporary" data-artist="Patricia Wolf" data-gallery="/gallery/patriciawolf">
+                    <div class="gallery-card-image" style="background: linear-gradient(135deg, #C97BE8, #DDA0DD);"></div>
+                    <div class="gallery-card-overlay">
+                        <span class="gallery-card-style">Contemporary</span>
+                        <span class="gallery-card-artist">Patricia Wolf</span>
+                    </div>
+                </div>
+                <div class="gallery-card" data-style="realism" data-artist="Pedro Batista" data-gallery="/gallery/batista_paints">
+                    <div class="gallery-card-image" style="background: linear-gradient(135deg, #E8927C, #F5B89A);"></div>
+                    <div class="gallery-card-overlay">
+                        <span class="gallery-card-style">Realism</span>
+                        <span class="gallery-card-artist">Pedro Batista</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Events Section -->
+    <section class="events-section" id="events">
+        <div class="events-header fade-in">
+            <h2>Upcoming Events</h2>
+            <p>Vernissages, openings, and live exhibitions from our artists</p>
+        </div>
+        <div class="events-scroll">
+            <div class="event-card">
+                <div class="event-image" style="background: linear-gradient(135deg, #E87C9A, #C97B84);">
+                    <span class="event-type">Vernissage</span>
+                    <div class="event-date-badge">
+                        <span class="event-date-day">24</span>
+                        <span class="event-date-month">Jan</span>
+                    </div>
+                </div>
+                <div class="event-content">
+                    <h3 class="event-title">Colors of Silence</h3>
+                    <p class="event-artist">by Anna Schulz</p>
+                    <div class="event-details">
+                        <span>&#128337; 7:00 PM CET</span>
+                        <span class="event-live">Live</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-card">
+                <div class="event-image" style="background: linear-gradient(135deg, #7CB5E8, #5A9BD4);">
+                    <span class="event-type">Opening</span>
+                    <div class="event-date-badge">
+                        <span class="event-date-day">28</span>
+                        <span class="event-date-month">Jan</span>
+                    </div>
+                </div>
+                <div class="event-content">
+                    <h3 class="event-title">Urban Perspectives</h3>
+                    <p class="event-artist">by Gomolemo Mokete</p>
+                    <div class="event-details">
+                        <span>&#128337; 6:00 PM CET</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-card">
+                <div class="event-image" style="background: linear-gradient(135deg, #9CE87C, #7BC85A);">
+                    <span class="event-type">Finissage</span>
+                    <div class="event-date-badge">
+                        <span class="event-date-day">02</span>
+                        <span class="event-date-month">Feb</span>
+                    </div>
+                </div>
+                <div class="event-content">
+                    <h3 class="event-title">Nature's Whispers</h3>
+                    <p class="event-artist">by Arya Bimbi</p>
+                    <div class="event-details">
+                        <span>&#128337; 5:00 PM CET</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-card">
+                <div class="event-image" style="background: linear-gradient(135deg, #C97BE8, #A855D4);">
+                    <span class="event-type">Live Talk</span>
+                    <div class="event-date-badge">
+                        <span class="event-date-day">10</span>
+                        <span class="event-date-month">Feb</span>
+                    </div>
+                </div>
+                <div class="event-content">
+                    <h3 class="event-title">The Digital Canvas</h3>
+                    <p class="event-artist">Panel Discussion</p>
+                    <div class="event-details">
+                        <span>&#128337; 8:00 PM CET</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features-corridor">
+        <div class="corridor-header fade-in">
+            <h2>What makes GalleryTalk different?</h2>
+        </div>
+        <div class="features-grid">
+            <div class="feature-item fade-in">
+                <div class="feature-icon">&#127970;</div>
+                <h3>Your Own Space</h3>
+                <p>Create and customize your virtual gallery exactly how you envision it.</p>
+            </div>
+            <div class="feature-item fade-in">
+                <div class="feature-icon">&#129309;</div>
+                <h3>Connect Personally</h3>
+                <p>Meet visitors in real-time and build lasting relationships with collectors.</p>
+            </div>
+            <div class="feature-item fade-in">
+                <div class="feature-icon">&#128176;</div>
+                <h3>0% Commission</h3>
+                <p>Keep everything you earn. Your art, your prices, your profits.</p>
+            </div>
+            <div class="feature-item fade-in">
+                <div class="feature-icon">&#127760;</div>
+                <h3>Global Community</h3>
+                <p>Join artists and enthusiasts from around the world in one platform.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision -->
+    <section class="vision-room">
+        <div class="vision-content fade-in">
+            <h2>We envision a world where art knows no boundaries.</h2>
+            <p>Artists around the world should be able to share their art with people all around the world. We empower them by making it easy to set up virtual galleries and connect with collectors, enthusiasts and other artists with a passion for art.</p>
+            <a href="#" class="vision-cta">
+                Start Creating
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing-exhibit" id="pricing">
+        <div class="pricing-header fade-in">
+            <h2>Simple, transparent pricing</h2>
+        </div>
+        <div class="pricing-cards">
+            <div class="price-card fade-in">
+                <h3 class="price-card-title">Trial</h3>
+                <div class="price-card-price">Free</div>
+                <p class="price-card-period">14 days to explore</p>
+                <ul class="price-features">
+                    <li>Full access to features</li>
+                    <li>Create your gallery</li>
+                    <li>No credit card required</li>
+                </ul>
+                <button class="price-cta">Try Now</button>
+            </div>
+            <div class="price-card featured fade-in">
+                <h3 class="price-card-title">Starter</h3>
+                <div class="price-card-price">€6.99</div>
+                <p class="price-card-period">per month</p>
+                <ul class="price-features">
+                    <li>Display up to 50 artworks</li>
+                    <li>0% commission on sales</li>
+                    <li>Host online exhibitions</li>
+                    <li>Visitor donations</li>
+                    <li>Gallery analytics</li>
+                    <li>Expert curation support</li>
+                </ul>
+                <button class="price-cta">Start Now</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>
+                    <div class="logo-icon" style="width:24px;height:24px;"></div>
+                    Gallery Talk
+                </h3>
+                <p>Your art. Your gallery. Your world.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#">Product</a>
+                <a href="#">Artists</a>
+                <a href="#">Pricing</a>
+                <a href="#">Instagram</a>
+                <a href="#">LinkedIn</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2026 BonfireHQ GmbH, Munich</span>
+            <a href="#">Imprint & Privacy</a>
+        </div>
+    </footer>
+
+    <script>
+        // ===== PREFERENCE SYSTEM =====
+        const STORAGE_KEY = 'gallerytalk_prefs';
+        const HISTORY_KEY = 'gallerytalk_history';
+
+        let userPreferences = {
+            styles: [],
+            lastVisit: null
+        };
+
+        let visitHistory = [];
+
+        // Load from localStorage
+        function loadPreferences() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) userPreferences = JSON.parse(saved);
+
+                const history = localStorage.getItem(HISTORY_KEY);
+                if (history) visitHistory = JSON.parse(history);
+            } catch (e) {
+                console.log('Could not load preferences');
+            }
+        }
+
+        function savePreferences() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(userPreferences));
+                localStorage.setItem(HISTORY_KEY, JSON.stringify(visitHistory));
+            } catch (e) {
+                console.log('Could not save preferences');
+            }
+        }
+
+        // Initialize
+        loadPreferences();
+
+        // Preference Tags
+        const prefTags = document.querySelectorAll('.pref-tag');
+        const paintings = document.querySelectorAll('.painting-frame');
+        const galleryCards = document.querySelectorAll('.gallery-card');
+
+        function setActiveStyle(style) {
+            // Update UI
+            prefTags.forEach(tag => {
+                tag.classList.toggle('active', tag.dataset.style === style);
+            });
+
+            // Filter paintings
+            const allItems = [...paintings, ...galleryCards];
+
+            allItems.forEach(item => {
+                if (style === 'all' || item.dataset.style === style) {
+                    item.classList.remove('filtered-out');
+                } else {
+                    item.classList.add('filtered-out');
+                }
+            });
+
+            // Update body style hint
+            document.body.dataset.preferredStyle = style;
+
+            // Save preference
+            userPreferences.styles = style === 'all' ? [] : [style];
+            savePreferences();
+        }
+
+        prefTags.forEach(tag => {
+            tag.addEventListener('click', () => {
+                setActiveStyle(tag.dataset.style);
+            });
+        });
+
+        // Apply saved preference on load
+        if (userPreferences.styles.length > 0) {
+            setActiveStyle(userPreferences.styles[0]);
+        }
+
+        // ===== PAINTING CLICK (PORTAL) =====
+        function handleGalleryClick(e) {
+            const item = e.currentTarget;
+            const artist = item.dataset.artist;
+            const gallery = item.dataset.gallery;
+            const style = item.dataset.style;
+
+            // Add to history
+            visitHistory.unshift({
+                artist,
+                gallery,
+                style,
+                timestamp: Date.now()
+            });
+            visitHistory = visitHistory.slice(0, 10); // Keep last 10
+            savePreferences();
+            updateHistoryUI();
+
+            // In production, this would navigate to the gallery
+            console.log(`Navigating to ${artist}'s gallery: ${gallery}`);
+            // window.location.href = gallery;
+
+            // For demo, show alert
+            alert(`Entering ${artist}'s gallery...\n\nIn the full app, this takes you directly to their virtual gallery space.`);
+        }
+
+        paintings.forEach(p => p.addEventListener('click', handleGalleryClick));
+        galleryCards.forEach(c => c.addEventListener('click', handleGalleryClick));
+
+        // ===== HISTORY SIDEBAR =====
+        const historySidebar = document.getElementById('historySidebar');
+        const historyToggle = document.getElementById('historyToggle');
+        const historyClose = document.getElementById('historyClose');
+        const historyList = document.getElementById('historyList');
+
+        function updateHistoryUI() {
+            if (visitHistory.length === 0) {
+                historyList.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">No galleries visited yet. Click on a painting to explore!</p>';
+                return;
+            }
+
+            historyList.innerHTML = visitHistory.map(item => `
+                <div class="history-item" data-gallery="${item.gallery}">
+                    <div class="history-thumb" style="background: linear-gradient(135deg, ${getStyleColor(item.style)});"></div>
+                    <div class="history-info">
+                        <h4>${item.artist}</h4>
+                        <p>${item.style} • ${formatTime(item.timestamp)}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add click handlers
+            document.querySelectorAll('.history-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    console.log(`Returning to ${item.dataset.gallery}`);
+                    alert('Returning to gallery...');
+                });
+            });
+        }
+
+        function getStyleColor(style) {
+            const colors = {
+                abstract: '#E87C9A, #FFB6C1',
+                photography: '#7CB5E8, #A5D4F5',
+                impressionism: '#9CE87C, #C4E8A5',
+                minimalist: '#E8D47C, #F5E6A3',
+                contemporary: '#C97BE8, #DDA0DD',
+                realism: '#E8927C, #F5B89A',
+                surrealism: '#7CE8D4, #A5E8E2'
+            };
+            return colors[style] || '#E8E2D9, #D8D2C9';
+        }
+
+        function formatTime(timestamp) {
+            const diff = Date.now() - timestamp;
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'Just now';
+            if (mins < 60) return `${mins}m ago`;
+            const hours = Math.floor(mins / 60);
+            if (hours < 24) return `${hours}h ago`;
+            return `${Math.floor(hours / 24)}d ago`;
+        }
+
+        historyToggle?.addEventListener('click', () => {
+            historySidebar.classList.add('open');
+        });
+
+        historyClose?.addEventListener('click', () => {
+            historySidebar.classList.remove('open');
+        });
+
+        updateHistoryUI();
+
+        // ===== SCROLL EFFECTS =====
+        const nav = document.getElementById('nav');
+        const preferenceBar = document.getElementById('preferenceBar');
+        let lastScrollY = 0;
+        let ticking = false;
+
+        function updateOnScroll() {
+            const scrollY = window.scrollY;
+
+            // Nav hide on scroll down
+            if (scrollY > lastScrollY && scrollY > 100) {
+                nav.classList.add('hidden');
+            } else {
+                nav.classList.remove('hidden');
+            }
+
+            // Show preference bar after scrolling past hero
+            if (scrollY > window.innerHeight * 0.5) {
+                preferenceBar.classList.add('visible');
+            } else {
+                preferenceBar.classList.remove('visible');
+            }
+
+            lastScrollY = scrollY;
+            ticking = false;
+        }
+
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(updateOnScroll);
+                ticking = true;
+            }
+        });
+
+        // ===== FADE IN ANIMATIONS =====
+        const fadeElements = document.querySelectorAll('.fade-in');
+
+        const fadeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        fadeElements.forEach(el => fadeObserver.observe(el));
+
+        // Initial fade-in for hero
+        setTimeout(() => {
+            document.querySelector('.entrance-content').classList.add('visible');
+        }, 300);
+    </script>
+</body>
+</html>

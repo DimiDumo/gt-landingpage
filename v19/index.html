@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GalleryTalk - The Discovery Map</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <style>
+        :root {
+            /* Base colors */
+            --bg-dark: #0A0A0F;
+            --bg-map: #0D0D14;
+            --text-light: #FFFFFF;
+            --text-muted: rgba(255,255,255,0.6);
+            --text-dim: rgba(255,255,255,0.4);
+
+            /* Zone gradients - Neutral theme */
+            --zone-abstract-start: #FF6B9D;
+            --zone-abstract-end: #C44DFF;
+            --zone-photography-start: #4A5568;
+            --zone-photography-end: #1A202C;
+            --zone-impressionism-start: #F6AD55;
+            --zone-impressionism-end: #ED8936;
+            --zone-minimalist-start: #E2E8F0;
+            --zone-minimalist-end: #A0AEC0;
+            --zone-contemporary-start: #38B2AC;
+            --zone-contemporary-end: #805AD5;
+            --zone-realism-start: #9B8B6E;
+            --zone-realism-end: #5D4E37;
+            --zone-info-start: #667eea;
+            --zone-info-end: #764ba2;
+
+            /* Path colors */
+            --path-color: #FF6B6B;
+            --path-glow: rgba(255, 107, 107, 0.5);
+            --position-color: #4ECDC4;
+
+            /* Animation */
+            --transition-fast: 0.2s;
+            --transition-medium: 0.5s;
+            --transition-slow: 1s;
+            --animation-multiplier: 1;
+
+            /* Event glow */
+            --event-glow: #FFD700;
+        }
+
+        /* Abstract Theme */
+        [data-theme="abstract"] {
+            --zone-abstract-start: #FF00FF;
+            --zone-abstract-end: #00FFFF;
+            --zone-photography-start: #7B68EE;
+            --zone-photography-end: #4B0082;
+            --zone-impressionism-start: #FF1493;
+            --zone-impressionism-end: #FF6347;
+            --zone-minimalist-start: #00CED1;
+            --zone-minimalist-end: #20B2AA;
+            --zone-contemporary-start: #FF4500;
+            --zone-contemporary-end: #FFD700;
+            --zone-realism-start: #8A2BE2;
+            --zone-realism-end: #9400D3;
+            --zone-info-start: #FF69B4;
+            --zone-info-end: #00FF7F;
+            --animation-multiplier: 0.6;
+        }
+
+        /* Impressionism Theme */
+        [data-theme="impressionism"] {
+            --zone-abstract-start: #FFB6C1;
+            --zone-abstract-end: #DDA0DD;
+            --zone-photography-start: #E6E6FA;
+            --zone-photography-end: #D8BFD8;
+            --zone-impressionism-start: #FFEFD5;
+            --zone-impressionism-end: #FFE4B5;
+            --zone-minimalist-start: #F0FFF0;
+            --zone-minimalist-end: #98FB98;
+            --zone-contemporary-start: #87CEEB;
+            --zone-contemporary-end: #B0E0E6;
+            --zone-realism-start: #DEB887;
+            --zone-realism-end: #D2B48C;
+            --zone-info-start: #E0BBE4;
+            --zone-info-end: #957DAD;
+            --animation-multiplier: 1.5;
+        }
+
+        /* Minimalist Theme */
+        [data-theme="minimalist"] {
+            --zone-abstract-start: #F5F5F5;
+            --zone-abstract-end: #E0E0E0;
+            --zone-photography-start: #BDBDBD;
+            --zone-photography-end: #9E9E9E;
+            --zone-impressionism-start: #EEEEEE;
+            --zone-impressionism-end: #E0E0E0;
+            --zone-minimalist-start: #FAFAFA;
+            --zone-minimalist-end: #F5F5F5;
+            --zone-contemporary-start: #E0E0E0;
+            --zone-contemporary-end: #BDBDBD;
+            --zone-realism-start: #D5D5D5;
+            --zone-realism-end: #C0C0C0;
+            --zone-info-start: #ECECEC;
+            --zone-info-end: #DADADA;
+            --animation-multiplier: 1.2;
+        }
+
+        /* Contemporary Theme */
+        [data-theme="contemporary"] {
+            --zone-abstract-start: #E91E63;
+            --zone-abstract-end: #9C27B0;
+            --zone-photography-start: #212121;
+            --zone-photography-end: #424242;
+            --zone-impressionism-start: #FF5722;
+            --zone-impressionism-end: #FF9800;
+            --zone-minimalist-start: #607D8B;
+            --zone-minimalist-end: #455A64;
+            --zone-contemporary-start: #00BCD4;
+            --zone-contemporary-end: #3F51B5;
+            --zone-realism-start: #795548;
+            --zone-realism-end: #5D4037;
+            --zone-info-start: #673AB7;
+            --zone-info-end: #512DA8;
+            --animation-multiplier: 0.8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: 'Outfit', -apple-system, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Main container */
+        #app {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Map container */
+        #map-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-map);
+            background-image:
+                radial-gradient(ellipse at 20% 30%, rgba(102, 126, 234, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(118, 75, 162, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(255, 107, 157, 0.05) 0%, transparent 60%);
+        }
+
+        #gallery-map {
+            width: 100%;
+            height: 100%;
+            max-width: 1400px;
+            max-height: 900px;
+            cursor: default;
+        }
+
+        /* Zone styles */
+        .zone {
+            cursor: pointer;
+            transition: filter var(--transition-fast);
+        }
+
+        .zone-blob {
+            transition: all var(--transition-medium);
+            filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
+        }
+
+        .zone:hover .zone-blob {
+            filter: drop-shadow(0 0 40px rgba(255,255,255,0.3));
+        }
+
+        .zone-label {
+            font-family: 'Fraunces', serif;
+            font-size: 16px;
+            fill: var(--text-light);
+            text-anchor: middle;
+            pointer-events: none;
+            opacity: 0.9;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .zone-sublabel {
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            fill: var(--text-muted);
+            text-anchor: middle;
+            pointer-events: none;
+        }
+
+        /* Center logo */
+        .center-logo {
+            font-family: 'Fraunces', serif;
+            font-size: 28px;
+            font-weight: 500;
+            fill: var(--text-light);
+            text-anchor: middle;
+        }
+
+        .center-logo-sub {
+            font-family: 'Outfit', sans-serif;
+            font-size: 12px;
+            fill: var(--text-muted);
+            text-anchor: middle;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* Exploration path */
+        #exploration-path {
+            fill: none;
+            stroke: var(--path-color);
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 8px var(--path-glow));
+        }
+
+        .position-marker {
+            fill: var(--position-color);
+            filter: drop-shadow(0 0 10px var(--position-color));
+        }
+
+        .visited-marker {
+            fill: var(--path-color);
+            opacity: 0.6;
+        }
+
+        /* Event nodes */
+        .event-node {
+            cursor: pointer;
+        }
+
+        .event-glow {
+            fill: var(--event-glow);
+            opacity: 0.3;
+            animation: eventPulse 2s ease-in-out infinite;
+        }
+
+        .event-core {
+            fill: var(--event-glow);
+            filter: drop-shadow(0 0 8px var(--event-glow));
+        }
+
+        @keyframes eventPulse {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+
+        /* Style selector */
+        #style-selector {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        #style-selector h4 {
+            font-family: 'Fraunces', serif;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .style-btn {
+            padding: 8px 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .style-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-light);
+        }
+
+        .style-btn.active {
+            background: var(--text-light);
+            color: var(--bg-dark);
+            border-color: var(--text-light);
+        }
+
+        /* Navigation hint */
+        #nav-hint {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            padding: 12px 24px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 14px;
+            color: var(--text-muted);
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.5s;
+        }
+
+        #nav-hint.hidden {
+            opacity: 0;
+        }
+
+        #nav-hint svg {
+            width: 20px;
+            height: 20px;
+            animation: clickBounce 1.5s ease-in-out infinite;
+        }
+
+        @keyframes clickBounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Zone content overlay */
+        #zone-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        #zone-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .zone-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 40px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .zone-title {
+            font-family: 'Fraunces', serif;
+            font-size: 32px;
+            font-weight: 400;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 30px;
+            color: var(--text-light);
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .zone-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+            align-content: flex-start;
+        }
+
+        /* Artist portal cards */
+        .artist-portal {
+            width: 280px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .artist-portal:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.3);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .portal-frame {
+            height: 180px;
+            background: linear-gradient(135deg, var(--zone-abstract-start), var(--zone-abstract-end));
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portal-frame::after {
+            content: '';
+            position: absolute;
+            inset: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+        }
+
+        .portal-frame .frame-art {
+            position: absolute;
+            inset: 30px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Fraunces', serif;
+            font-size: 40px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .portal-info {
+            padding: 20px;
+        }
+
+        .portal-info h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 20px;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .portal-info p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            line-height: 1.5;
+        }
+
+        .visit-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            background: var(--text-light);
+            color: var(--bg-dark);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all var(--transition-fast);
+        }
+
+        .visit-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Info content styles */
+        .info-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .info-content h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 42px;
+            font-weight: 400;
+            margin-bottom: 24px;
+            line-height: 1.3;
+        }
+
+        .info-content p {
+            font-size: 18px;
+            color: var(--text-muted);
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+
+        .feature-item {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--zone-info-start), var(--zone-info-end));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .feature-item h4 {
+            font-family: 'Fraunces', serif;
+            font-size: 18px;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .feature-item p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 0;
+        }
+
+        /* Pricing cards */
+        .pricing-grid {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .pricing-card {
+            width: 300px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--zone-info-start);
+            box-shadow: 0 0 40px rgba(102, 126, 234, 0.2);
+        }
+
+        .pricing-card h3 {
+            font-family: 'Fraunces', serif;
+            font-size: 24px;
+            font-weight: 400;
+            margin-bottom: 8px;
+        }
+
+        .pricing-card .price {
+            font-family: 'Fraunces', serif;
+            font-size: 48px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .pricing-card .price span {
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+
+        .pricing-card .desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .pricing-card ul {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+
+        .pricing-card ul li {
+            padding: 8px 0;
+            font-size: 14px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pricing-card ul li::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: var(--zone-info-start);
+            border-radius: 50%;
+        }
+
+        .pricing-btn {
+            display: inline-block;
+            width: 100%;
+            padding: 14px 30px;
+            background: var(--text-light);
+            color: var(--bg-dark);
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all var(--transition-fast);
+        }
+
+        .pricing-btn:hover {
+            transform: scale(1.02);
+        }
+
+        /* Event popup */
+        .event-popup {
+            position: fixed;
+            z-index: 300;
+            background: rgba(20, 20, 30, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,215,0,0.3);
+            border-radius: 16px;
+            padding: 24px;
+            min-width: 280px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: all 0.3s;
+        }
+
+        .event-popup.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .event-popup h4 {
+            font-family: 'Fraunces', serif;
+            font-size: 20px;
+            font-weight: 400;
+            margin-bottom: 8px;
+            color: var(--event-glow);
+        }
+
+        .event-popup .event-artist {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .event-popup .event-date {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(255,215,0,0.1);
+            border-radius: 20px;
+            font-size: 13px;
+            color: var(--event-glow);
+        }
+
+        .event-popup .event-type {
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .event-popup .close-popup {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 24px;
+            height: 24px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            border-radius: 50%;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        /* Minimap */
+        #minimap {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 180px;
+            height: 120px;
+            z-index: 250;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            padding: 10px;
+            cursor: pointer;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+        }
+
+        #minimap.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #minimap:hover {
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        #minimap svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        #minimap .minimap-label {
+            position: absolute;
+            bottom: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: var(--text-dim);
+            white-space: nowrap;
+        }
+
+        /* Journey stats */
+        #journey-stats {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            padding: 16px 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 13px;
+        }
+
+        #journey-stats h4 {
+            font-family: 'Fraunces', serif;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #journey-stats .stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        #journey-stats .stat-value {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .reset-journey {
+            margin-top: 12px;
+            padding: 6px 12px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            color: var(--text-dim);
+            font-size: 11px;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .reset-journey:hover {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-light);
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            #style-selector {
+                top: auto;
+                bottom: 80px;
+                left: 10px;
+                right: 10px;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            #style-selector h4 {
+                width: 100%;
+                text-align: center;
+            }
+
+            #journey-stats {
+                top: 10px;
+                right: 10px;
+                padding: 12px 16px;
+            }
+
+            #nav-hint {
+                bottom: 150px;
+                font-size: 12px;
+                padding: 10px 18px;
+            }
+
+            .zone-label {
+                font-size: 12px;
+            }
+
+            .zone-sublabel {
+                font-size: 9px;
+            }
+
+            .zone-header {
+                padding: 16px 20px;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .zone-title {
+                font-size: 24px;
+            }
+
+            .zone-content {
+                padding: 20px;
+            }
+
+            .artist-portal {
+                width: 100%;
+                max-width: 320px;
+            }
+
+            #minimap {
+                width: 120px;
+                height: 80px;
+                bottom: 10px;
+                right: 10px;
+            }
+
+            .info-content h2 {
+                font-size: 28px;
+            }
+
+            .pricing-card {
+                width: 100%;
+                max-width: 320px;
+            }
+        }
+    </style>
+</head>
+<body data-theme="neutral">
+    <div id="app">
+        <!-- Map Container -->
+        <div id="map-container">
+            <svg id="gallery-map" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                    <!-- Zone gradients -->
+                    <linearGradient id="grad-abstract" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:var(--zone-abstract-start)"/>
+                        <stop offset="100%" style="stop-color:var(--zone-abstract-end)"/>
+                    </linearGradient>
+                    <linearGradient id="grad-photography" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:var(--zone-photography-start)"/>
+                        <stop offset="100%" style="stop-color:var(--zone-photography-end)"/>
+                    </linearGradient>
+                    <linearGradient id="grad-impressionism" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:var(--zone-impressionism-start)"/>
+                        <stop offset="100%" style="stop-color:var(--zone-impressionism-end)"/>
+                    </linearGradient>
+                    <linearGradient id="grad-minimalist" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:var(--zone-minimalist-start)"/>
+                        <stop offset="100%" style="stop-color:var(--zone-minimalist-end)"/>
+                    </linearGradient>
+                    <linearGradient id="grad-contemporary" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:var(--zone-contemporary-start)"/>
+                        <stop offset="100%" style="stop-color:var(--zone-contemporary-end)"/>
+                    </linearGradient>
+                    <linearGradient id="grad-realism" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:var(--zone-realism-start)"/>
+                        <stop offset="100%" style="stop-color:var(--zone-realism-end)"/>
+                    </linearGradient>
+                    <linearGradient id="grad-info" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:var(--zone-info-start)"/>
+                        <stop offset="100%" style="stop-color:var(--zone-info-end)"/>
+                    </linearGradient>
+
+                    <!-- Path gradient -->
+                    <linearGradient id="path-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#FF6B6B;stop-opacity:0.3"/>
+                        <stop offset="100%" style="stop-color:#FF6B6B;stop-opacity:1"/>
+                    </linearGradient>
+
+                    <!-- Event glow filter -->
+                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Background pattern -->
+                <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <circle cx="20" cy="20" r="1" fill="rgba(255,255,255,0.03)"/>
+                </pattern>
+                <rect width="100%" height="100%" fill="url(#grid)"/>
+
+                <!-- Exploration path (drawn as user navigates) -->
+                <path id="exploration-path" d="" fill="none" stroke="url(#path-gradient)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+                <!-- Zone: Abstract Wing (Top Left) -->
+                <g class="zone" data-zone="abstract" data-center-x="200" data-center-y="200">
+                    <path class="zone-blob" d="M120,150 Q180,80 260,120 Q340,160 320,240 Q300,320 220,300 Q140,280 100,220 Q60,160 120,150" fill="url(#grad-abstract)" opacity="0.85"/>
+                    <text class="zone-label" x="200" y="195">Abstract Wing</text>
+                    <text class="zone-sublabel" x="200" y="215">Anna Schulz</text>
+                </g>
+
+                <!-- Zone: Photography Hall (Top Right) -->
+                <g class="zone" data-zone="photography" data-center-x="950" data-center-y="180">
+                    <path class="zone-blob" d="M870,120 Q940,80 1020,110 Q1100,140 1080,220 Q1060,300 980,280 Q900,260 860,200 Q820,140 870,120" fill="url(#grad-photography)" opacity="0.85"/>
+                    <text class="zone-label" x="960" y="185">Photography Hall</text>
+                    <text class="zone-sublabel" x="960" y="205">Gomolemo Mokete</text>
+                </g>
+
+                <!-- Zone: Impressionist Garden (Right Center) -->
+                <g class="zone" data-zone="impressionism" data-center-x="1000" data-center-y="480">
+                    <path class="zone-blob" d="M920,400 Q1000,360 1080,400 Q1160,440 1140,520 Q1120,600 1040,580 Q960,560 900,500 Q840,440 920,400" fill="url(#grad-impressionism)" opacity="0.85"/>
+                    <text class="zone-label" x="1000" y="475">Impressionist Garden</text>
+                    <text class="zone-sublabel" x="1000" y="495">Arya Bimbi</text>
+                </g>
+
+                <!-- Zone: Minimalist Studio (Bottom Left) -->
+                <g class="zone" data-zone="minimalist" data-center-x="180" data-center-y="580">
+                    <path class="zone-blob" d="M100,520 Q160,480 240,500 Q320,520 300,600 Q280,680 200,680 Q120,680 80,620 Q40,560 100,520" fill="url(#grad-minimalist)" opacity="0.85"/>
+                    <text class="zone-label" x="185" y="580">Minimalist Studio</text>
+                    <text class="zone-sublabel" x="185" y="600">Alvaro Daza</text>
+                </g>
+
+                <!-- Zone: Contemporary Loft (Bottom Right) -->
+                <g class="zone" data-zone="contemporary" data-center-x="850" data-center-y="680">
+                    <path class="zone-blob" d="M760,620 Q840,580 920,610 Q1000,640 980,720 Q960,800 880,780 Q800,760 740,700 Q680,640 760,620" fill="url(#grad-contemporary)" opacity="0.85"/>
+                    <text class="zone-label" x="855" y="680">Contemporary Loft</text>
+                    <text class="zone-sublabel" x="855" y="700">Patricia Wolf</text>
+                </g>
+
+                <!-- Zone: Realism Gallery (Bottom Center) -->
+                <g class="zone" data-zone="realism" data-center-x="500" data-center-y="700">
+                    <path class="zone-blob" d="M400,650 Q480,620 560,640 Q640,660 630,730 Q620,800 540,790 Q460,780 400,730 Q340,680 400,650" fill="url(#grad-realism)" opacity="0.85"/>
+                    <text class="zone-label" x="505" y="700">Realism Gallery</text>
+                    <text class="zone-sublabel" x="505" y="720">Pedro Batista</text>
+                </g>
+
+                <!-- Zone: Info Pavilion (Center) - About/Features/Pricing -->
+                <g class="zone" data-zone="info" data-center-x="600" data-center-y="400">
+                    <path class="zone-blob" d="M500,320 Q580,280 680,310 Q780,340 760,420 Q740,500 660,500 Q580,500 520,460 Q460,420 500,320" fill="url(#grad-info)" opacity="0.85"/>
+                    <text class="zone-label" x="610" y="390">Info Pavilion</text>
+                    <text class="zone-sublabel" x="610" y="410">About / Features / Pricing</text>
+                </g>
+
+                <!-- Center Logo -->
+                <g class="logo-group" transform="translate(600, 120)">
+                    <rect x="-60" y="-30" width="120" height="60" rx="30" fill="rgba(0,0,0,0.5)"/>
+                    <text class="center-logo" x="0" y="8">GalleryTalk</text>
+                </g>
+
+                <!-- Event Nodes -->
+                <g class="event-node" data-event="anna-vernissage" data-artist="Anna Schulz" data-title="Colors of Silence" data-date="Jan 24" data-type="Vernissage">
+                    <circle class="event-glow" cx="280" cy="160" r="18"/>
+                    <circle class="event-core" cx="280" cy="160" r="6" filter="url(#glow)"/>
+                </g>
+
+                <g class="event-node" data-event="gomo-opening" data-artist="Gomolemo Mokete" data-title="Urban Perspectives" data-date="Jan 28" data-type="Opening">
+                    <circle class="event-glow" cx="1020" cy="160" r="18"/>
+                    <circle class="event-core" cx="1020" cy="160" r="6" filter="url(#glow)"/>
+                </g>
+
+                <g class="event-node" data-event="arya-finissage" data-artist="Arya Bimbi" data-title="Nature's Whispers" data-date="Feb 2" data-type="Finissage">
+                    <circle class="event-glow" cx="1060" cy="440" r="18"/>
+                    <circle class="event-core" cx="1060" cy="440" r="6" filter="url(#glow)"/>
+                </g>
+
+                <!-- Visited markers (populated by JS) -->
+                <g id="visited-markers"></g>
+
+                <!-- Current position marker -->
+                <circle id="position-marker" class="position-marker" r="8" cx="600" cy="400" opacity="0"/>
+            </svg>
+        </div>
+
+        <!-- Style Selector -->
+        <div id="style-selector">
+            <h4>Art Style</h4>
+            <button class="style-btn active" data-style="neutral">All Styles</button>
+            <button class="style-btn" data-style="abstract">Abstract</button>
+            <button class="style-btn" data-style="impressionism">Impressionism</button>
+            <button class="style-btn" data-style="minimalist">Minimalist</button>
+            <button class="style-btn" data-style="contemporary">Contemporary</button>
+        </div>
+
+        <!-- Journey Stats -->
+        <div id="journey-stats">
+            <h4>Your Journey</h4>
+            <div class="stat">Zones explored: <span class="stat-value" id="zones-count">0</span>/7</div>
+            <div class="stat">Path length: <span class="stat-value" id="path-length">0</span> steps</div>
+            <button class="reset-journey" id="reset-btn">Reset Journey</button>
+        </div>
+
+        <!-- Navigation Hint -->
+        <div id="nav-hint">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 8v8M8 12h8"/>
+            </svg>
+            Click any zone to explore
+        </div>
+
+        <!-- Zone Content Overlay -->
+        <div id="zone-overlay">
+            <div class="zone-header">
+                <h2 class="zone-title"></h2>
+                <button class="back-btn" id="back-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Back to Map
+                </button>
+            </div>
+            <div class="zone-content" id="zone-content-inner"></div>
+        </div>
+
+        <!-- Minimap -->
+        <div id="minimap">
+            <svg viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid meet">
+                <!-- Simplified zone shapes -->
+                <path d="M120,150 Q180,80 260,120 Q340,160 320,240 Q300,320 220,300 Q140,280 100,220 Q60,160 120,150" fill="var(--zone-abstract-start)" opacity="0.5"/>
+                <path d="M870,120 Q940,80 1020,110 Q1100,140 1080,220 Q1060,300 980,280 Q900,260 860,200 Q820,140 870,120" fill="var(--zone-photography-start)" opacity="0.5"/>
+                <path d="M920,400 Q1000,360 1080,400 Q1160,440 1140,520 Q1120,600 1040,580 Q960,560 900,500 Q840,440 920,400" fill="var(--zone-impressionism-start)" opacity="0.5"/>
+                <path d="M100,520 Q160,480 240,500 Q320,520 300,600 Q280,680 200,680 Q120,680 80,620 Q40,560 100,520" fill="var(--zone-minimalist-start)" opacity="0.5"/>
+                <path d="M760,620 Q840,580 920,610 Q1000,640 980,720 Q960,800 880,780 Q800,760 740,700 Q680,640 760,620" fill="var(--zone-contemporary-start)" opacity="0.5"/>
+                <path d="M400,650 Q480,620 560,640 Q640,660 630,730 Q620,800 540,790 Q460,780 400,730 Q340,680 400,650" fill="var(--zone-realism-start)" opacity="0.5"/>
+                <path d="M500,320 Q580,280 680,310 Q780,340 760,420 Q740,500 660,500 Q580,500 520,460 Q460,420 500,320" fill="var(--zone-info-start)" opacity="0.5"/>
+                <!-- Minimap path -->
+                <path id="minimap-path" d="" fill="none" stroke="#FF6B6B" stroke-width="4" stroke-linecap="round"/>
+                <!-- Minimap position -->
+                <circle id="minimap-position" r="12" fill="#4ECDC4" opacity="0"/>
+            </svg>
+            <span class="minimap-label">Click to return</span>
+        </div>
+
+        <!-- Event Popup -->
+        <div class="event-popup" id="event-popup">
+            <button class="close-popup" id="close-popup">&times;</button>
+            <h4 id="event-title"></h4>
+            <p class="event-artist" id="event-artist"></p>
+            <span class="event-date" id="event-date">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <span id="event-date-text"></span>
+            </span>
+            <p class="event-type" id="event-type"></p>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // GalleryTalk - The Discovery Map
+        // ============================================
+
+        const App = {
+            // State
+            state: {
+                currentView: 'map',
+                currentZone: null,
+                theme: 'neutral',
+                explorationPath: [],
+                visitedZones: new Set()
+            },
+
+            // Zone data
+            zones: {
+                abstract: {
+                    name: 'Abstract Wing',
+                    artist: {
+                        name: 'Anna Schulz',
+                        username: 'annaschulz',
+                        bio: 'Anna lives and works in Munich. In her work she tries to discover how music and painting influence each other.',
+                        style: 'Abstract expressionism meets musical harmony'
+                    },
+                    color: 'abstract'
+                },
+                photography: {
+                    name: 'Photography Hall',
+                    artist: {
+                        name: 'Gomolemo Mokete',
+                        username: 'jusgomo',
+                        bio: 'Capturing the essence of urban life through a unique lens.',
+                        style: 'Urban documentary photography'
+                    },
+                    color: 'photography'
+                },
+                impressionism: {
+                    name: 'Impressionist Garden',
+                    artist: {
+                        name: 'Arya Bimbi',
+                        username: 'aryabimbi',
+                        bio: 'Finding beauty in the fleeting moments of nature and light.',
+                        style: 'Modern impressionism with natural themes'
+                    },
+                    color: 'impressionism'
+                },
+                minimalist: {
+                    name: 'Minimalist Studio',
+                    artist: {
+                        name: 'Alvaro Daza',
+                        username: 'justforyou',
+                        bio: 'Less is more. Every line and space has meaning.',
+                        style: 'Contemporary minimalism'
+                    },
+                    color: 'minimalist'
+                },
+                contemporary: {
+                    name: 'Contemporary Loft',
+                    artist: {
+                        name: 'Patricia Wolf',
+                        username: 'patriciawolf',
+                        bio: 'Pushing boundaries and challenging perceptions through bold works.',
+                        style: 'Bold contemporary art'
+                    },
+                    color: 'contemporary'
+                },
+                realism: {
+                    name: 'Realism Gallery',
+                    artist: {
+                        name: 'Pedro Batista',
+                        username: 'batista_paints',
+                        bio: 'Bringing reality to canvas with precision and emotion.',
+                        style: 'Classical realism with modern subjects'
+                    },
+                    color: 'realism'
+                },
+                info: {
+                    name: 'Info Pavilion',
+                    type: 'info',
+                    color: 'info'
+                }
+            },
+
+            // DOM elements
+            elements: {},
+
+            // Initialize
+            init() {
+                this.cacheElements();
+                this.bindEvents();
+                this.loadSavedState();
+                this.animateInitialLoad();
+            },
+
+            cacheElements() {
+                this.elements = {
+                    map: document.getElementById('gallery-map'),
+                    mapContainer: document.getElementById('map-container'),
+                    zones: document.querySelectorAll('.zone'),
+                    overlay: document.getElementById('zone-overlay'),
+                    overlayContent: document.getElementById('zone-content-inner'),
+                    overlayTitle: document.querySelector('.zone-title'),
+                    backBtn: document.getElementById('back-btn'),
+                    minimap: document.getElementById('minimap'),
+                    minimapPath: document.getElementById('minimap-path'),
+                    minimapPosition: document.getElementById('minimap-position'),
+                    explorationPath: document.getElementById('exploration-path'),
+                    positionMarker: document.getElementById('position-marker'),
+                    visitedMarkers: document.getElementById('visited-markers'),
+                    styleBtns: document.querySelectorAll('.style-btn'),
+                    navHint: document.getElementById('nav-hint'),
+                    zonesCount: document.getElementById('zones-count'),
+                    pathLength: document.getElementById('path-length'),
+                    resetBtn: document.getElementById('reset-btn'),
+                    eventNodes: document.querySelectorAll('.event-node'),
+                    eventPopup: document.getElementById('event-popup'),
+                    closePopup: document.getElementById('close-popup')
+                };
+            },
+
+            bindEvents() {
+                // Zone interactions
+                this.elements.zones.forEach(zone => {
+                    zone.addEventListener('click', () => this.zoomToZone(zone));
+                    zone.addEventListener('mouseenter', () => this.hoverZone(zone, true));
+                    zone.addEventListener('mouseleave', () => this.hoverZone(zone, false));
+                });
+
+                // Back button
+                this.elements.backBtn.addEventListener('click', () => this.returnToMap());
+
+                // Minimap click
+                this.elements.minimap.addEventListener('click', () => this.returnToMap());
+
+                // Style buttons
+                this.elements.styleBtns.forEach(btn => {
+                    btn.addEventListener('click', () => this.switchTheme(btn.dataset.style));
+                });
+
+                // Reset journey
+                this.elements.resetBtn.addEventListener('click', () => this.resetJourney());
+
+                // Event nodes
+                this.elements.eventNodes.forEach(node => {
+                    node.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.showEventPopup(node);
+                    });
+                });
+
+                // Close event popup
+                this.elements.closePopup.addEventListener('click', () => this.hideEventPopup());
+                document.addEventListener('click', (e) => {
+                    if (!e.target.closest('.event-popup') && !e.target.closest('.event-node')) {
+                        this.hideEventPopup();
+                    }
+                });
+
+                // Keyboard navigation
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.state.currentView === 'zoomed') {
+                        this.returnToMap();
+                    }
+                });
+            },
+
+            loadSavedState() {
+                const saved = localStorage.getItem('gt-discovery-map');
+                if (saved) {
+                    try {
+                        const data = JSON.parse(saved);
+                        this.state.explorationPath = data.path || [];
+                        this.state.visitedZones = new Set(data.visited || []);
+                        this.state.theme = data.theme || 'neutral';
+
+                        // Apply saved theme
+                        document.body.setAttribute('data-theme', this.state.theme);
+                        this.elements.styleBtns.forEach(btn => {
+                            btn.classList.toggle('active', btn.dataset.style === this.state.theme);
+                        });
+
+                        // Update stats
+                        this.updateStats();
+                    } catch (e) {
+                        console.log('Could not load saved state');
+                    }
+                }
+            },
+
+            saveState() {
+                const data = {
+                    path: this.state.explorationPath,
+                    visited: Array.from(this.state.visitedZones),
+                    theme: this.state.theme
+                };
+                localStorage.setItem('gt-discovery-map', JSON.stringify(data));
+            },
+
+            animateInitialLoad() {
+                // Fade in zones
+                gsap.set(this.elements.zones, { opacity: 0, scale: 0.8 });
+                gsap.to(this.elements.zones, {
+                    opacity: 0.85,
+                    scale: 1,
+                    duration: 0.8,
+                    stagger: 0.1,
+                    ease: 'back.out(1.7)',
+                    delay: 0.3
+                });
+
+                // Draw existing path if any
+                if (this.state.explorationPath.length > 0) {
+                    this.drawPath(false);
+                    this.drawVisitedMarkers();
+                }
+
+                // Pulse logo
+                gsap.fromTo('.logo-group',
+                    { scale: 0.9, opacity: 0 },
+                    { scale: 1, opacity: 1, duration: 1, delay: 0.5, ease: 'elastic.out(1, 0.5)' }
+                );
+
+                // Animate event nodes
+                gsap.fromTo('.event-node',
+                    { scale: 0 },
+                    { scale: 1, duration: 0.6, stagger: 0.15, delay: 1, ease: 'back.out(2)' }
+                );
+
+                // Hide nav hint after first interaction
+                setTimeout(() => {
+                    if (this.state.visitedZones.size > 0) {
+                        this.elements.navHint.classList.add('hidden');
+                    }
+                }, 2000);
+            },
+
+            hoverZone(zone, isHovering) {
+                if (this.state.currentView !== 'map') return;
+
+                const blob = zone.querySelector('.zone-blob');
+                const multiplier = parseFloat(getComputedStyle(document.body).getPropertyValue('--animation-multiplier')) || 1;
+
+                gsap.to(blob, {
+                    scale: isHovering ? 1.08 : 1,
+                    duration: 0.3 * multiplier,
+                    ease: 'power2.out'
+                });
+
+                gsap.to(zone, {
+                    filter: isHovering ? 'brightness(1.2)' : 'brightness(1)',
+                    duration: 0.3
+                });
+            },
+
+            zoomToZone(zone) {
+                if (this.state.currentView === 'zoomed') return;
+
+                const zoneId = zone.dataset.zone;
+                const centerX = parseFloat(zone.dataset.centerX);
+                const centerY = parseFloat(zone.dataset.centerY);
+
+                this.state.currentView = 'zoomed';
+                this.state.currentZone = zoneId;
+
+                // Hide nav hint
+                this.elements.navHint.classList.add('hidden');
+
+                // Add to path
+                this.addToPath(zoneId, centerX, centerY);
+
+                // Zoom animation
+                const viewBox = this.elements.map.viewBox.baseVal;
+                const scale = 3;
+                const newX = centerX - (viewBox.width / scale / 2);
+                const newY = centerY - (viewBox.height / scale / 2);
+
+                gsap.to(this.elements.map, {
+                    attr: { viewBox: `${newX} ${newY} ${viewBox.width / scale} ${viewBox.height / scale}` },
+                    duration: 1.2,
+                    ease: 'power3.inOut',
+                    onComplete: () => {
+                        this.showZoneContent(zoneId);
+                    }
+                });
+
+                // Fade other zones
+                this.elements.zones.forEach(z => {
+                    if (z !== zone) {
+                        gsap.to(z, { opacity: 0.2, duration: 0.5 });
+                    }
+                });
+
+                // Show minimap
+                setTimeout(() => {
+                    this.elements.minimap.classList.add('active');
+                    this.updateMinimap(centerX, centerY);
+                }, 800);
+            },
+
+            showZoneContent(zoneId) {
+                const zoneData = this.zones[zoneId];
+                this.elements.overlayTitle.textContent = zoneData.name;
+
+                let content = '';
+
+                if (zoneData.type === 'info') {
+                    content = this.renderInfoContent();
+                } else {
+                    content = this.renderArtistContent(zoneData);
+                }
+
+                this.elements.overlayContent.innerHTML = content;
+                this.elements.overlay.classList.add('active');
+
+                // Animate content
+                gsap.fromTo('.zone-content > *',
+                    { opacity: 0, y: 20 },
+                    { opacity: 1, y: 0, duration: 0.5, stagger: 0.1, delay: 0.2 }
+                );
+            },
+
+            renderArtistContent(zoneData) {
+                const artist = zoneData.artist;
+                return `
+                    <div class="artist-portal" onclick="window.open('https://gallerytalk.io/${artist.username}', '_blank')">
+                        <div class="portal-frame" style="background: linear-gradient(135deg, var(--zone-${zoneData.color}-start), var(--zone-${zoneData.color}-end))">
+                            <div class="frame-art">${artist.name.charAt(0)}</div>
+                        </div>
+                        <div class="portal-info">
+                            <h3>${artist.name}</h3>
+                            <p>${artist.bio}</p>
+                            <a href="https://gallerytalk.io/${artist.username}" target="_blank" class="visit-btn" onclick="event.stopPropagation()">
+                                Visit Gallery
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="info-content" style="max-width: 400px;">
+                        <h2 style="font-size: 28px;">Explore ${artist.name}'s World</h2>
+                        <p style="font-size: 15px;">${artist.style}</p>
+                        <p style="font-size: 14px; opacity: 0.7;">Click the portal to enter the gallery and experience the artwork in an immersive virtual space.</p>
+                    </div>
+                `;
+            },
+
+            renderInfoContent() {
+                return `
+                    <div class="info-content">
+                        <h2>We envision a world where art knows no boundaries.</h2>
+                        <p>Artists around the world should be able to share their art with people all around the world. We empower them by making it easy to set up virtual galleries and connect with collectors, enthusiasts and other artists with a passion for art.</p>
+
+                        <div class="features-grid">
+                            <div class="feature-item">
+                                <div class="feature-icon">&#128216;</div>
+                                <h4>Visit Instantly</h4>
+                                <p>Explore galleries from anywhere in the world</p>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">0%</div>
+                                <h4>Fair Commission</h4>
+                                <p>Keep 100% of your art sales</p>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">&#9889;</div>
+                                <h4>Build in Minutes</h4>
+                                <p>Create your gallery with ease</p>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon">&#127758;</div>
+                                <h4>Global Community</h4>
+                                <p>Connect with art lovers worldwide</p>
+                            </div>
+                        </div>
+
+                        <div class="pricing-grid">
+                            <div class="pricing-card">
+                                <h3>Trial</h3>
+                                <div class="price">Free</div>
+                                <p class="desc">Experiment & explore 14 days of Starter for free</p>
+                                <ul>
+                                    <li>Full access for 14 days</li>
+                                    <li>No credit card required</li>
+                                    <li>Explore all features</li>
+                                </ul>
+                                <a href="https://gallerytalk.io/signup" class="pricing-btn">Try Now</a>
+                            </div>
+                            <div class="pricing-card featured">
+                                <h3>Starter</h3>
+                                <div class="price">6.99<span>/mo</span></div>
+                                <p class="desc">Everything you need to showcase your art</p>
+                                <ul>
+                                    <li>Display up to 50 artworks</li>
+                                    <li>0% commission on sales</li>
+                                    <li>Host online exhibitions</li>
+                                    <li>Gallery analytics</li>
+                                    <li>Curation support</li>
+                                    <li>Digital Gallery Playbook</li>
+                                </ul>
+                                <a href="https://gallerytalk.io/signup" class="pricing-btn">Start Now</a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
+
+            returnToMap() {
+                if (this.state.currentView !== 'zoomed') return;
+
+                this.state.currentView = 'map';
+
+                // Hide overlay
+                this.elements.overlay.classList.remove('active');
+
+                // Hide minimap
+                this.elements.minimap.classList.remove('active');
+
+                // Reset zoom
+                gsap.to(this.elements.map, {
+                    attr: { viewBox: '0 0 1200 800' },
+                    duration: 1,
+                    ease: 'power3.inOut'
+                });
+
+                // Restore zone opacities
+                this.elements.zones.forEach(zone => {
+                    const isVisited = this.state.visitedZones.has(zone.dataset.zone);
+                    gsap.to(zone, {
+                        opacity: isVisited ? 0.7 : 0.85,
+                        duration: 0.5
+                    });
+                });
+
+                this.state.currentZone = null;
+            },
+
+            addToPath(zoneId, x, y) {
+                // Add zone to visited
+                this.state.visitedZones.add(zoneId);
+
+                // Add point to path
+                this.state.explorationPath.push({ zone: zoneId, x, y });
+
+                // Draw path
+                this.drawPath(true);
+                this.drawVisitedMarkers();
+
+                // Update stats
+                this.updateStats();
+
+                // Save state
+                this.saveState();
+            },
+
+            drawPath(animate = true) {
+                if (this.state.explorationPath.length < 1) return;
+
+                const pathData = this.state.explorationPath
+                    .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+                    .join(' ');
+
+                this.elements.explorationPath.setAttribute('d', pathData);
+                this.elements.minimapPath.setAttribute('d', pathData);
+
+                if (animate) {
+                    const pathLength = this.elements.explorationPath.getTotalLength();
+                    gsap.fromTo(this.elements.explorationPath,
+                        { strokeDasharray: pathLength, strokeDashoffset: pathLength },
+                        { strokeDashoffset: 0, duration: 0.8, ease: 'power2.out' }
+                    );
+                } else {
+                    const pathLength = this.elements.explorationPath.getTotalLength();
+                    this.elements.explorationPath.style.strokeDasharray = pathLength;
+                    this.elements.explorationPath.style.strokeDashoffset = 0;
+                }
+
+                // Update position marker
+                const lastPoint = this.state.explorationPath[this.state.explorationPath.length - 1];
+                gsap.to(this.elements.positionMarker, {
+                    attr: { cx: lastPoint.x, cy: lastPoint.y },
+                    opacity: 1,
+                    duration: 0.5
+                });
+            },
+
+            drawVisitedMarkers() {
+                this.elements.visitedMarkers.innerHTML = '';
+
+                this.state.explorationPath.forEach((point, index) => {
+                    if (index < this.state.explorationPath.length - 1) {
+                        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        circle.setAttribute('cx', point.x);
+                        circle.setAttribute('cy', point.y);
+                        circle.setAttribute('r', '5');
+                        circle.setAttribute('class', 'visited-marker');
+                        this.elements.visitedMarkers.appendChild(circle);
+                    }
+                });
+            },
+
+            updateMinimap(x, y) {
+                gsap.to(this.elements.minimapPosition, {
+                    attr: { cx: x, cy: y },
+                    opacity: 1,
+                    duration: 0.3
+                });
+            },
+
+            updateStats() {
+                this.elements.zonesCount.textContent = this.state.visitedZones.size;
+                this.elements.pathLength.textContent = this.state.explorationPath.length;
+            },
+
+            resetJourney() {
+                this.state.explorationPath = [];
+                this.state.visitedZones.clear();
+
+                // Clear path
+                this.elements.explorationPath.setAttribute('d', '');
+                this.elements.minimapPath.setAttribute('d', '');
+                this.elements.visitedMarkers.innerHTML = '';
+
+                // Hide position marker
+                gsap.to(this.elements.positionMarker, { opacity: 0, duration: 0.3 });
+
+                // Reset zone opacities
+                this.elements.zones.forEach(zone => {
+                    gsap.to(zone, { opacity: 0.85, duration: 0.3 });
+                });
+
+                // Update stats
+                this.updateStats();
+
+                // Save state
+                this.saveState();
+
+                // Show nav hint again
+                this.elements.navHint.classList.remove('hidden');
+            },
+
+            switchTheme(theme) {
+                this.state.theme = theme;
+                document.body.setAttribute('data-theme', theme);
+
+                // Update active button
+                this.elements.styleBtns.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.style === theme);
+                });
+
+                // Animate zone transformation
+                const multiplier = theme === 'abstract' ? 0.6 : theme === 'impressionism' ? 1.5 : 1;
+
+                this.elements.zones.forEach(zone => {
+                    const blob = zone.querySelector('.zone-blob');
+                    const zoneId = zone.dataset.zone;
+
+                    // Scale preferred zone
+                    const isPreferred = zoneId === theme;
+                    gsap.to(blob, {
+                        scale: isPreferred ? 1.15 : 1,
+                        duration: 0.8 * multiplier,
+                        ease: theme === 'abstract' ? 'elastic.out(1, 0.5)' : 'power2.out'
+                    });
+                });
+
+                // Save state
+                this.saveState();
+            },
+
+            showEventPopup(node) {
+                const popup = this.elements.eventPopup;
+                const rect = node.getBoundingClientRect();
+
+                document.getElementById('event-title').textContent = node.dataset.title;
+                document.getElementById('event-artist').textContent = node.dataset.artist;
+                document.getElementById('event-date-text').textContent = node.dataset.date;
+                document.getElementById('event-type').textContent = node.dataset.type;
+
+                popup.style.left = `${rect.left + rect.width / 2}px`;
+                popup.style.top = `${rect.bottom + 10}px`;
+                popup.style.transform = 'translateX(-50%)';
+
+                popup.classList.add('active');
+            },
+
+            hideEventPopup() {
+                this.elements.eventPopup.classList.remove('active');
+            }
+        };
+
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            App.init();
+        });
+    </script>
+</body>
+</html>
