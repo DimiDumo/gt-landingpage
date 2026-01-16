@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GalleryTalk - Walk Through Art</title>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -87,17 +88,17 @@
             width: 100%;
             height: 100%;
             transform-style: preserve-3d;
-            transition: transform 0.1s ease-out;
+            transition: transform 0.05s linear;
         }
 
-        /* Floor */
+        /* Floor - pushed further down to avoid z-fighting */
         .floor {
             position: absolute;
             width: 600px;
             height: 8000px;
             left: 50%;
             bottom: 50%;
-            transform: translateX(-50%) rotateX(90deg);
+            transform: translateX(-50%) rotateX(90deg) translateZ(-1px);
             transform-origin: bottom center;
             background:
                 linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px),
@@ -106,14 +107,14 @@
             background-size: 100px 100px, 100px 100px, 100% 100%;
         }
 
-        /* Ceiling */
+        /* Ceiling - pushed further up */
         .ceiling {
             position: absolute;
             width: 600px;
             height: 8000px;
             left: 50%;
             top: 50%;
-            transform: translateX(-50%) rotateX(-90deg);
+            transform: translateX(-50%) rotateX(-90deg) translateZ(-1px);
             transform-origin: top center;
             background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
         }
@@ -135,7 +136,7 @@
         .ceiling::before { left: 50px; }
         .ceiling::after { right: 50px; }
 
-        /* Walls */
+        /* Walls - slightly inward to prevent z-fighting with frames */
         .wall {
             position: absolute;
             height: 500px;
@@ -146,14 +147,14 @@
 
         .wall-left {
             left: 50%;
-            transform: translateY(-50%) translateX(-300px) rotateY(90deg);
+            transform: translateY(-50%) translateX(-299px) rotateY(90deg);
             transform-origin: left center;
             background: linear-gradient(to right, #f5f5f5, #fafafa);
         }
 
         .wall-right {
             right: 50%;
-            transform: translateY(-50%) translateX(300px) rotateY(-90deg);
+            transform: translateY(-50%) translateX(299px) rotateY(-90deg);
             transform-origin: right center;
             background: linear-gradient(to left, #f5f5f5, #fafafa);
         }
@@ -167,6 +168,7 @@
             width: 100%;
             background: white;
             box-shadow: 0 0 20px white, 0 0 40px rgba(255,255,255,0.5);
+            z-index: 1;
         }
         .wall::before { top: 10px; }
         .wall::after { bottom: 10px; }
@@ -183,15 +185,16 @@
                 0 0 0 2px rgba(255,255,255,0.1);
             overflow: hidden;
             cursor: pointer;
-            transition: transform 0.3s, box-shadow 0.3s;
+            /* Push frames out from wall to prevent z-fighting */
+            transform: translateZ(3px);
+            backface-visibility: hidden;
         }
 
         .frame:hover {
-            transform: translateZ(20px) scale(1.02);
             box-shadow:
                 inset 0 0 30px rgba(0,0,0,0.5),
                 0 10px 60px rgba(0,0,0,0.6),
-                0 0 80px rgba(255,200,100,0.2);
+                0 0 80px rgba(255,200,100,0.3);
         }
 
         .frame-content {
@@ -202,6 +205,7 @@
             flex-direction: column;
             justify-content: center;
             overflow: hidden;
+            backface-visibility: hidden;
         }
 
         /* Different artistic styles for each frame */
@@ -580,48 +584,75 @@
             transition: width 0.1s;
         }
 
-        /* Modal for expanded view */
-        .modal {
+        /* Overlay for zoomed view */
+        .zoom-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 2000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
+            background: rgba(0,0,0,0);
+            z-index: 500;
+            pointer-events: none;
+            transition: background 0.3s;
         }
 
-        .modal.active {
-            display: flex;
+        .zoom-overlay.active {
+            background: rgba(0,0,0,0.85);
+            pointer-events: auto;
         }
 
-        .modal-inner {
-            max-width: 800px;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
+        /* Zoomed frame container */
+        .zoomed-frame {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 501;
+            opacity: 0;
+            pointer-events: none;
+            max-width: 90vw;
+            max-height: 85vh;
         }
 
-        .modal-close {
+        .zoomed-frame.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .zoomed-frame .frame-content {
+            border-radius: 20px;
+            box-shadow: 0 0 100px rgba(0,0,0,0.8);
+        }
+
+        /* Close button */
+        .close-btn {
             position: fixed;
             top: 30px;
             right: 30px;
             width: 50px;
             height: 50px;
             background: rgba(255,255,255,0.1);
-            border: none;
+            border: 2px solid rgba(255,255,255,0.3);
             border-radius: 50%;
             color: white;
-            font-size: 2rem;
+            font-size: 1.5rem;
             cursor: pointer;
-            z-index: 2001;
+            z-index: 502;
+            opacity: 0;
+            pointer-events: none;
+            transition: background 0.3s, opacity 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .modal-close:hover {
+        .close-btn.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .close-btn:hover {
             background: rgba(255,255,255,0.2);
         }
 
@@ -664,6 +695,11 @@
         .corridor-end a:hover {
             transform: scale(1.1);
         }
+
+        /* Disable scroll during zoom */
+        body.zoomed {
+            overflow: hidden;
+        }
     </style>
 </head>
 <body>
@@ -687,6 +723,10 @@
     </div>
 
     <div class="progress-bar" id="progressBar"></div>
+
+    <div class="zoom-overlay" id="zoomOverlay"></div>
+    <div class="zoomed-frame" id="zoomedFrame"></div>
+    <button class="close-btn" id="closeBtn">×</button>
 
     <div class="gallery-wrapper">
         <div class="corridor" id="corridor">
@@ -840,26 +880,25 @@
         <a href="#">Live Demo →</a>
     </div>
 
-    <!-- Modal -->
-    <div class="modal" id="modal">
-        <button class="modal-close" id="modalClose">×</button>
-        <div class="modal-inner" id="modalInner"></div>
-    </div>
-
     <script>
         const corridor = document.getElementById('corridor');
         const heroOverlay = document.getElementById('heroOverlay');
         const scrollHint = document.getElementById('scrollHint');
         const corridorEnd = document.getElementById('corridorEnd');
         const progressBar = document.getElementById('progressBar');
-        const modal = document.getElementById('modal');
-        const modalInner = document.getElementById('modalInner');
-        const modalClose = document.getElementById('modalClose');
+        const zoomOverlay = document.getElementById('zoomOverlay');
+        const zoomedFrame = document.getElementById('zoomedFrame');
+        const closeBtn = document.getElementById('closeBtn');
         const frames = document.querySelectorAll('.frame');
 
         const maxScroll = 8000;
+        let isZoomed = false;
+        let currentZoom = null;
 
+        // Scroll handling
         window.addEventListener('scroll', () => {
+            if (isZoomed) return;
+
             const scrollY = window.scrollY;
             const progress = Math.min(scrollY / maxScroll, 1);
 
@@ -882,34 +921,121 @@
             }
         });
 
-        // Click to expand frame
+        // Click to zoom into frame with GSAP animation
         frames.forEach(frame => {
-            frame.addEventListener('click', () => {
-                const clone = frame.querySelector('.frame-content').cloneNode(true);
-                clone.style.transform = 'none';
-                clone.style.width = '100%';
+            frame.addEventListener('click', (e) => {
+                if (isZoomed) return;
+
+                isZoomed = true;
+                currentZoom = frame;
+                document.body.classList.add('zoomed');
+
+                // Get frame's current position on screen
+                const rect = frame.getBoundingClientRect();
+                const frameContent = frame.querySelector('.frame-content');
+
+                // Clone the frame content for the zoomed view
+                const clone = frameContent.cloneNode(true);
+                clone.style.width = Math.min(800, window.innerWidth * 0.9) + 'px';
                 clone.style.height = 'auto';
                 clone.style.minHeight = '400px';
+                clone.style.maxHeight = '85vh';
+                clone.style.overflowY = 'auto';
                 clone.style.borderRadius = '20px';
-                clone.style.padding = '50px';
-                modalInner.innerHTML = '';
-                modalInner.appendChild(clone);
-                modal.classList.add('active');
-                document.body.style.overflow = 'hidden';
+                clone.style.boxShadow = '0 0 100px rgba(0,0,0,0.8)';
+
+                zoomedFrame.innerHTML = '';
+                zoomedFrame.appendChild(clone);
+
+                // Set initial position to match the frame on screen
+                gsap.set(zoomedFrame, {
+                    position: 'fixed',
+                    left: rect.left,
+                    top: rect.top,
+                    width: rect.width,
+                    height: rect.height,
+                    xPercent: 0,
+                    yPercent: 0,
+                    scale: 1,
+                    rotateY: frame.closest('.wall-left') ? -90 : 90,
+                    rotateX: 0,
+                    opacity: 1,
+                    transformPerspective: 1200
+                });
+
+                // Show overlay and close button
+                zoomOverlay.classList.add('active');
+                closeBtn.classList.add('active');
+                zoomedFrame.classList.add('active');
+
+                // Animate to center and flatten
+                gsap.to(zoomedFrame, {
+                    duration: 0.8,
+                    left: '50%',
+                    top: '50%',
+                    xPercent: -50,
+                    yPercent: -50,
+                    width: Math.min(800, window.innerWidth * 0.9),
+                    height: 'auto',
+                    rotateY: 0,
+                    rotateX: 0,
+                    scale: 1,
+                    ease: 'power3.out'
+                });
+
+                // Fade out the original frame
+                gsap.to(frame, {
+                    duration: 0.3,
+                    opacity: 0
+                });
             });
         });
 
-        function closeModal() {
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
+        // Close zoom
+        function closeZoom() {
+            if (!isZoomed || !currentZoom) return;
+
+            const frame = currentZoom;
+            const rect = frame.getBoundingClientRect();
+            const isLeftWall = frame.closest('.wall-left');
+
+            // Animate back to original position
+            gsap.to(zoomedFrame, {
+                duration: 0.6,
+                left: rect.left,
+                top: rect.top,
+                width: rect.width,
+                height: rect.height,
+                xPercent: 0,
+                yPercent: 0,
+                rotateY: isLeftWall ? -90 : 90,
+                scale: 1,
+                ease: 'power3.inOut',
+                onComplete: () => {
+                    zoomedFrame.classList.remove('active');
+                    zoomedFrame.innerHTML = '';
+                    isZoomed = false;
+                    currentZoom = null;
+                    document.body.classList.remove('zoomed');
+                }
+            });
+
+            // Fade overlay and button
+            zoomOverlay.classList.remove('active');
+            closeBtn.classList.remove('active');
+
+            // Restore original frame
+            gsap.to(frame, {
+                duration: 0.3,
+                delay: 0.3,
+                opacity: 1
+            });
         }
 
-        modalClose.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) closeModal();
-        });
+        closeBtn.addEventListener('click', closeZoom);
+        zoomOverlay.addEventListener('click', closeZoom);
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeModal();
+            if (e.key === 'Escape') closeZoom();
         });
     </script>
 </body>
