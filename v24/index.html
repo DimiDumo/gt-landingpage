@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GalleryTalk - Coastal Gallery Experience</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Ocean Blue / Coastal Palette */
+            --ocean-deep: #0077B6;
+            --ocean-bright: #00B4D8;
+            --seafoam: #90E0EF;
+            --seafoam-light: #CAF0F8;
+            --sand: #E9D8A6;
+            --sand-light: #F5ECD5;
+            --driftwood: #A8977A;
+            --driftwood-dark: #6B5E4A;
+            --white: #FFFFFF;
+            --white-blue: #F8FCFF;
+            --wall-coastal: #F0F7FA;
+            --wall-shadow: #DCE9EF;
+            --floor-sand: #E9D8A6;
+            --floor-driftwood: #A8977A;
+            --frame-white: #FFFFFF;
+            --frame-weathered: #D4CFC5;
+            --text-dark: #1A3A4A;
+            --text-light: #FAFCFD;
+            --accent-teal: #0096C7;
+            --accent-aqua: #48CAE4;
+            --accent-coral: #F4A261;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, sans-serif;
+            background: var(--wall-coastal);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(248, 252, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 119, 182, 0.1);
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+
+        .logo-wave {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--ocean-deep), var(--ocean-bright), var(--seafoam), var(--accent-coral));
+            border-radius: 50%;
+        }
+
+        .top-nav {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .top-nav a {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            opacity: 0.7;
+            transition: opacity 0.2s, color 0.2s;
+        }
+
+        .top-nav a:hover {
+            opacity: 1;
+            color: var(--ocean-deep);
+        }
+
+        .btn-signup {
+            padding: 0.6rem 1.2rem;
+            background: var(--ocean-deep);
+            color: var(--text-light) !important;
+            border-radius: 6px;
+            opacity: 1 !important;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        .btn-signup:hover {
+            background: var(--accent-teal);
+        }
+
+        /* ===== ART STYLE FILTER ===== */
+        .style-filter {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 100px;
+            box-shadow: 0 4px 20px rgba(0, 119, 182, 0.15);
+            display: flex;
+            gap: 0.25rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .style-filter.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .style-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            border-radius: 100px;
+            font-family: inherit;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            color: var(--text-dark);
+        }
+
+        .style-btn:hover {
+            background: var(--seafoam-light);
+        }
+
+        .style-btn.active {
+            background: var(--ocean-deep);
+            color: white;
+        }
+
+        /* ===== HERO ENTRANCE ===== */
+        .hero-entrance {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 6rem 2rem 4rem;
+            position: relative;
+            background:
+                linear-gradient(180deg, var(--white-blue) 0%, var(--seafoam-light) 50%, var(--wall-coastal) 100%);
+        }
+
+        /* Decorative wave shapes */
+        .hero-entrance::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 150'%3E%3Cpath fill='%23F0F7FA' d='M0,64L48,69.3C96,75,192,85,288,101.3C384,117,480,139,576,138.7C672,139,768,117,864,101.3C960,85,1056,75,1152,80C1248,85,1344,107,1392,117.3L1440,128L1440,150L1392,150C1344,150,1248,150,1152,150C1056,150,960,150,864,150C768,150,672,150,576,150C480,150,384,150,288,150C192,150,96,150,48,150L0,150Z'%3E%3C/path%3E%3C/svg%3E") no-repeat bottom;
+            background-size: cover;
+        }
+
+        .hero-content {
+            max-width: 700px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            background: rgba(0, 180, 216, 0.15);
+            color: var(--ocean-deep);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(0, 180, 216, 0.2);
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 400;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .hero-title em {
+            font-style: italic;
+            color: var(--ocean-bright);
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: rgba(26, 58, 74, 0.7);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-primary {
+            padding: 1rem 2rem;
+            background: var(--ocean-deep);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 119, 182, 0.3);
+            background: var(--accent-teal);
+        }
+
+        .cta-secondary {
+            padding: 1rem 2rem;
+            background: transparent;
+            color: var(--ocean-deep);
+            border: 2px solid var(--ocean-deep);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .cta-secondary:hover {
+            background: var(--ocean-deep);
+            color: white;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--ocean-deep);
+            font-size: 0.8rem;
+            z-index: 10;
+        }
+
+        .scroll-arrow {
+            width: 30px;
+            height: 30px;
+            border: 2px solid var(--ocean-bright);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: bounce 2s infinite;
+            color: var(--ocean-bright);
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+        }
+
+        /* ===== INFINITE GALLERY WALK ===== */
+        .gallery-walk {
+            position: relative;
+            background: var(--wall-shadow);
+            overflow: hidden;
+        }
+
+        .walk-header {
+            text-align: center;
+            padding: 4rem 2rem 2rem;
+            background: var(--wall-coastal);
+        }
+
+        .walk-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .walk-header p {
+            color: rgba(26, 58, 74, 0.6);
+            font-size: 0.95rem;
+        }
+
+        /* Horizontal scrolling gallery */
+        .gallery-scroll-container {
+            position: relative;
+            height: 70vh;
+            min-height: 500px;
+            max-height: 700px;
+        }
+
+        .gallery-wall {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 70%;
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            padding: 0 100px;
+            /* Light blue-tinted coastal wall */
+            background: linear-gradient(180deg, var(--seafoam-light) 0%, var(--wall-coastal) 100%);
+            box-shadow:
+                inset 0 -50px 80px -50px rgba(0, 119, 182, 0.1),
+                0 10px 30px rgba(0, 0, 0, 0.08);
+            animation: scrollWall 40s linear infinite;
+            will-change: transform;
+        }
+
+        .gallery-wall:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes scrollWall {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Sandy driftwood floor */
+        .gallery-floor {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30%;
+            background:
+                linear-gradient(to bottom, var(--floor-sand), var(--floor-driftwood)),
+                repeating-linear-gradient(90deg,
+                    var(--sand) 0px,
+                    var(--sand) 80px,
+                    var(--driftwood) 80px,
+                    var(--driftwood) 82px
+                );
+            background-size: 100% 100%, 82px 100%;
+        }
+
+        /* Weathered wood grain texture overlay */
+        .gallery-floor::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 3px,
+                rgba(107, 94, 74, 0.05) 3px,
+                rgba(107, 94, 74, 0.05) 6px
+            );
+            pointer-events: none;
+        }
+
+        /* Artwork frames - White/Weathered Wood Style */
+        .artwork {
+            flex-shrink: 0;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .artwork:hover {
+            transform: scale(1.08) translateY(-10px);
+            z-index: 100;
+        }
+
+        .artwork-frame {
+            background: white;
+            padding: 15px;
+            box-shadow:
+                0 8px 30px rgba(0, 0, 0, 0.12),
+                inset 0 0 0 3px var(--frame-weathered),
+                inset 0 0 0 8px var(--frame-white),
+                inset 0 0 0 10px var(--frame-weathered);
+            border-radius: 2px;
+        }
+
+        .artwork-canvas {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .artwork-image {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.4s;
+        }
+
+        .artwork:hover .artwork-image {
+            transform: scale(1.1);
+        }
+
+        .artwork-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 77, 113, 0.9), transparent 70%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.5rem;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .artwork:hover .artwork-overlay {
+            opacity: 1;
+        }
+
+        .artwork-artist {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .artwork-style {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.7;
+        }
+
+        .artwork-enter {
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            color: var(--seafoam);
+        }
+
+        /* Artwork sizes */
+        .artwork.size-lg .artwork-frame { width: 280px; height: 350px; }
+        .artwork.size-md .artwork-frame { width: 220px; height: 280px; }
+        .artwork.size-sm .artwork-frame { width: 180px; height: 220px; }
+        .artwork.size-wide .artwork-frame { width: 320px; height: 200px; }
+        .artwork.size-tall .artwork-frame { width: 160px; height: 300px; }
+
+        /* Spotlight effect - warmer coastal light */
+        .artwork::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 120px;
+            background: radial-gradient(ellipse at bottom, rgba(255, 252, 240, 0.35), transparent 70%);
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* Plaque - driftwood style */
+        .artwork-plaque {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--driftwood-dark);
+            color: var(--sand-light);
+            padding: 0.3rem 0.8rem;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-radius: 2px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .artwork:hover .artwork-plaque {
+            opacity: 1;
+        }
+
+        /* Filter classes */
+        .artwork.filtered-out {
+            opacity: 0.15;
+            transform: scale(0.9);
+            pointer-events: none;
+        }
+
+        /* ===== EVENTS WING ===== */
+        .events-wing {
+            padding: 5rem 2rem;
+            background: var(--white-blue);
+        }
+
+        .events-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .events-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+
+        .events-header p {
+            color: rgba(26, 58, 74, 0.6);
+        }
+
+        .events-timeline {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .events-timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 30px;
+            width: 2px;
+            background: linear-gradient(180deg, var(--ocean-bright), var(--seafoam));
+        }
+
+        .event-item {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .event-date {
+            flex-shrink: 0;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--ocean-deep), var(--ocean-bright));
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+            box-shadow: 0 4px 15px rgba(0, 119, 182, 0.3);
+        }
+
+        .event-date-day {
+            font-size: 1.3rem;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .event-date-month {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .event-card {
+            flex: 1;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 119, 182, 0.08);
+            display: flex;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .event-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 30px rgba(0, 119, 182, 0.15);
+        }
+
+        .event-image {
+            width: 120px;
+            flex-shrink: 0;
+        }
+
+        .event-content {
+            padding: 1.25rem;
+            flex: 1;
+        }
+
+        .event-type-badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            background: rgba(0, 180, 216, 0.15);
+            color: var(--ocean-deep);
+            border-radius: 100px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+            color: var(--text-dark);
+        }
+
+        .event-artist-name {
+            font-size: 0.85rem;
+            color: rgba(26, 58, 74, 0.6);
+            margin-bottom: 0.5rem;
+        }
+
+        .event-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: rgba(26, 58, 74, 0.5);
+        }
+
+        .event-live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.15rem 0.5rem;
+            background: rgba(0, 180, 216, 0.1);
+            color: var(--ocean-deep);
+            border-radius: 100px;
+            font-size: 0.65rem;
+            font-weight: 500;
+        }
+
+        .event-live-badge::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            background: var(--ocean-bright);
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* ===== FEATURES GALLERY ===== */
+        .features-gallery {
+            padding: 5rem 2rem;
+            background: linear-gradient(135deg, var(--ocean-deep), var(--accent-teal));
+            color: white;
+        }
+
+        .features-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .features-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 400;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .feature-frame {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            transition: transform 0.3s, background 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-frame:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, var(--seafoam), var(--accent-aqua));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .feature-frame h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-frame p {
+            font-size: 0.9rem;
+            opacity: 0.85;
+            line-height: 1.6;
+        }
+
+        /* ===== VISION STATEMENT ===== */
+        .vision-statement {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, var(--wall-coastal), var(--seafoam-light));
+            text-align: center;
+        }
+
+        .vision-content {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .vision-statement h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 3rem);
+            font-weight: 400;
+            font-style: italic;
+            line-height: 1.4;
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+
+        .vision-statement p {
+            font-size: 1rem;
+            color: rgba(26, 58, 74, 0.7);
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+
+        .vision-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--ocean-deep);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .vision-cta:hover {
+            transform: translateY(-2px);
+            background: var(--accent-teal);
+        }
+
+        /* ===== PRICING ===== */
+        .pricing-section {
+            padding: 5rem 2rem;
+            background: var(--white-blue);
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 400;
+            color: var(--text-dark);
+        }
+
+        .pricing-grid {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            flex: 1;
+            min-width: 280px;
+            max-width: 360px;
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 25px rgba(0, 119, 182, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .pricing-card.highlighted {
+            background: linear-gradient(135deg, var(--ocean-deep), var(--accent-teal));
+            color: white;
+        }
+
+        .pricing-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 0.25rem;
+        }
+
+        .pricing-card.highlighted .pricing-price {
+            color: var(--sand);
+        }
+
+        .pricing-period {
+            font-size: 0.85rem;
+            opacity: 0.6;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features li {
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pricing-features li::before {
+            content: '';
+            font-weight: bold;
+        }
+
+        .pricing-card:not(.highlighted) .pricing-features li::before {
+            content: '';
+            width: 18px;
+            height: 18px;
+            background: var(--ocean-bright);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white' stroke='white' stroke-width='3'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E");
+            background-size: 12px;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .pricing-card.highlighted .pricing-features li::before {
+            content: '';
+            width: 18px;
+            height: 18px;
+            background: var(--sand);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230077B6' stroke='%230077B6' stroke-width='3'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E");
+            background-size: 12px;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        .pricing-btn {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid currentColor;
+            background: transparent;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pricing-card:not(.highlighted) .pricing-btn {
+            color: var(--ocean-deep);
+            border-color: var(--ocean-deep);
+        }
+
+        .pricing-card:not(.highlighted) .pricing-btn:hover {
+            background: var(--ocean-deep);
+            color: white;
+        }
+
+        .pricing-card.highlighted .pricing-btn {
+            background: var(--sand);
+            border-color: var(--sand);
+            color: var(--ocean-deep);
+        }
+
+        .pricing-card.highlighted .pricing-btn:hover {
+            background: var(--sand-light);
+            border-color: var(--sand-light);
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            padding: 4rem 2rem 2rem;
+            background: var(--text-dark);
+            color: white;
+        }
+
+        .footer-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .footer-brand h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-brand p {
+            opacity: 0.6;
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.6;
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+        }
+
+        .footer-bottom {
+            max-width: 1100px;
+            margin: 2rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.8rem;
+            opacity: 0.5;
+        }
+
+        /* ===== HISTORY PANEL ===== */
+        .history-fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--ocean-deep), var(--ocean-bright));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 20px rgba(0, 119, 182, 0.35);
+            cursor: pointer;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 998;
+            transition: transform 0.3s;
+        }
+
+        .history-fab:hover {
+            transform: scale(1.1);
+        }
+
+        .history-panel {
+            position: fixed;
+            bottom: 100px;
+            right: 2rem;
+            width: 320px;
+            max-height: 400px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0, 119, 182, 0.2);
+            z-index: 999;
+            overflow: hidden;
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .history-panel.open {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .history-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(0, 119, 182, 0.1);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+        }
+
+        .history-list {
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .history-item:hover {
+            background: var(--seafoam-light);
+        }
+
+        .history-thumb {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .history-info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.15rem;
+            color: var(--text-dark);
+        }
+
+        .history-info p {
+            font-size: 0.75rem;
+            color: rgba(26, 58, 74, 0.5);
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(26, 58, 74, 0.5);
+            font-size: 0.9rem;
+        }
+
+        /* ===== MOBILE RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .top-nav {
+                display: none;
+            }
+
+            .style-filter {
+                top: auto;
+                bottom: 80px;
+                left: 1rem;
+                right: 1rem;
+                transform: none;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .gallery-scroll-container {
+                height: 50vh;
+                min-height: 350px;
+            }
+
+            .artwork.size-lg .artwork-frame { width: 200px; height: 250px; }
+            .artwork.size-md .artwork-frame { width: 160px; height: 200px; }
+            .artwork.size-sm .artwork-frame { width: 130px; height: 160px; }
+            .artwork.size-wide .artwork-frame { width: 220px; height: 140px; }
+            .artwork.size-tall .artwork-frame { width: 120px; height: 220px; }
+
+            .gallery-wall {
+                gap: 40px;
+                padding: 0 60px;
+            }
+
+            .event-item {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .events-timeline::before {
+                display: none;
+            }
+
+            .event-card {
+                flex-direction: column;
+            }
+
+            .event-image {
+                width: 100%;
+                height: 100px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero-cta-group {
+                flex-direction: column;
+            }
+
+            .pricing-grid {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .footer-content {
+                flex-direction: column;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .history-panel {
+                right: 1rem;
+                left: 1rem;
+                width: auto;
+            }
+
+            .history-fab {
+                bottom: 1.5rem;
+                right: 1.5rem;
+            }
+        }
+
+        /* ===== ANIMATION HELPERS ===== */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <a href="#" class="logo">
+            <div class="logo-wave"></div>
+            Gallery Talk
+        </a>
+        <nav class="top-nav">
+            <a href="#walk">Explore</a>
+            <a href="#events">Events</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#" class="btn-signup">Artist Sign Up</a>
+        </nav>
+    </header>
+
+    <!-- Style Filter -->
+    <div class="style-filter" id="styleFilter">
+        <button class="style-btn active" data-style="all">All</button>
+        <button class="style-btn" data-style="abstract">Abstract</button>
+        <button class="style-btn" data-style="photography">Photography</button>
+        <button class="style-btn" data-style="impressionism">Impressionism</button>
+        <button class="style-btn" data-style="minimalist">Minimalist</button>
+        <button class="style-btn" data-style="contemporary">Contemporary</button>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero-entrance">
+        <div class="hero-content fade-up">
+            <span class="hero-badge">Your Coastal Gallery Awaits</span>
+            <h1 class="hero-title">Every painting is an <em>ocean</em></h1>
+            <p class="hero-subtitle">
+                Walk through an endless seaside gallery. Click any artwork to dive into the artist's world.
+                Tell us what you love, and we'll show you more of it.
+            </p>
+            <div class="hero-cta-group">
+                <a href="#walk" class="cta-primary">
+                    Start Exploring
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="#" class="cta-secondary">Live Demo</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll to explore</span>
+            <div class="scroll-arrow">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12l7 7 7-7"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Infinite Gallery Walk -->
+    <section class="gallery-walk" id="walk">
+        <div class="walk-header fade-up">
+            <h2>The Coastal Gallery Walls</h2>
+            <p>Hover to pause. Click to dive into an artist's world.</p>
+        </div>
+
+        <div class="gallery-scroll-container">
+            <div class="gallery-wall" id="galleryWall">
+                <!-- First set of artworks - Ocean/Coastal color palette -->
+                <div class="artwork size-lg" data-style="abstract" data-artist="Anna Schulz">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #0077B6, #00B4D8, #90E0EF);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Anna Schulz</span>
+                                <span class="artwork-style">Abstract</span>
+                                <span class="artwork-enter">Enter Gallery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Anna Schulz</div>
+                </div>
+
+                <div class="artwork size-md" data-style="photography" data-artist="Gomolemo Mokete">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #48CAE4, #CAF0F8, #90E0EF);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Gomolemo Mokete</span>
+                                <span class="artwork-style">Photography</span>
+                                <span class="artwork-enter">Enter Gallery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Gomolemo Mokete</div>
+                </div>
+
+                <div class="artwork size-wide" data-style="impressionism" data-artist="Arya Bimbi">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #E9D8A6, #F4A261, #E9D8A6);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Arya Bimbi</span>
+                                <span class="artwork-style">Impressionism</span>
+                                <span class="artwork-enter">Enter Gallery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Arya Bimbi</div>
+                </div>
+
+                <div class="artwork size-tall" data-style="minimalist" data-artist="Alvaro Daza">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(180deg, #CAF0F8, #FFFFFF, #90E0EF);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Alvaro Daza</span>
+                                <span class="artwork-style">Minimalist</span>
+                                <span class="artwork-enter">Enter Gallery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Alvaro Daza</div>
+                </div>
+
+                <div class="artwork size-md" data-style="contemporary" data-artist="Patricia Wolf">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #0096C7, #48CAE4, #00B4D8);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Patricia Wolf</span>
+                                <span class="artwork-style">Contemporary</span>
+                                <span class="artwork-enter">Enter Gallery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Patricia Wolf</div>
+                </div>
+
+                <div class="artwork size-lg" data-style="abstract" data-artist="Pedro Batista">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(45deg, #F4A261, #E9D8A6, #48CAE4);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Pedro Batista</span>
+                                <span class="artwork-style">Abstract</span>
+                                <span class="artwork-enter">Enter Gallery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Pedro Batista</div>
+                </div>
+
+                <div class="artwork size-sm" data-style="photography" data-artist="Alann De Vuyst">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #90E0EF, #CAF0F8, #48CAE4);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Alann De Vuyst</span>
+                                <span class="artwork-style">Photography</span>
+                                <span class="artwork-enter">Enter Gallery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Alann De Vuyst</div>
+                </div>
+
+                <div class="artwork size-wide" data-style="contemporary" data-artist="Dastagir Syed">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(90deg, #0077B6, #0096C7, #00B4D8);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Dastagir Syed</span>
+                                <span class="artwork-style">Contemporary</span>
+                                <span class="artwork-enter">Enter Gallery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Dastagir Syed</div>
+                </div>
+
+                <!-- Duplicate for infinite scroll -->
+                <div class="artwork size-lg" data-style="abstract" data-artist="Anna Schulz">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #0077B6, #00B4D8, #90E0EF);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Anna Schulz</span>
+                                <span class="artwork-style">Abstract</span>
+                                <span class="artwork-enter">Enter Gallery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Anna Schulz</div>
+                </div>
+
+                <div class="artwork size-md" data-style="photography" data-artist="Gomolemo Mokete">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #48CAE4, #CAF0F8, #90E0EF);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Gomolemo Mokete</span>
+                                <span class="artwork-style">Photography</span>
+                                <span class="artwork-enter">Enter Gallery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Gomolemo Mokete</div>
+                </div>
+
+                <div class="artwork size-wide" data-style="impressionism" data-artist="Arya Bimbi">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #E9D8A6, #F4A261, #E9D8A6);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Arya Bimbi</span>
+                                <span class="artwork-style">Impressionism</span>
+                                <span class="artwork-enter">Enter Gallery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Arya Bimbi</div>
+                </div>
+
+                <div class="artwork size-tall" data-style="minimalist" data-artist="Alvaro Daza">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(180deg, #CAF0F8, #FFFFFF, #90E0EF);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Alvaro Daza</span>
+                                <span class="artwork-style">Minimalist</span>
+                                <span class="artwork-enter">Enter Gallery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Alvaro Daza</div>
+                </div>
+
+                <div class="artwork size-md" data-style="contemporary" data-artist="Patricia Wolf">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #0096C7, #48CAE4, #00B4D8);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Patricia Wolf</span>
+                                <span class="artwork-style">Contemporary</span>
+                                <span class="artwork-enter">Enter Gallery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Patricia Wolf</div>
+                </div>
+
+                <div class="artwork size-lg" data-style="abstract" data-artist="Pedro Batista">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(45deg, #F4A261, #E9D8A6, #48CAE4);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Pedro Batista</span>
+                                <span class="artwork-style">Abstract</span>
+                                <span class="artwork-enter">Enter Gallery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Pedro Batista</div>
+                </div>
+
+                <div class="artwork size-sm" data-style="photography" data-artist="Alann De Vuyst">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #90E0EF, #CAF0F8, #48CAE4);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Alann De Vuyst</span>
+                                <span class="artwork-style">Photography</span>
+                                <span class="artwork-enter">Enter Gallery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Alann De Vuyst</div>
+                </div>
+
+                <div class="artwork size-wide" data-style="contemporary" data-artist="Dastagir Syed">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(90deg, #0077B6, #0096C7, #00B4D8);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Dastagir Syed</span>
+                                <span class="artwork-style">Contemporary</span>
+                                <span class="artwork-enter">Enter Gallery</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Dastagir Syed</div>
+                </div>
+            </div>
+            <div class="gallery-floor"></div>
+        </div>
+    </section>
+
+    <!-- Events Wing -->
+    <section class="events-wing" id="events">
+        <div class="events-header fade-up">
+            <h2>Upcoming Events</h2>
+            <p>Vernissages, openings, and live exhibitions from our artists</p>
+        </div>
+
+        <div class="events-timeline">
+            <div class="event-item fade-up">
+                <div class="event-date">
+                    <span class="event-date-day">24</span>
+                    <span class="event-date-month">Jan</span>
+                </div>
+                <div class="event-card">
+                    <div class="event-image" style="background: linear-gradient(135deg, #0077B6, #48CAE4);"></div>
+                    <div class="event-content">
+                        <span class="event-type-badge">Vernissage</span>
+                        <h3 class="event-title">Colors of Silence</h3>
+                        <p class="event-artist-name">by Anna Schulz</p>
+                        <div class="event-meta">
+                            <span>7:00 PM CET</span>
+                            <span class="event-live-badge">Live Now</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-item fade-up">
+                <div class="event-date">
+                    <span class="event-date-day">28</span>
+                    <span class="event-date-month">Jan</span>
+                </div>
+                <div class="event-card">
+                    <div class="event-image" style="background: linear-gradient(135deg, #00B4D8, #90E0EF);"></div>
+                    <div class="event-content">
+                        <span class="event-type-badge">Opening</span>
+                        <h3 class="event-title">Urban Perspectives</h3>
+                        <p class="event-artist-name">by Gomolemo Mokete</p>
+                        <div class="event-meta">
+                            <span>6:00 PM CET</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-item fade-up">
+                <div class="event-date">
+                    <span class="event-date-day">02</span>
+                    <span class="event-date-month">Feb</span>
+                </div>
+                <div class="event-card">
+                    <div class="event-image" style="background: linear-gradient(135deg, #E9D8A6, #F4A261);"></div>
+                    <div class="event-content">
+                        <span class="event-type-badge">Finissage</span>
+                        <h3 class="event-title">Nature's Whispers</h3>
+                        <p class="event-artist-name">by Arya Bimbi</p>
+                        <div class="event-meta">
+                            <span>5:00 PM CET</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-item fade-up">
+                <div class="event-date">
+                    <span class="event-date-day">10</span>
+                    <span class="event-date-month">Feb</span>
+                </div>
+                <div class="event-card">
+                    <div class="event-image" style="background: linear-gradient(135deg, #0096C7, #00B4D8);"></div>
+                    <div class="event-content">
+                        <span class="event-type-badge">Live Talk</span>
+                        <h3 class="event-title">The Digital Canvas</h3>
+                        <p class="event-artist-name">Panel Discussion</p>
+                        <div class="event-meta">
+                            <span>8:00 PM CET</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Gallery -->
+    <section class="features-gallery">
+        <div class="features-header fade-up">
+            <h2>What makes GalleryTalk different?</h2>
+        </div>
+        <div class="features-grid">
+            <div class="feature-frame fade-up">
+                <div class="feature-icon">&#127970;</div>
+                <h3>Your Own Space</h3>
+                <p>Build your virtual gallery exactly how you envision it. Your art, your rules.</p>
+            </div>
+            <div class="feature-frame fade-up">
+                <div class="feature-icon">&#129309;</div>
+                <h3>Real Connections</h3>
+                <p>Meet visitors in real-time. Turn casual viewers into collectors and friends.</p>
+            </div>
+            <div class="feature-frame fade-up">
+                <div class="feature-icon">&#128176;</div>
+                <h3>0% Commission</h3>
+                <p>Keep 100% of your sales. We believe artists should own their success.</p>
+            </div>
+            <div class="feature-frame fade-up">
+                <div class="feature-icon">&#127760;</div>
+                <h3>Global Reach</h3>
+                <p>Connect with art lovers worldwide. No borders, no boundaries.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision -->
+    <section class="vision-statement">
+        <div class="vision-content fade-up">
+            <h2>We envision a world where art knows no boundaries.</h2>
+            <p>
+                Artists around the world should be able to share their art with people all around the world.
+                We empower them by making it easy to set up virtual galleries and connect with collectors,
+                enthusiasts and other artists with a passion for art.
+            </p>
+            <a href="#" class="vision-cta">
+                Start Creating
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing-section" id="pricing">
+        <div class="pricing-header fade-up">
+            <h2>Simple pricing for artists</h2>
+        </div>
+        <div class="pricing-grid">
+            <div class="pricing-card fade-up">
+                <h3 class="pricing-name">Trial</h3>
+                <div class="pricing-price">Free</div>
+                <p class="pricing-period">14 days to explore</p>
+                <ul class="pricing-features">
+                    <li>Full feature access</li>
+                    <li>Create your gallery</li>
+                    <li>No credit card needed</li>
+                </ul>
+                <button class="pricing-btn">Try Now</button>
+            </div>
+            <div class="pricing-card highlighted fade-up">
+                <h3 class="pricing-name">Starter</h3>
+                <div class="pricing-price">6.99</div>
+                <p class="pricing-period">per month</p>
+                <ul class="pricing-features">
+                    <li>Display up to 50 artworks</li>
+                    <li>0% commission on sales</li>
+                    <li>Host online exhibitions</li>
+                    <li>Visitor donations</li>
+                    <li>Gallery analytics</li>
+                    <li>Expert curation support</li>
+                </ul>
+                <button class="pricing-btn">Start Now</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>
+                    <div class="logo-wave" style="width:24px;height:24px;"></div>
+                    Gallery Talk
+                </h3>
+                <p>Your art. Your gallery. Your world.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#">Product</a>
+                <a href="#">Artists</a>
+                <a href="#">Pricing</a>
+                <a href="#">Instagram</a>
+                <a href="#">LinkedIn</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>2026 BonfireHQ GmbH, Munich</span>
+            <a href="#" style="color:inherit;">Imprint & Privacy</a>
+        </div>
+    </footer>
+
+    <!-- History FAB & Panel -->
+    <button class="history-fab" id="historyFab" title="View History">&#128214;</button>
+    <div class="history-panel" id="historyPanel">
+        <div class="history-header">Recently Visited</div>
+        <div class="history-list" id="historyList">
+            <div class="history-empty">
+                Click on any painting to start exploring galleries.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== STORAGE =====
+        const PREFS_KEY = 'gt_walk_prefs_v24';
+        const HISTORY_KEY = 'gt_walk_history_v24';
+
+        let preferences = { style: 'all' };
+        let visitHistory = [];
+
+        function loadData() {
+            try {
+                const p = localStorage.getItem(PREFS_KEY);
+                if (p) preferences = JSON.parse(p);
+                const h = localStorage.getItem(HISTORY_KEY);
+                if (h) visitHistory = JSON.parse(h);
+            } catch (e) {}
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem(PREFS_KEY, JSON.stringify(preferences));
+                localStorage.setItem(HISTORY_KEY, JSON.stringify(visitHistory));
+            } catch (e) {}
+        }
+
+        loadData();
+
+        // ===== STYLE FILTER =====
+        const styleFilter = document.getElementById('styleFilter');
+        const styleBtns = document.querySelectorAll('.style-btn');
+        const artworks = document.querySelectorAll('.artwork');
+
+        function applyFilter(style) {
+            styleBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.style === style);
+            });
+
+            artworks.forEach(art => {
+                if (style === 'all' || art.dataset.style === style) {
+                    art.classList.remove('filtered-out');
+                } else {
+                    art.classList.add('filtered-out');
+                }
+            });
+
+            preferences.style = style;
+            saveData();
+        }
+
+        styleBtns.forEach(btn => {
+            btn.addEventListener('click', () => applyFilter(btn.dataset.style));
+        });
+
+        // Apply saved filter
+        if (preferences.style !== 'all') {
+            applyFilter(preferences.style);
+        }
+
+        // Show filter on scroll
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 200) {
+                styleFilter.classList.add('visible');
+            } else {
+                styleFilter.classList.remove('visible');
+            }
+        });
+
+        // ===== ARTWORK CLICK (PORTAL) =====
+        artworks.forEach(artwork => {
+            artwork.addEventListener('click', () => {
+                const artist = artwork.dataset.artist;
+                const style = artwork.dataset.style;
+
+                // Add to history
+                visitHistory.unshift({
+                    artist,
+                    style,
+                    timestamp: Date.now()
+                });
+                visitHistory = visitHistory.slice(0, 10);
+                saveData();
+                renderHistory();
+
+                // In production: navigate to gallery
+                console.log(`Entering ${artist}'s gallery`);
+                alert(`Entering ${artist}'s gallery...\n\nIn the full app, this takes you directly to their virtual gallery.`);
+            });
+        });
+
+        // ===== HISTORY PANEL =====
+        const historyFab = document.getElementById('historyFab');
+        const historyPanel = document.getElementById('historyPanel');
+        const historyListEl = document.getElementById('historyList');
+
+        function getColorForStyle(style) {
+            const colors = {
+                abstract: '#0077B6, #00B4D8',
+                photography: '#48CAE4, #90E0EF',
+                impressionism: '#E9D8A6, #F4A261',
+                minimalist: '#CAF0F8, #90E0EF',
+                contemporary: '#0096C7, #00B4D8'
+            };
+            return colors[style] || '#90E0EF, #CAF0F8';
+        }
+
+        function formatTimeAgo(ts) {
+            const diff = Date.now() - ts;
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'Just now';
+            if (mins < 60) return `${mins}m ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return `${hrs}h ago`;
+            return `${Math.floor(hrs / 24)}d ago`;
+        }
+
+        function renderHistory() {
+            if (visitHistory.length === 0) {
+                historyListEl.innerHTML = '<div class="history-empty">Click on any painting to start exploring galleries.</div>';
+                return;
+            }
+
+            historyListEl.innerHTML = visitHistory.map(item => `
+                <div class="history-item" data-artist="${item.artist}">
+                    <div class="history-thumb" style="background: linear-gradient(135deg, ${getColorForStyle(item.style)});"></div>
+                    <div class="history-info">
+                        <h4>${item.artist}</h4>
+                        <p>${item.style} - ${formatTimeAgo(item.timestamp)}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.history-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    alert(`Returning to ${item.dataset.artist}'s gallery...`);
+                });
+            });
+        }
+
+        historyFab.addEventListener('click', () => {
+            historyPanel.classList.toggle('open');
+        });
+
+        // Close panel when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!historyPanel.contains(e.target) && !historyFab.contains(e.target)) {
+                historyPanel.classList.remove('open');
+            }
+        });
+
+        renderHistory();
+
+        // ===== FADE IN ANIMATIONS =====
+        const fadeElements = document.querySelectorAll('.fade-up');
+
+        const fadeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        fadeElements.forEach(el => fadeObserver.observe(el));
+
+        // Initial fade for hero
+        setTimeout(() => {
+            document.querySelector('.hero-content').classList.add('visible');
+        }, 200);
+    </script>
+</body>
+</html>
