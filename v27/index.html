@@ -254,11 +254,164 @@
             border-radius: 50%;
             background: rgba(255,255,255,0.2);
             transition: all 0.3s;
+            cursor: pointer;
         }
 
         .room-dot.active {
             background: var(--frame-gold);
             transform: scale(1.3);
+        }
+
+        .room-dot:hover {
+            background: rgba(255,255,255,0.5);
+        }
+
+        /* ===== GUIDED TOUR SELECTOR ===== */
+        .tour-selector {
+            padding: 4rem 2rem;
+            background: var(--text-dark);
+            text-align: center;
+            color: white;
+        }
+
+        .tour-header {
+            margin-bottom: 2rem;
+        }
+
+        .tour-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .tour-header p {
+            color: rgba(255,255,255,0.6);
+            font-size: 1rem;
+        }
+
+        .tour-options {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .tour-card {
+            flex: 1;
+            min-width: 200px;
+            max-width: 280px;
+            padding: 1.5rem;
+            background: rgba(255,255,255,0.03);
+            border: 2px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+
+        .tour-card:hover {
+            border-color: var(--frame-gold);
+            background: rgba(201, 168, 104, 0.08);
+            transform: translateY(-5px);
+        }
+
+        .tour-card.active {
+            border-color: var(--frame-gold);
+            background: rgba(201, 168, 104, 0.15);
+        }
+
+        .tour-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .tour-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .tour-card p {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.5;
+        }
+
+        .tour-styles {
+            display: flex;
+            gap: 0.3rem;
+            flex-wrap: wrap;
+            margin-top: 0.75rem;
+        }
+
+        .tour-style-tag {
+            padding: 0.2rem 0.5rem;
+            background: rgba(201, 168, 104, 0.2);
+            color: var(--frame-gold);
+            border-radius: 4px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ===== FILTER BAR ===== */
+        .filter-bar {
+            position: sticky;
+            top: 60px;
+            z-index: 100;
+            padding: 1rem 2rem;
+            background: rgba(245, 243, 238, 0.98);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            color: rgba(26, 22, 18, 0.6);
+            font-weight: 500;
+        }
+
+        .filter-pills {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-pill {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 100px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-pill:hover {
+            border-color: var(--frame-gold);
+        }
+
+        .filter-pill.active {
+            background: var(--text-dark);
+            color: white;
+            border-color: var(--text-dark);
+        }
+
+        .filter-count {
+            margin-left: 1rem;
+            font-size: 0.8rem;
+            color: rgba(26, 22, 18, 0.5);
         }
 
         /* ===== GALLERY ROOMS ===== */
@@ -354,6 +507,13 @@
             cursor: pointer;
             opacity: 0;
             transform: translateY(50px);
+            transition: opacity 0.4s, transform 0.4s;
+        }
+
+        .artwork-display.filtered-out {
+            opacity: 0.15 !important;
+            transform: scale(0.9) !important;
+            pointer-events: none;
         }
 
         .artwork-frame {
@@ -434,6 +594,27 @@
             pointer-events: none;
         }
 
+        /* Style badge */
+        .artwork-style-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            padding: 0.3rem 0.6rem;
+            background: var(--text-dark);
+            color: white;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-radius: 4px;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .artwork-display:hover .artwork-style-badge {
+            opacity: 1;
+        }
+
         /* Plaque */
         .artwork-plaque {
             position: absolute;
@@ -489,85 +670,74 @@
             font-weight: 400;
         }
 
-        .value-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 3rem;
-        }
-
-        .value-tab {
-            padding: 0.75rem 1.5rem;
-            background: transparent;
-            border: 2px solid rgba(255,255,255,0.2);
-            color: white;
-            border-radius: 100px;
-            font-family: inherit;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .value-tab:hover {
-            border-color: rgba(255,255,255,0.4);
-        }
-
-        .value-tab.active {
-            background: var(--frame-gold);
-            border-color: var(--frame-gold);
-            color: var(--text-dark);
-        }
-
-        .value-content {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .value-content.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .value-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
         }
 
-        .value-item {
-            padding: 2rem;
+        .value-card {
+            padding: 2.5rem;
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 16px;
+            border-radius: 20px;
+            opacity: 0;
+            transform: translateY(40px);
         }
 
-        .value-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--accent-coral), var(--frame-gold));
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
+        .value-card.for-artists {
+            border-left: 3px solid var(--accent-coral);
+        }
+
+        .value-card.for-collectors {
+            border-left: 3px solid var(--accent-blue);
+        }
+
+        .value-label {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 100px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+        }
+
+        .value-card h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 400;
             margin-bottom: 1rem;
         }
 
-        .value-item h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.15rem;
-            font-weight: 400;
-            margin-bottom: 0.5rem;
+        .value-list {
+            list-style: none;
         }
 
-        .value-item p {
-            font-size: 0.9rem;
-            opacity: 0.7;
-            line-height: 1.6;
+        .value-list li {
+            padding: 0.75rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 0.95rem;
+            opacity: 0.8;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .value-list li:last-child {
+            border-bottom: none;
+        }
+
+        .value-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            background: var(--frame-gold);
+            border-radius: 50%;
         }
 
         /* ===== FEATURES SECTION ===== */
@@ -604,6 +774,8 @@
             background: white;
             border-radius: 16px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            opacity: 0;
+            transform: translateY(30px);
         }
 
         .feature-card-icon {
@@ -668,6 +840,8 @@
             border-radius: 20px;
             padding: 2.5rem;
             box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            opacity: 0;
+            transform: translateY(30px);
         }
 
         .pricing-card.highlighted {
@@ -806,6 +980,8 @@
             .room-artworks { gap: 2rem; }
             .entrance-arch { width: 280px; height: 350px; border-radius: 140px 140px 0 0; }
             .entrance-arch::before { border-radius: 120px 120px 0 0; }
+            .value-grid { grid-template-columns: 1fr; }
+            .filter-bar { top: 56px; }
         }
 
         @media (max-width: 600px) {
@@ -813,7 +989,7 @@
             .pricing-grid { flex-direction: column; align-items: center; }
             .footer-content { flex-direction: column; }
             .footer-links { flex-direction: column; gap: 0.75rem; }
-            .value-tabs { flex-direction: column; }
+            .tour-options { gap: 1rem; }
             .artwork-display.size-lg .artwork-frame { width: 220px; height: 280px; }
             .artwork-display.size-md .artwork-frame { width: 180px; height: 230px; }
         }
@@ -848,13 +1024,13 @@
                 Art from every corner of the world, instantly accessible.
             </p>
             <div class="hero-cta-group">
-                <a href="#rooms" class="cta-primary">
-                    Enter the Gallery
+                <a href="#tours" class="cta-primary">
+                    Choose Your Tour
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M5 12h14M12 5l7 7-7 7"/>
                     </svg>
                 </a>
-                <a href="#" class="cta-secondary">Live Demo</a>
+                <a href="#rooms" class="cta-secondary">Browse All Rooms</a>
             </div>
         </div>
         <div class="room-indicator">
@@ -868,6 +1044,64 @@
         </div>
     </section>
 
+    <!-- Guided Tour Selector -->
+    <section class="tour-selector" id="tours">
+        <div class="tour-header">
+            <h2>Choose Your Guided Experience</h2>
+            <p>Select a curated journey through our galleries, or explore freely</p>
+        </div>
+        <div class="tour-options">
+            <div class="tour-card" data-tour="first-time" data-styles="all">
+                <div class="tour-icon">&#128075;</div>
+                <h3>First Time Visitor</h3>
+                <p>A welcoming tour through all styles. Perfect for newcomers to digital galleries.</p>
+                <div class="tour-styles">
+                    <span class="tour-style-tag">All Styles</span>
+                </div>
+            </div>
+            <div class="tour-card" data-tour="contemporary" data-styles="contemporary,abstract">
+                <div class="tour-icon">&#128293;</div>
+                <h3>Bold & Contemporary</h3>
+                <p>Vibrant, challenging works that push boundaries and spark conversation.</p>
+                <div class="tour-styles">
+                    <span class="tour-style-tag">Contemporary</span>
+                    <span class="tour-style-tag">Abstract</span>
+                </div>
+            </div>
+            <div class="tour-card" data-tour="serene" data-styles="minimalist,impressionism">
+                <div class="tour-icon">&#127774;</div>
+                <h3>Serene & Mindful</h3>
+                <p>Calming pieces for quiet contemplation and meditative viewing.</p>
+                <div class="tour-styles">
+                    <span class="tour-style-tag">Minimalist</span>
+                    <span class="tour-style-tag">Impressionism</span>
+                </div>
+            </div>
+            <div class="tour-card" data-tour="visual" data-styles="photography">
+                <div class="tour-icon">&#128247;</div>
+                <h3>Visual Stories</h3>
+                <p>Photography and documentary works that capture moments and narratives.</p>
+                <div class="tour-styles">
+                    <span class="tour-style-tag">Photography</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter Bar -->
+    <div class="filter-bar" id="filterBar">
+        <span class="filter-label">Filter by style:</span>
+        <div class="filter-pills">
+            <button class="filter-pill active" data-style="all">All</button>
+            <button class="filter-pill" data-style="abstract">Abstract</button>
+            <button class="filter-pill" data-style="photography">Photography</button>
+            <button class="filter-pill" data-style="impressionism">Impressionism</button>
+            <button class="filter-pill" data-style="minimalist">Minimalist</button>
+            <button class="filter-pill" data-style="contemporary">Contemporary</button>
+        </div>
+        <span class="filter-count" id="filterCount">Showing 8 artworks</span>
+    </div>
+
     <!-- Gallery Rooms -->
     <section class="gallery-rooms" id="rooms">
         <!-- Room 1: Abstract -->
@@ -878,7 +1112,8 @@
                     <h2>Abstract Expressions</h2>
                 </div>
                 <div class="room-artworks">
-                    <div class="artwork-display size-lg" data-artist="Anna Schulz">
+                    <div class="artwork-display size-lg" data-artist="Anna Schulz" data-style="abstract">
+                        <div class="artwork-style-badge">Abstract</div>
                         <div class="artwork-frame">
                             <div class="artwork-canvas">
                                 <div class="artwork-image" style="background: linear-gradient(135deg, #E87C9A, #FFB6C1, #E8927C);"></div>
@@ -891,7 +1126,8 @@
                         </div>
                         <div class="artwork-plaque">Anna Schulz</div>
                     </div>
-                    <div class="artwork-display size-md" data-artist="Pedro Batista">
+                    <div class="artwork-display size-md" data-artist="Pedro Batista" data-style="abstract">
+                        <div class="artwork-style-badge">Abstract</div>
                         <div class="artwork-frame">
                             <div class="artwork-canvas">
                                 <div class="artwork-image" style="background: linear-gradient(45deg, #E8927C, #F5B89A, #D47C5A);"></div>
@@ -917,7 +1153,8 @@
                     <h2>Captured Moments</h2>
                 </div>
                 <div class="room-artworks">
-                    <div class="artwork-display size-wide" data-artist="Gomolemo Mokete">
+                    <div class="artwork-display size-wide" data-artist="Gomolemo Mokete" data-style="photography">
+                        <div class="artwork-style-badge">Photography</div>
                         <div class="artwork-frame">
                             <div class="artwork-canvas">
                                 <div class="artwork-image" style="background: linear-gradient(135deg, #7CB5E8, #A5D4F5, #5A9BD4);"></div>
@@ -930,7 +1167,8 @@
                         </div>
                         <div class="artwork-plaque">Gomolemo Mokete</div>
                     </div>
-                    <div class="artwork-display size-md" data-artist="Alann De Vuyst">
+                    <div class="artwork-display size-md" data-artist="Alann De Vuyst" data-style="photography">
+                        <div class="artwork-style-badge">Photography</div>
                         <div class="artwork-frame">
                             <div class="artwork-canvas">
                                 <div class="artwork-image" style="background: linear-gradient(135deg, #7CE8D4, #A5E8E2, #5AD4C0);"></div>
@@ -948,7 +1186,7 @@
             <div class="room-floor"></div>
         </div>
 
-        <!-- Room 3: Contemporary -->
+        <!-- Room 3: Contemporary & Impressionism -->
         <div class="gallery-room" data-room="3">
             <div class="room-wall" style="background: #EBE8E0;">
                 <div class="room-label">
@@ -956,7 +1194,8 @@
                     <h2>Contemporary Visions</h2>
                 </div>
                 <div class="room-artworks">
-                    <div class="artwork-display size-md" data-artist="Patricia Wolf">
+                    <div class="artwork-display size-md" data-artist="Patricia Wolf" data-style="contemporary">
+                        <div class="artwork-style-badge">Contemporary</div>
                         <div class="artwork-frame">
                             <div class="artwork-canvas">
                                 <div class="artwork-image" style="background: linear-gradient(135deg, #C97BE8, #DDA0DD, #A855D4);"></div>
@@ -969,7 +1208,8 @@
                         </div>
                         <div class="artwork-plaque">Patricia Wolf</div>
                     </div>
-                    <div class="artwork-display size-lg" data-artist="Dastagir Syed">
+                    <div class="artwork-display size-lg" data-artist="Dastagir Syed" data-style="contemporary">
+                        <div class="artwork-style-badge">Contemporary</div>
                         <div class="artwork-frame">
                             <div class="artwork-canvas">
                                 <div class="artwork-image" style="background: linear-gradient(90deg, #E87CB5, #F5A0C8, #D45A95);"></div>
@@ -982,7 +1222,8 @@
                         </div>
                         <div class="artwork-plaque">Dastagir Syed</div>
                     </div>
-                    <div class="artwork-display size-sm" data-artist="Arya Bimbi">
+                    <div class="artwork-display size-sm" data-artist="Arya Bimbi" data-style="impressionism">
+                        <div class="artwork-style-badge">Impressionism</div>
                         <div class="artwork-frame">
                             <div class="artwork-canvas">
                                 <div class="artwork-image" style="background: linear-gradient(135deg, #9CE87C, #C4E8A5, #7BC85A);"></div>
@@ -1008,7 +1249,8 @@
                     <h2>Minimal Forms</h2>
                 </div>
                 <div class="room-artworks">
-                    <div class="artwork-display size-lg" data-artist="Alvaro Daza">
+                    <div class="artwork-display size-lg" data-artist="Alvaro Daza" data-style="minimalist">
+                        <div class="artwork-style-badge">Minimalist</div>
                         <div class="artwork-frame">
                             <div class="artwork-canvas">
                                 <div class="artwork-image" style="background: linear-gradient(180deg, #E8D47C, #F5E6A3, #D4C088);"></div>
@@ -1033,56 +1275,30 @@
             <div class="value-header">
                 <h2>A platform for everyone in art</h2>
             </div>
-            <div class="value-tabs">
-                <button class="value-tab active" data-tab="artists">For Artists</button>
-                <button class="value-tab" data-tab="collectors">For Art Lovers</button>
-            </div>
-            <div class="value-content active" id="artists">
-                <div class="value-grid">
-                    <div class="value-item">
-                        <div class="value-icon">&#127760;</div>
-                        <h3>Break Free from Gatekeepers</h3>
-                        <p>No more relying on physical galleries or expensive institutions. Share your art directly with a global audience.</p>
-                    </div>
-                    <div class="value-item">
-                        <div class="value-icon">&#128187;</div>
-                        <h3>Create from Anywhere</h3>
-                        <p>Perfect for artists in remote areas, countries with limited art markets, or those with personal constraints preventing travel.</p>
-                    </div>
-                    <div class="value-item">
-                        <div class="value-icon">&#129309;</div>
-                        <h3>Face-to-Face Connection</h3>
-                        <p>Meet collectors and admirers through video calls directly in your gallery. Personal interaction without the logistics.</p>
-                    </div>
-                    <div class="value-item">
-                        <div class="value-icon">&#128176;</div>
-                        <h3>Keep 100% of Sales</h3>
-                        <p>Zero commission on your artwork sales. Your success is yours to keep.</p>
-                    </div>
+            <div class="value-grid">
+                <div class="value-card for-artists">
+                    <span class="value-label">For Artists</span>
+                    <h3>Your art deserves a global stage</h3>
+                    <ul class="value-list">
+                        <li>No gatekeeping physical galleries or expensive commissions</li>
+                        <li>Reach collectors worldwide from any location</li>
+                        <li>Connect face-to-face via video calls within your gallery</li>
+                        <li>Perfect for artists with personal, health, or geographic limitations</li>
+                        <li>Build your following independently of institutions</li>
+                        <li>Keep 100% of your sales &mdash; 0% commission</li>
+                    </ul>
                 </div>
-            </div>
-            <div class="value-content" id="collectors">
-                <div class="value-grid">
-                    <div class="value-item">
-                        <div class="value-icon">&#127758;</div>
-                        <h3>Art from Every Corner</h3>
-                        <p>Discover artists from around the world. No expensive travel, no boundaries &mdash; just pure artistic exploration.</p>
-                    </div>
-                    <div class="value-item">
-                        <div class="value-icon">&#127916;</div>
-                        <h3>Join Free Events</h3>
-                        <p>Attend openings, vernissages, and edition reveals from your home. Be part of the art world's most exciting moments.</p>
-                    </div>
-                    <div class="value-item">
-                        <div class="value-icon">&#128101;</div>
-                        <h3>Explore Together</h3>
-                        <p>Share favorite galleries with friends. Meet up inside virtual exhibitions and experience art socially.</p>
-                    </div>
-                    <div class="value-item">
-                        <div class="value-icon">&#129309;</div>
-                        <h3>Meet Artists Directly</h3>
-                        <p>No intermediaries. Connect face-to-face with creators through video calls and build meaningful relationships.</p>
-                    </div>
+                <div class="value-card for-collectors">
+                    <span class="value-label">For Art Lovers</span>
+                    <h3>Discover art like never before</h3>
+                    <ul class="value-list">
+                        <li>Explore curated galleries from every corner of the world</li>
+                        <li>Meet artists directly through video calls</li>
+                        <li>Join free openings, vernissages, and edition reveals</li>
+                        <li>Share favorite galleries with friends</li>
+                        <li>Meet up with friends inside virtual exhibitions</li>
+                        <li>Support artists directly without middlemen</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -1213,11 +1429,86 @@
             });
         }
 
+        // Room dot click handlers
+        roomDots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                if (index === 0) {
+                    document.querySelector('.entrance-hall').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    rooms[index - 1].scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // ===== GUIDED TOUR SELECTOR =====
+        const tourCards = document.querySelectorAll('.tour-card');
+        const filterPills = document.querySelectorAll('.filter-pill');
+        const artworks = document.querySelectorAll('.artwork-display');
+        const filterCount = document.getElementById('filterCount');
+
+        tourCards.forEach(card => {
+            card.addEventListener('click', () => {
+                tourCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+
+                const styles = card.dataset.styles.split(',');
+                const firstStyle = styles[0];
+
+                // Apply filter
+                applyFilter(firstStyle === 'all' ? 'all' : firstStyle);
+                filterPills.forEach(p => {
+                    p.classList.toggle('active', p.dataset.style === firstStyle || (firstStyle === 'all' && p.dataset.style === 'all'));
+                });
+
+                // Scroll to rooms
+                setTimeout(() => {
+                    document.getElementById('rooms').scrollIntoView({ behavior: 'smooth' });
+                }, 300);
+            });
+        });
+
+        // ===== STYLE FILTER =====
+        function applyFilter(style) {
+            let visibleCount = 0;
+
+            artworks.forEach(artwork => {
+                if (style === 'all' || artwork.dataset.style === style) {
+                    artwork.classList.remove('filtered-out');
+                    visibleCount++;
+                } else {
+                    artwork.classList.add('filtered-out');
+                }
+            });
+
+            filterCount.textContent = `Showing ${visibleCount} artwork${visibleCount !== 1 ? 's' : ''}`;
+            localStorage.setItem('gt_style_pref', style);
+        }
+
+        filterPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                filterPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                applyFilter(pill.dataset.style);
+
+                // Clear tour selection
+                tourCards.forEach(c => c.classList.remove('active'));
+            });
+        });
+
+        // Load saved preference
+        const savedStyle = localStorage.getItem('gt_style_pref');
+        if (savedStyle) {
+            applyFilter(savedStyle);
+            filterPills.forEach(p => {
+                p.classList.toggle('active', p.dataset.style === savedStyle);
+            });
+        }
+
         // ===== ARTWORK REVEAL ANIMATIONS =====
         rooms.forEach((room) => {
-            const artworks = room.querySelectorAll('.artwork-display');
+            const roomArtworks = room.querySelectorAll('.artwork-display');
 
-            artworks.forEach((artwork, i) => {
+            roomArtworks.forEach((artwork, i) => {
                 gsap.to(artwork, {
                     opacity: 1,
                     y: 0,
@@ -1248,29 +1539,57 @@
             }
         });
 
-        // ===== VALUE TABS =====
-        const valueTabs = document.querySelectorAll('.value-tab');
-        const valueContents = document.querySelectorAll('.value-content');
+        // ===== VALUE CARDS =====
+        gsap.utils.toArray('.value-card').forEach((card, i) => {
+            gsap.to(card, {
+                opacity: 1,
+                y: 0,
+                duration: 0.8,
+                delay: i * 0.2,
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+        });
 
-        valueTabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                const target = tab.dataset.tab;
+        // ===== FEATURE CARDS =====
+        gsap.utils.toArray('.feature-card').forEach((card, i) => {
+            gsap.to(card, {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                delay: i * 0.1,
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                }
+            });
+        });
 
-                valueTabs.forEach(t => t.classList.remove('active'));
-                valueContents.forEach(c => c.classList.remove('active'));
-
-                tab.classList.add('active');
-                document.getElementById(target).classList.add('active');
+        // ===== PRICING CARDS =====
+        gsap.utils.toArray('.pricing-card').forEach((card, i) => {
+            gsap.to(card, {
+                opacity: 1,
+                y: 0,
+                duration: 0.6,
+                delay: i * 0.15,
+                scrollTrigger: {
+                    trigger: card,
+                    start: 'top 85%',
+                    toggleActions: 'play none none reverse'
+                }
             });
         });
 
         // ===== ARTWORK CLICK HANDLER =====
-        document.querySelectorAll('.artwork-display').forEach(artwork => {
+        artworks.forEach(artwork => {
             artwork.addEventListener('click', () => {
                 const artist = artwork.dataset.artist;
                 const transition = document.getElementById('roomTransition');
 
-                // Flash transition effect
                 gsap.to(transition, {
                     opacity: 1,
                     duration: 0.3,
@@ -1283,7 +1602,6 @@
                     }
                 });
 
-                // Scale artwork
                 gsap.to(artwork, {
                     scale: 1.05,
                     duration: 0.2,
