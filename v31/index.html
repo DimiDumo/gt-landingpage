@@ -1,0 +1,2119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GalleryTalk - Infinite Gallery Walk</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --wall-light: #F8F6F2;
+            --wall-shadow: #E8E4DC;
+            --floor-wood: #D4C4A8;
+            --floor-dark: #8B7355;
+            --frame-mahogany: #4A3728;
+            --frame-gold: #C9A868;
+            --accent-coral: #E8927C;
+            --accent-blue: #7CB5E8;
+            --accent-green: #9CE87C;
+            --accent-purple: #C97BE8;
+            --text-dark: #2C2416;
+            --text-light: #FAFAF8;
+            --vision-dark: #1F1D1A;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, sans-serif;
+            background: var(--wall-light);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* ===== TOP BAR ===== */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(248, 246, 242, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            color: var(--text-dark);
+        }
+
+        .logo-flame {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--accent-coral), var(--frame-gold), var(--accent-purple), var(--accent-blue));
+            border-radius: 50%;
+        }
+
+        .top-nav {
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .top-nav a {
+            font-size: 0.9rem;
+            color: var(--text-dark);
+            text-decoration: none;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .top-nav a:hover {
+            opacity: 1;
+        }
+
+        .btn-signup {
+            padding: 0.6rem 1.2rem;
+            background: var(--text-dark);
+            color: var(--text-light) !important;
+            border-radius: 6px;
+            opacity: 1 !important;
+            font-weight: 500;
+        }
+
+        /* ===== ART STYLE FILTER ===== */
+        .style-filter {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 999;
+            padding: 0.5rem;
+            background: white;
+            border-radius: 100px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 0.25rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        .style-filter.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .style-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            border-radius: 100px;
+            font-family: inherit;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .style-btn:hover {
+            background: var(--wall-shadow);
+        }
+
+        .style-btn.active {
+            background: var(--text-dark);
+            color: white;
+        }
+
+        /* ===== HERO ENTRANCE ===== */
+        .hero-entrance {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 6rem 2rem 4rem;
+            position: relative;
+            background:
+                linear-gradient(to bottom, var(--wall-light), var(--wall-shadow) 80%),
+                repeating-linear-gradient(90deg, transparent, transparent 100px, rgba(0,0,0,0.02) 100px, rgba(0,0,0,0.02) 101px);
+        }
+
+        .hero-content {
+            max-width: 700px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            background: rgba(201, 168, 104, 0.15);
+            color: var(--frame-mahogany);
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 400;
+            line-height: 1.15;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title em {
+            font-style: italic;
+            color: var(--accent-coral);
+            font-weight: 800;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: rgba(44, 36, 22, 0.7);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .hero-cta-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-primary {
+            padding: 1rem 2rem;
+            background: var(--text-dark);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .cta-secondary {
+            padding: 1rem 2rem;
+            background: transparent;
+            color: var(--text-dark);
+            border: 2px solid var(--text-dark);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .cta-secondary:hover {
+            background: var(--text-dark);
+            color: white;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: rgba(44, 36, 22, 0.5);
+            font-size: 0.8rem;
+        }
+
+        .scroll-arrow {
+            width: 30px;
+            height: 30px;
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+        }
+
+        /* ===== INFINITE GALLERY WALK ===== */
+        .gallery-walk {
+            position: relative;
+            background: var(--wall-shadow);
+            overflow: hidden;
+        }
+
+        .gallery-hint {
+            text-align: center;
+            padding: 3rem 2rem 1.5rem;
+        }
+
+        .gallery-hint p {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border-radius: 100px;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .gallery-hint .hint-icon {
+            font-size: 1.1rem;
+        }
+
+        /* ===== MOOD SELECTOR ===== */
+        .mood-section {
+            padding: 5rem 2rem;
+            background: var(--wall-shadow);
+            text-align: center;
+        }
+
+        .mood-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .mood-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+            font-weight: 400;
+            margin-bottom: 0.75rem;
+        }
+
+        .mood-header p {
+            color: rgba(44, 36, 22, 0.6);
+            font-size: 0.95rem;
+        }
+
+        .mood-pills {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.75rem;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .mood-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 100px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .mood-pill:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+            border-color: rgba(0,0,0,0.1);
+        }
+
+        .mood-pill.active {
+            background: var(--text-dark);
+            color: white;
+            border-color: var(--text-dark);
+        }
+
+        .mood-emoji {
+            font-size: 1.1rem;
+        }
+
+        /* Horizontal scrolling gallery */
+        .gallery-scroll-container {
+            position: relative;
+            height: 70vh;
+            min-height: 500px;
+            max-height: 700px;
+        }
+
+        .gallery-wall {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 70%;
+            display: flex;
+            align-items: center;
+            gap: 60px;
+            padding: 0 100px;
+            background: var(--wall-light);
+            box-shadow:
+                inset 0 -50px 80px -50px rgba(0,0,0,0.1),
+                0 10px 30px rgba(0,0,0,0.1);
+            animation: scrollWall 40s linear infinite;
+            will-change: transform;
+        }
+
+        .gallery-wall:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes scrollWall {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .gallery-floor {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30%;
+            background:
+                linear-gradient(to bottom, var(--floor-wood), var(--floor-dark)),
+                repeating-linear-gradient(90deg,
+                    var(--floor-wood) 0px,
+                    var(--floor-wood) 80px,
+                    var(--floor-dark) 80px,
+                    var(--floor-dark) 82px
+                );
+            background-size: 100% 100%, 82px 100%;
+        }
+
+        /* Artwork frames */
+        .artwork {
+            flex-shrink: 0;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+        }
+
+        .artwork:hover {
+            transform: scale(1.08) translateY(-10px);
+            z-index: 100;
+        }
+
+        .artwork-frame {
+            background: white;
+            padding: 15px;
+            box-shadow:
+                0 8px 30px rgba(0,0,0,0.15),
+                inset 0 0 0 3px var(--frame-mahogany),
+                inset 0 0 0 8px var(--frame-gold),
+                inset 0 0 0 10px var(--frame-mahogany);
+        }
+
+        .artwork-canvas {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .artwork-image {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: transform 0.4s;
+        }
+
+        .artwork:hover .artwork-image {
+            transform: scale(1.1);
+        }
+
+        .artwork-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.85), transparent 70%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.5rem;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .artwork:hover .artwork-overlay {
+            opacity: 1;
+        }
+
+        .artwork-artist {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .artwork-style {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.7;
+        }
+
+        .artwork-enter {
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* Artwork sizes */
+        .artwork.size-lg .artwork-frame { width: 280px; height: 350px; }
+        .artwork.size-md .artwork-frame { width: 220px; height: 280px; }
+        .artwork.size-sm .artwork-frame { width: 180px; height: 220px; }
+        .artwork.size-wide .artwork-frame { width: 320px; height: 200px; }
+        .artwork.size-tall .artwork-frame { width: 160px; height: 300px; }
+
+        /* Spotlight effect */
+        .artwork::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 120px;
+            background: radial-gradient(ellipse at bottom, rgba(255,248,220,0.3), transparent 70%);
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* Plaque */
+        .artwork-plaque {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--frame-mahogany);
+            color: var(--frame-gold);
+            padding: 0.3rem 0.8rem;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            border-radius: 2px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .artwork:hover .artwork-plaque {
+            opacity: 1;
+        }
+
+        /* Filter classes */
+        .artwork.filtered-out {
+            opacity: 0.15;
+            transform: scale(0.9);
+            pointer-events: none;
+        }
+
+        /* ===== EVENTS WING ===== */
+        .events-wing {
+            padding: 5rem 2rem;
+            background: var(--wall-light);
+        }
+
+        .events-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .events-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .events-header p {
+            color: rgba(44, 36, 22, 0.6);
+        }
+
+        .events-timeline {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .events-timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 30px;
+            width: 2px;
+            background: var(--wall-shadow);
+        }
+
+        .event-item {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .event-date {
+            flex-shrink: 0;
+            width: 60px;
+            height: 60px;
+            background: var(--text-dark);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        .event-date-day {
+            font-size: 1.3rem;
+            font-weight: 600;
+            line-height: 1;
+        }
+
+        .event-date-month {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .event-card {
+            flex: 1;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            display: flex;
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .event-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+        }
+
+        .event-image {
+            width: 120px;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--accent-coral), var(--accent-purple));
+        }
+
+        .event-content {
+            padding: 1.25rem;
+            flex: 1;
+        }
+
+        .event-type-badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            background: rgba(201, 168, 104, 0.15);
+            color: var(--frame-mahogany);
+            border-radius: 100px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .event-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .event-artist-name {
+            font-size: 0.85rem;
+            color: rgba(44, 36, 22, 0.6);
+            margin-bottom: 0.5rem;
+        }
+
+        .event-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.75rem;
+            color: rgba(44, 36, 22, 0.5);
+        }
+
+        .event-live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.15rem 0.5rem;
+            background: #E8F5E9;
+            color: #2E7D32;
+            border-radius: 100px;
+            font-size: 0.65rem;
+            font-weight: 500;
+        }
+
+        .event-live-badge::before {
+            content: '';
+            width: 5px;
+            height: 5px;
+            background: #4CAF50;
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* ===== SPLIT-SCREEN FEATURE REVEAL (v31 - Merged Section) ===== */
+        .split-features {
+            padding: 5rem 2rem;
+            background: var(--text-dark);
+            color: white;
+        }
+
+        .split-features-header {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+
+        .split-features-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .split-features-header p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.95rem;
+        }
+
+        .split-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* Split Card */
+        .split-card {
+            position: relative;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            min-height: 200px;
+        }
+
+        .split-card-inner {
+            display: flex;
+            height: 100%;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .split-card:hover .split-card-inner {
+            transform: translateX(-50%);
+        }
+
+        .split-side {
+            min-width: 100%;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Artist Side (left, default visible) */
+        .split-artist {
+            background: linear-gradient(135deg, rgba(201, 168, 104, 0.1), rgba(232, 146, 124, 0.1));
+            border-right: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Lover Side (right, revealed on hover) */
+        .split-lover {
+            background: linear-gradient(135deg, rgba(124, 181, 232, 0.1), rgba(201, 123, 232, 0.1));
+        }
+
+        .split-side-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 100px;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+            width: fit-content;
+        }
+
+        .split-artist .split-side-label {
+            background: linear-gradient(135deg, var(--frame-gold), var(--accent-coral));
+            color: var(--text-dark);
+        }
+
+        .split-lover .split-side-label {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: white;
+        }
+
+        .split-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .split-artist .split-icon {
+            background: linear-gradient(135deg, var(--frame-gold), var(--accent-coral));
+        }
+
+        .split-lover .split-icon {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+        }
+
+        .split-side h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .split-side p {
+            font-size: 0.875rem;
+            opacity: 0.7;
+            line-height: 1.55;
+            flex: 1;
+        }
+
+        /* Hover indicator */
+        .split-card::after {
+            content: '';
+            position: absolute;
+            bottom: 1rem;
+            right: 1rem;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s, background 0.3s;
+        }
+
+        .split-card:hover::after {
+            transform: translateX(-100%);
+            background: rgba(255,255,255,0.2);
+        }
+
+        .split-hint {
+            position: absolute;
+            bottom: 1rem;
+            right: 0.75rem;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.4);
+            transition: opacity 0.3s;
+        }
+
+        .split-card:hover .split-hint {
+            opacity: 0;
+        }
+
+        /* ===== PRICING ===== */
+        .pricing-section {
+            padding: 5rem 2rem;
+            background: var(--wall-light);
+        }
+
+        .pricing-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .pricing-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 400;
+        }
+
+        .pricing-grid {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .pricing-card {
+            flex: 1;
+            min-width: 280px;
+            max-width: 360px;
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .pricing-card.highlighted {
+            background: var(--text-dark);
+            color: white;
+        }
+
+        .pricing-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pricing-price {
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: 0.25rem;
+        }
+
+        .pricing-card.highlighted .pricing-price {
+            color: var(--frame-gold);
+        }
+
+        .pricing-period {
+            font-size: 0.85rem;
+            opacity: 0.6;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .pricing-features li {
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .pricing-features li::before {
+            content: '\2713';
+            color: var(--frame-gold);
+            font-weight: bold;
+        }
+
+        .pricing-btn {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid currentColor;
+            background: transparent;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pricing-card:not(.highlighted) .pricing-btn:hover {
+            background: var(--text-dark);
+            color: white;
+            border-color: var(--text-dark);
+        }
+
+        .pricing-card.highlighted .pricing-btn {
+            background: var(--frame-gold);
+            border-color: var(--frame-gold);
+            color: var(--text-dark);
+        }
+
+        .pricing-card.highlighted .pricing-btn:hover {
+            background: #D4B578;
+            border-color: #D4B578;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            padding: 4rem 2rem 2rem;
+            background: var(--text-dark);
+            color: white;
+        }
+
+        .footer-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .footer-brand h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-brand p {
+            opacity: 0.6;
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.6;
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+        }
+
+        .footer-bottom {
+            max-width: 1100px;
+            margin: 2rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.8rem;
+            opacity: 0.5;
+        }
+
+        /* ===== HISTORY PANEL ===== */
+        .history-fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 56px;
+            height: 56px;
+            background: var(--text-dark);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+            cursor: pointer;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 998;
+            transition: transform 0.3s;
+        }
+
+        .history-fab:hover {
+            transform: scale(1.1);
+        }
+
+        .history-panel {
+            position: fixed;
+            bottom: 100px;
+            right: 2rem;
+            width: 320px;
+            max-height: 400px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            z-index: 999;
+            overflow: hidden;
+            transform: translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .history-panel.open {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .history-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1rem;
+            color: var(--text-dark);
+        }
+
+        .history-list {
+            padding: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            gap: 1rem;
+            padding: 0.75rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .history-item:hover {
+            background: var(--wall-shadow);
+        }
+
+        .history-thumb {
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--accent-coral), var(--accent-blue));
+            flex-shrink: 0;
+        }
+
+        .history-info h4 {
+            font-size: 0.9rem;
+            margin-bottom: 0.15rem;
+            color: var(--text-dark);
+        }
+
+        .history-info p {
+            font-size: 0.75rem;
+            color: rgba(44, 36, 22, 0.5);
+        }
+
+        .history-empty {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(44, 36, 22, 0.5);
+            font-size: 0.9rem;
+        }
+
+        /* ===== MOBILE RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .top-nav {
+                display: none;
+            }
+
+            .style-filter {
+                top: auto;
+                bottom: 80px;
+                left: 1rem;
+                right: 1rem;
+                transform: none;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .gallery-scroll-container {
+                height: 50vh;
+                min-height: 350px;
+            }
+
+            .artwork.size-lg .artwork-frame { width: 200px; height: 250px; }
+            .artwork.size-md .artwork-frame { width: 160px; height: 200px; }
+            .artwork.size-sm .artwork-frame { width: 130px; height: 160px; }
+            .artwork.size-wide .artwork-frame { width: 220px; height: 140px; }
+            .artwork.size-tall .artwork-frame { width: 120px; height: 220px; }
+
+            .gallery-wall {
+                gap: 40px;
+                padding: 0 60px;
+            }
+
+            .event-item {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .events-timeline::before {
+                display: none;
+            }
+
+            .event-card {
+                flex-direction: column;
+            }
+
+            .event-image {
+                width: 100%;
+                height: 100px;
+            }
+
+            .split-cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* Mobile: tap behavior instead of hover */
+            .split-card.tapped .split-card-inner {
+                transform: translateX(-50%);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero-cta-group {
+                flex-direction: column;
+            }
+
+            .mood-pills {
+                gap: 0.5rem;
+            }
+
+            .mood-pill {
+                padding: 0.6rem 1.1rem;
+                font-size: 0.85rem;
+            }
+
+            .pricing-grid {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .footer-content {
+                flex-direction: column;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .history-panel {
+                right: 1rem;
+                left: 1rem;
+                width: auto;
+            }
+
+            .history-fab {
+                bottom: 1.5rem;
+                right: 1.5rem;
+            }
+
+            .split-side {
+                padding: 1.5rem;
+            }
+        }
+
+        /* ===== ANIMATION HELPERS ===== */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <a href="#" class="logo">
+            <div class="logo-flame"></div>
+            Gallery Talk
+        </a>
+        <nav class="top-nav">
+            <a href="#walk">Explore</a>
+            <a href="#events">Events</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#" class="btn-signup">Artist Sign Up</a>
+        </nav>
+    </header>
+
+    <!-- Style Filter -->
+    <div class="style-filter" id="styleFilter">
+        <button class="style-btn active" data-style="all">All</button>
+        <button class="style-btn" data-style="abstract">Abstract</button>
+        <button class="style-btn" data-style="photography">Photography</button>
+        <button class="style-btn" data-style="impressionism">Impressionism</button>
+        <button class="style-btn" data-style="minimalist">Minimalist</button>
+        <button class="style-btn" data-style="contemporary">Contemporary</button>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero-entrance">
+        <div class="hero-content fade-up">
+            <span class="hero-badge">Your Virtual Museum Awaits</span>
+            <h1 class="hero-title">Every painting is a <em>portal</em></h1>
+            <p class="hero-subtitle">
+                Walk through an endless gallery. Click any artwork to enter the artist's world.
+                Tell us what you love, and we'll show you more of it.
+            </p>
+            <div class="hero-cta-group">
+                <a href="#walk" class="cta-primary">
+                    Start Walking
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="#" class="cta-secondary">Live Demo</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll to explore</span>
+            <div class="scroll-arrow">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12l7 7 7-7"/>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- Infinite Gallery Walk -->
+    <section class="gallery-walk" id="walk">
+        <div class="gallery-hint fade-up">
+            <p><span class="hint-icon">&#128065;</span> Hover to pause. Click to enter an artist's world.</p>
+        </div>
+
+        <div class="gallery-scroll-container">
+            <div class="gallery-wall" id="galleryWall">
+                <!-- First set of artworks -->
+                <div class="artwork size-lg" data-style="abstract" data-artist="Anna Schulz">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #E87C9A, #FFB6C1, #E8927C);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Anna Schulz</span>
+                                <span class="artwork-style">Abstract</span>
+                                <span class="artwork-enter">Enter Gallery &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Anna Schulz</div>
+                </div>
+
+                <div class="artwork size-md" data-style="photography" data-artist="Gomolemo Mokete">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #7CB5E8, #A5D4F5, #5A9BD4);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Gomolemo Mokete</span>
+                                <span class="artwork-style">Photography</span>
+                                <span class="artwork-enter">Enter Gallery &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Gomolemo Mokete</div>
+                </div>
+
+                <div class="artwork size-wide" data-style="impressionism" data-artist="Arya Bimbi">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #9CE87C, #C4E8A5, #7BC85A);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Arya Bimbi</span>
+                                <span class="artwork-style">Impressionism</span>
+                                <span class="artwork-enter">Enter Gallery &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Arya Bimbi</div>
+                </div>
+
+                <div class="artwork size-tall" data-style="minimalist" data-artist="Alvaro Daza">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(180deg, #E8D47C, #F5E6A3, #D4C088);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Alvaro Daza</span>
+                                <span class="artwork-style">Minimalist</span>
+                                <span class="artwork-enter">Enter Gallery &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Alvaro Daza</div>
+                </div>
+
+                <div class="artwork size-md" data-style="contemporary" data-artist="Patricia Wolf">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #C97BE8, #DDA0DD, #A855D4);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Patricia Wolf</span>
+                                <span class="artwork-style">Contemporary</span>
+                                <span class="artwork-enter">Enter Gallery &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Patricia Wolf</div>
+                </div>
+
+                <div class="artwork size-lg" data-style="abstract" data-artist="Pedro Batista">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(45deg, #E8927C, #F5B89A, #D47C5A);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Pedro Batista</span>
+                                <span class="artwork-style">Abstract</span>
+                                <span class="artwork-enter">Enter Gallery &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Pedro Batista</div>
+                </div>
+
+                <div class="artwork size-sm" data-style="photography" data-artist="Alann De Vuyst">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #7CE8D4, #A5E8E2, #5AD4C0);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Alann De Vuyst</span>
+                                <span class="artwork-style">Photography</span>
+                                <span class="artwork-enter">Enter Gallery &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Alann De Vuyst</div>
+                </div>
+
+                <div class="artwork size-wide" data-style="contemporary" data-artist="Dastagir Syed">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(90deg, #E87CB5, #F5A0C8, #D45A95);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Dastagir Syed</span>
+                                <span class="artwork-style">Contemporary</span>
+                                <span class="artwork-enter">Enter Gallery &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Dastagir Syed</div>
+                </div>
+
+                <!-- Duplicate for infinite scroll -->
+                <div class="artwork size-lg" data-style="abstract" data-artist="Anna Schulz">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #E87C9A, #FFB6C1, #E8927C);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Anna Schulz</span>
+                                <span class="artwork-style">Abstract</span>
+                                <span class="artwork-enter">Enter Gallery &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Anna Schulz</div>
+                </div>
+
+                <div class="artwork size-md" data-style="photography" data-artist="Gomolemo Mokete">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #7CB5E8, #A5D4F5, #5A9BD4);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Gomolemo Mokete</span>
+                                <span class="artwork-style">Photography</span>
+                                <span class="artwork-enter">Enter Gallery &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Gomolemo Mokete</div>
+                </div>
+
+                <div class="artwork size-wide" data-style="impressionism" data-artist="Arya Bimbi">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #9CE87C, #C4E8A5, #7BC85A);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Arya Bimbi</span>
+                                <span class="artwork-style">Impressionism</span>
+                                <span class="artwork-enter">Enter Gallery &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Arya Bimbi</div>
+                </div>
+
+                <div class="artwork size-tall" data-style="minimalist" data-artist="Alvaro Daza">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(180deg, #E8D47C, #F5E6A3, #D4C088);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Alvaro Daza</span>
+                                <span class="artwork-style">Minimalist</span>
+                                <span class="artwork-enter">Enter Gallery &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Alvaro Daza</div>
+                </div>
+
+                <div class="artwork size-md" data-style="contemporary" data-artist="Patricia Wolf">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #C97BE8, #DDA0DD, #A855D4);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Patricia Wolf</span>
+                                <span class="artwork-style">Contemporary</span>
+                                <span class="artwork-enter">Enter Gallery &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Patricia Wolf</div>
+                </div>
+
+                <div class="artwork size-lg" data-style="abstract" data-artist="Pedro Batista">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(45deg, #E8927C, #F5B89A, #D47C5A);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Pedro Batista</span>
+                                <span class="artwork-style">Abstract</span>
+                                <span class="artwork-enter">Enter Gallery &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Pedro Batista</div>
+                </div>
+
+                <div class="artwork size-sm" data-style="photography" data-artist="Alann De Vuyst">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(135deg, #7CE8D4, #A5E8E2, #5AD4C0);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Alann De Vuyst</span>
+                                <span class="artwork-style">Photography</span>
+                                <span class="artwork-enter">Enter Gallery &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Alann De Vuyst</div>
+                </div>
+
+                <div class="artwork size-wide" data-style="contemporary" data-artist="Dastagir Syed">
+                    <div class="artwork-frame">
+                        <div class="artwork-canvas">
+                            <div class="artwork-image" style="background: linear-gradient(90deg, #E87CB5, #F5A0C8, #D45A95);"></div>
+                            <div class="artwork-overlay">
+                                <span class="artwork-artist">Dastagir Syed</span>
+                                <span class="artwork-style">Contemporary</span>
+                                <span class="artwork-enter">Enter Gallery &rarr;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="artwork-plaque">Dastagir Syed</div>
+                </div>
+            </div>
+            <div class="gallery-floor"></div>
+        </div>
+    </section>
+
+    <!-- Mood Selector -->
+    <section class="mood-section fade-up" id="mood">
+        <div class="mood-header">
+            <h2>How are you feeling today?</h2>
+            <p>Tell us your mood and we'll curate art that resonates with you</p>
+        </div>
+        <div class="mood-pills">
+            <button class="mood-pill" data-mood="energetic" data-styles="abstract,contemporary">
+                <span class="mood-emoji">&#9889;</span>
+                Energetic
+            </button>
+            <button class="mood-pill" data-mood="calm" data-styles="minimalist,impressionism">
+                <span class="mood-emoji">&#127754;</span>
+                Calm
+            </button>
+            <button class="mood-pill" data-mood="curious" data-styles="photography,contemporary">
+                <span class="mood-emoji">&#128269;</span>
+                Curious
+            </button>
+            <button class="mood-pill" data-mood="dreamy" data-styles="impressionism,abstract">
+                <span class="mood-emoji">&#128171;</span>
+                Dreamy
+            </button>
+            <button class="mood-pill" data-mood="bold" data-styles="contemporary,abstract">
+                <span class="mood-emoji">&#128293;</span>
+                Bold
+            </button>
+            <button class="mood-pill" data-mood="reflective" data-styles="photography,minimalist">
+                <span class="mood-emoji">&#128367;</span>
+                Reflective
+            </button>
+        </div>
+    </section>
+
+    <!-- Events Wing -->
+    <section class="events-wing" id="events">
+        <div class="events-header fade-up">
+            <h2>Upcoming Events</h2>
+            <p>Vernissages, openings, and live exhibitions from our artists</p>
+        </div>
+
+        <div class="events-timeline">
+            <div class="event-item fade-up">
+                <div class="event-date">
+                    <span class="event-date-day">24</span>
+                    <span class="event-date-month">Jan</span>
+                </div>
+                <div class="event-card">
+                    <div class="event-image" style="background: linear-gradient(135deg, #E87C9A, #C97B84);"></div>
+                    <div class="event-content">
+                        <span class="event-type-badge">Vernissage</span>
+                        <h3 class="event-title">Colors of Silence</h3>
+                        <p class="event-artist-name">by Anna Schulz</p>
+                        <div class="event-meta">
+                            <span>7:00 PM CET</span>
+                            <span class="event-live-badge">Live Now</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-item fade-up">
+                <div class="event-date">
+                    <span class="event-date-day">28</span>
+                    <span class="event-date-month">Jan</span>
+                </div>
+                <div class="event-card">
+                    <div class="event-image" style="background: linear-gradient(135deg, #7CB5E8, #5A9BD4);"></div>
+                    <div class="event-content">
+                        <span class="event-type-badge">Opening</span>
+                        <h3 class="event-title">Urban Perspectives</h3>
+                        <p class="event-artist-name">by Gomolemo Mokete</p>
+                        <div class="event-meta">
+                            <span>6:00 PM CET</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-item fade-up">
+                <div class="event-date">
+                    <span class="event-date-day">02</span>
+                    <span class="event-date-month">Feb</span>
+                </div>
+                <div class="event-card">
+                    <div class="event-image" style="background: linear-gradient(135deg, #9CE87C, #7BC85A);"></div>
+                    <div class="event-content">
+                        <span class="event-type-badge">Finissage</span>
+                        <h3 class="event-title">Nature's Whispers</h3>
+                        <p class="event-artist-name">by Arya Bimbi</p>
+                        <div class="event-meta">
+                            <span>5:00 PM CET</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="event-item fade-up">
+                <div class="event-date">
+                    <span class="event-date-day">10</span>
+                    <span class="event-date-month">Feb</span>
+                </div>
+                <div class="event-card">
+                    <div class="event-image" style="background: linear-gradient(135deg, #C97BE8, #A855D4);"></div>
+                    <div class="event-content">
+                        <span class="event-type-badge">Live Talk</span>
+                        <h3 class="event-title">The Digital Canvas</h3>
+                        <p class="event-artist-name">Panel Discussion</p>
+                        <div class="event-meta">
+                            <span>8:00 PM CET</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- v31: Split-Screen Feature Reveal (Merged Section) -->
+    <section class="split-features" id="features">
+        <div class="split-features-header fade-up">
+            <h2>Two perspectives, one platform</h2>
+            <p>Hover to discover how GalleryTalk serves both sides of the art world</p>
+        </div>
+
+        <div class="split-cards-grid">
+            <div class="split-card fade-up">
+                <div class="split-card-inner">
+                    <div class="split-side split-artist">
+                        <span class="split-side-label">&#127912; For Artists</span>
+                        <div class="split-icon">&#127970;</div>
+                        <h3>Your Own Gallery</h3>
+                        <p>Build your virtual space exactly how you envision it. Your art, your rules, your world.</p>
+                    </div>
+                    <div class="split-side split-lover">
+                        <span class="split-side-label">&#128150; For Art Lovers</span>
+                        <div class="split-icon">&#127758;</div>
+                        <h3>Explore Globally</h3>
+                        <p>Discover curated galleries from every corner of the world without leaving home.</p>
+                    </div>
+                </div>
+                <span class="split-hint">Hover &rarr;</span>
+            </div>
+
+            <div class="split-card fade-up">
+                <div class="split-card-inner">
+                    <div class="split-side split-artist">
+                        <span class="split-side-label">&#127912; For Artists</span>
+                        <div class="split-icon">&#127760;</div>
+                        <h3>Global Reach</h3>
+                        <p>Reach collectors worldwide from any location. No gatekeeping, no geographic limits.</p>
+                    </div>
+                    <div class="split-side split-lover">
+                        <span class="split-side-label">&#128150; For Art Lovers</span>
+                        <div class="split-icon">&#128100;</div>
+                        <h3>Meet Artists</h3>
+                        <p>Connect with creators directly through video calls. Learn the stories behind the art.</p>
+                    </div>
+                </div>
+                <span class="split-hint">Hover &rarr;</span>
+            </div>
+
+            <div class="split-card fade-up">
+                <div class="split-card-inner">
+                    <div class="split-side split-artist">
+                        <span class="split-side-label">&#127912; For Artists</span>
+                        <div class="split-icon">&#129309;</div>
+                        <h3>Real Connections</h3>
+                        <p>Connect face-to-face via video calls within your gallery. Build real relationships.</p>
+                    </div>
+                    <div class="split-side split-lover">
+                        <span class="split-side-label">&#128150; For Art Lovers</span>
+                        <div class="split-icon">&#127881;</div>
+                        <h3>Free Events</h3>
+                        <p>Join openings, vernissages, and edition reveals. Experience art as it happens.</p>
+                    </div>
+                </div>
+                <span class="split-hint">Hover &rarr;</span>
+            </div>
+
+            <div class="split-card fade-up">
+                <div class="split-card-inner">
+                    <div class="split-side split-artist">
+                        <span class="split-side-label">&#127912; For Artists</span>
+                        <div class="split-icon">&#128176;</div>
+                        <h3>0% Commission</h3>
+                        <p>Keep 100% of your sales. We believe artists should own their success completely.</p>
+                    </div>
+                    <div class="split-side split-lover">
+                        <span class="split-side-label">&#128150; For Art Lovers</span>
+                        <div class="split-icon">&#128153;</div>
+                        <h3>Direct Support</h3>
+                        <p>Support artists directly without middlemen. Your purchase goes straight to the creator.</p>
+                    </div>
+                </div>
+                <span class="split-hint">Hover &rarr;</span>
+            </div>
+
+            <div class="split-card fade-up">
+                <div class="split-card-inner">
+                    <div class="split-side split-artist">
+                        <span class="split-side-label">&#127912; For Artists</span>
+                        <div class="split-icon">&#127793;</div>
+                        <h3>No Barriers</h3>
+                        <p>Perfect for artists with personal, health, or geographic limitations. Art has no boundaries.</p>
+                    </div>
+                    <div class="split-side split-lover">
+                        <span class="split-side-label">&#128150; For Art Lovers</span>
+                        <div class="split-icon">&#128279;</div>
+                        <h3>Share Favorites</h3>
+                        <p>Share your favorite galleries with friends. Spread the art you love.</p>
+                    </div>
+                </div>
+                <span class="split-hint">Hover &rarr;</span>
+            </div>
+
+            <div class="split-card fade-up">
+                <div class="split-card-inner">
+                    <div class="split-side split-artist">
+                        <span class="split-side-label">&#127912; For Artists</span>
+                        <div class="split-icon">&#128640;</div>
+                        <h3>Build Independence</h3>
+                        <p>Grow your following independently of institutions. Your career, your terms.</p>
+                    </div>
+                    <div class="split-side split-lover">
+                        <span class="split-side-label">&#128150; For Art Lovers</span>
+                        <div class="split-icon">&#128101;</div>
+                        <h3>Virtual Meetups</h3>
+                        <p>Meet up with friends inside virtual exhibitions. Experience art together.</p>
+                    </div>
+                </div>
+                <span class="split-hint">Hover &rarr;</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing-section" id="pricing">
+        <div class="pricing-header fade-up">
+            <h2>Simple pricing for artists</h2>
+        </div>
+        <div class="pricing-grid">
+            <div class="pricing-card fade-up">
+                <h3 class="pricing-name">Trial</h3>
+                <div class="pricing-price">Free</div>
+                <p class="pricing-period">14 days to explore</p>
+                <ul class="pricing-features">
+                    <li>Full feature access</li>
+                    <li>Create your gallery</li>
+                    <li>No credit card needed</li>
+                </ul>
+                <button class="pricing-btn">Try Now</button>
+            </div>
+            <div class="pricing-card highlighted fade-up">
+                <h3 class="pricing-name">Starter</h3>
+                <div class="pricing-price">&euro;6.99</div>
+                <p class="pricing-period">per month</p>
+                <ul class="pricing-features">
+                    <li>Display up to 50 artworks</li>
+                    <li>0% commission on sales</li>
+                    <li>Host online exhibitions</li>
+                    <li>Visitor donations</li>
+                    <li>Gallery analytics</li>
+                    <li>Expert curation support</li>
+                </ul>
+                <button class="pricing-btn">Start Now</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>
+                    <div class="logo-flame" style="width:24px;height:24px;"></div>
+                    Gallery Talk
+                </h3>
+                <p>Your art. Your gallery. Your world.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#">Product</a>
+                <a href="#">Artists</a>
+                <a href="#">Pricing</a>
+                <a href="#">Instagram</a>
+                <a href="#">LinkedIn</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; 2026 BonfireHQ GmbH, Munich</span>
+            <a href="#" style="color:inherit;">Imprint & Privacy</a>
+        </div>
+    </footer>
+
+    <!-- History FAB & Panel -->
+    <button class="history-fab" id="historyFab" title="View History">&#128214;</button>
+    <div class="history-panel" id="historyPanel">
+        <div class="history-header">Recently Visited</div>
+        <div class="history-list" id="historyList">
+            <div class="history-empty">
+                Click on any painting to start exploring galleries.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== STORAGE =====
+        const PREFS_KEY = 'gt_walk_prefs';
+        const HISTORY_KEY = 'gt_walk_history';
+
+        let preferences = { style: 'all', mood: null };
+        let visitHistory = [];
+
+        function loadData() {
+            try {
+                const p = localStorage.getItem(PREFS_KEY);
+                if (p) preferences = JSON.parse(p);
+                const h = localStorage.getItem(HISTORY_KEY);
+                if (h) visitHistory = JSON.parse(h);
+            } catch (e) {}
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem(PREFS_KEY, JSON.stringify(preferences));
+                localStorage.setItem(HISTORY_KEY, JSON.stringify(visitHistory));
+            } catch (e) {}
+        }
+
+        loadData();
+
+        // ===== SPLIT CARDS MOBILE TAP =====
+        const splitCards = document.querySelectorAll('.split-card');
+        const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+        if (isTouchDevice) {
+            splitCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    // Toggle tapped state on mobile
+                    const wasTapped = card.classList.contains('tapped');
+                    // Remove tapped from all cards first
+                    splitCards.forEach(c => c.classList.remove('tapped'));
+                    // Toggle current card
+                    if (!wasTapped) {
+                        card.classList.add('tapped');
+                    }
+                });
+            });
+
+            // Update hints for mobile
+            document.querySelectorAll('.split-hint').forEach(hint => {
+                hint.textContent = 'Tap →';
+            });
+        }
+
+        // ===== MOOD SELECTOR =====
+        const moodPills = document.querySelectorAll('.mood-pill');
+
+        // Mood to styles mapping
+        const moodStyleMap = {
+            energetic: ['abstract', 'contemporary'],
+            calm: ['minimalist', 'impressionism'],
+            curious: ['photography', 'contemporary'],
+            dreamy: ['impressionism', 'abstract'],
+            bold: ['contemporary', 'abstract'],
+            reflective: ['photography', 'minimalist']
+        };
+
+        function applyMoodFilter(mood) {
+            // Update pill states
+            moodPills.forEach(pill => {
+                pill.classList.toggle('active', pill.dataset.mood === mood);
+            });
+
+            // Get styles for this mood
+            const styles = moodStyleMap[mood] || [];
+
+            // Filter artworks - show those matching ANY of the mood's styles
+            artworks.forEach(art => {
+                const artStyle = art.dataset.style;
+                if (styles.includes(artStyle)) {
+                    art.classList.remove('filtered-out');
+                } else {
+                    art.classList.add('filtered-out');
+                }
+            });
+
+            // Update style filter to show 'all' since mood takes precedence
+            styleBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.style === 'all');
+            });
+
+            preferences.mood = mood;
+            preferences.style = 'all';
+            saveData();
+
+            // Scroll to gallery
+            document.getElementById('walk').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        moodPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                const mood = pill.dataset.mood;
+                if (preferences.mood === mood) {
+                    // Deselect mood - show all
+                    preferences.mood = null;
+                    moodPills.forEach(p => p.classList.remove('active'));
+                    applyFilter('all');
+                    saveData();
+                } else {
+                    applyMoodFilter(mood);
+                }
+            });
+        });
+
+        // ===== STYLE FILTER =====
+        const styleFilter = document.getElementById('styleFilter');
+        const styleBtns = document.querySelectorAll('.style-btn');
+        const artworks = document.querySelectorAll('.artwork');
+
+        function applyFilter(style) {
+            // Clear mood when manually filtering
+            preferences.mood = null;
+            moodPills.forEach(p => p.classList.remove('active'));
+
+            styleBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.style === style);
+            });
+
+            artworks.forEach(art => {
+                if (style === 'all' || art.dataset.style === style) {
+                    art.classList.remove('filtered-out');
+                } else {
+                    art.classList.add('filtered-out');
+                }
+            });
+
+            preferences.style = style;
+            saveData();
+        }
+
+        styleBtns.forEach(btn => {
+            btn.addEventListener('click', () => applyFilter(btn.dataset.style));
+        });
+
+        // Apply saved preferences
+        if (preferences.mood) {
+            applyMoodFilter(preferences.mood);
+        } else if (preferences.style !== 'all') {
+            applyFilter(preferences.style);
+        }
+
+        // Show filter on scroll
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 200) {
+                styleFilter.classList.add('visible');
+            } else {
+                styleFilter.classList.remove('visible');
+            }
+        });
+
+        // ===== ARTWORK CLICK (PORTAL) =====
+        artworks.forEach(artwork => {
+            artwork.addEventListener('click', () => {
+                const artist = artwork.dataset.artist;
+                const style = artwork.dataset.style;
+
+                // Add to history
+                visitHistory.unshift({
+                    artist,
+                    style,
+                    timestamp: Date.now()
+                });
+                visitHistory = visitHistory.slice(0, 10);
+                saveData();
+                renderHistory();
+
+                // In production: navigate to gallery
+                console.log(`Entering ${artist}'s gallery`);
+                alert(`Entering ${artist}'s gallery...\n\nIn the full app, this takes you directly to their virtual gallery.`);
+            });
+        });
+
+        // ===== HISTORY PANEL =====
+        const historyFab = document.getElementById('historyFab');
+        const historyPanel = document.getElementById('historyPanel');
+        const historyListEl = document.getElementById('historyList');
+
+        function getColorForStyle(style) {
+            const colors = {
+                abstract: '#E87C9A, #FFB6C1',
+                photography: '#7CB5E8, #A5D4F5',
+                impressionism: '#9CE87C, #C4E8A5',
+                minimalist: '#E8D47C, #F5E6A3',
+                contemporary: '#C97BE8, #DDA0DD'
+            };
+            return colors[style] || '#E8E4DC, #D4D0C8';
+        }
+
+        function formatTimeAgo(ts) {
+            const diff = Date.now() - ts;
+            const mins = Math.floor(diff / 60000);
+            if (mins < 1) return 'Just now';
+            if (mins < 60) return `${mins}m ago`;
+            const hrs = Math.floor(mins / 60);
+            if (hrs < 24) return `${hrs}h ago`;
+            return `${Math.floor(hrs / 24)}d ago`;
+        }
+
+        function renderHistory() {
+            if (visitHistory.length === 0) {
+                historyListEl.innerHTML = '<div class="history-empty">Click on any painting to start exploring galleries.</div>';
+                return;
+            }
+
+            historyListEl.innerHTML = visitHistory.map(item => `
+                <div class="history-item" data-artist="${item.artist}">
+                    <div class="history-thumb" style="background: linear-gradient(135deg, ${getColorForStyle(item.style)});"></div>
+                    <div class="history-info">
+                        <h4>${item.artist}</h4>
+                        <p>${item.style} &bull; ${formatTimeAgo(item.timestamp)}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.history-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    alert(`Returning to ${item.dataset.artist}'s gallery...`);
+                });
+            });
+        }
+
+        historyFab.addEventListener('click', () => {
+            historyPanel.classList.toggle('open');
+        });
+
+        // Close panel when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!historyPanel.contains(e.target) && !historyFab.contains(e.target)) {
+                historyPanel.classList.remove('open');
+            }
+        });
+
+        renderHistory();
+
+        // ===== FADE IN ANIMATIONS =====
+        const fadeElements = document.querySelectorAll('.fade-up');
+
+        const fadeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        fadeElements.forEach(el => fadeObserver.observe(el));
+
+        // Initial fade for hero
+        setTimeout(() => {
+            document.querySelector('.hero-content').classList.add('visible');
+        }, 200);
+    </script>
+</body>
+</html>
