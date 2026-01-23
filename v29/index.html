@@ -276,6 +276,34 @@
             50% { transform: translateY(5px); }
         }
 
+        /* ===== INFINITE GALLERY WALK ===== */
+        .gallery-walk {
+            position: relative;
+            background: var(--wall-shadow);
+            overflow: hidden;
+        }
+
+        .gallery-hint {
+            text-align: center;
+            padding: 3rem 2rem 1.5rem;
+        }
+
+        .gallery-hint p {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            background: white;
+            border-radius: 100px;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+
+        .gallery-hint .hint-icon {
+            font-size: 1.1rem;
+        }
+
         /* ===== MOOD SELECTOR ===== */
         .mood-section {
             padding: 5rem 2rem;
@@ -337,30 +365,6 @@
 
         .mood-emoji {
             font-size: 1.1rem;
-        }
-
-        /* ===== INFINITE GALLERY WALK ===== */
-        .gallery-walk {
-            position: relative;
-            background: var(--wall-shadow);
-            overflow: hidden;
-        }
-
-        .walk-header {
-            text-align: center;
-            padding: 4rem 2rem 2rem;
-        }
-
-        .walk-header h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: clamp(1.5rem, 3vw, 2rem);
-            font-weight: 400;
-            margin-bottom: 0.5rem;
-        }
-
-        .walk-header p {
-            color: rgba(44, 36, 22, 0.6);
-            font-size: 0.95rem;
         }
 
         /* Horizontal scrolling gallery */
@@ -1304,45 +1308,10 @@
         </div>
     </section>
 
-    <!-- Mood Selector -->
-    <section class="mood-section fade-up" id="mood">
-        <div class="mood-header">
-            <h2>How are you feeling today?</h2>
-            <p>Tell us your mood and we'll curate art that resonates with you</p>
-        </div>
-        <div class="mood-pills">
-            <button class="mood-pill" data-mood="energetic" data-styles="abstract,contemporary">
-                <span class="mood-emoji">&#9889;</span>
-                Energetic
-            </button>
-            <button class="mood-pill" data-mood="calm" data-styles="minimalist,impressionism">
-                <span class="mood-emoji">&#127754;</span>
-                Calm
-            </button>
-            <button class="mood-pill" data-mood="curious" data-styles="photography,contemporary">
-                <span class="mood-emoji">&#128269;</span>
-                Curious
-            </button>
-            <button class="mood-pill" data-mood="dreamy" data-styles="impressionism,abstract">
-                <span class="mood-emoji">&#128171;</span>
-                Dreamy
-            </button>
-            <button class="mood-pill" data-mood="bold" data-styles="contemporary,abstract">
-                <span class="mood-emoji">&#128293;</span>
-                Bold
-            </button>
-            <button class="mood-pill" data-mood="reflective" data-styles="photography,minimalist">
-                <span class="mood-emoji">&#128367;</span>
-                Reflective
-            </button>
-        </div>
-    </section>
-
     <!-- Infinite Gallery Walk -->
     <section class="gallery-walk" id="walk">
-        <div class="walk-header fade-up">
-            <h2>The Gallery Walls</h2>
-            <p>Hover to pause. Click to enter an artist's world.</p>
+        <div class="gallery-hint fade-up">
+            <p><span class="hint-icon">&#128065;</span> Hover to pause. Click to enter an artist's world.</p>
         </div>
 
         <div class="gallery-scroll-container">
@@ -1574,6 +1543,40 @@
                 </div>
             </div>
             <div class="gallery-floor"></div>
+        </div>
+    </section>
+
+    <!-- Mood Selector -->
+    <section class="mood-section fade-up" id="mood">
+        <div class="mood-header">
+            <h2>How are you feeling today?</h2>
+            <p>Tell us your mood and we'll curate art that resonates with you</p>
+        </div>
+        <div class="mood-pills">
+            <button class="mood-pill" data-mood="energetic" data-styles="abstract,contemporary">
+                <span class="mood-emoji">&#9889;</span>
+                Energetic
+            </button>
+            <button class="mood-pill" data-mood="calm" data-styles="minimalist,impressionism">
+                <span class="mood-emoji">&#127754;</span>
+                Calm
+            </button>
+            <button class="mood-pill" data-mood="curious" data-styles="photography,contemporary">
+                <span class="mood-emoji">&#128269;</span>
+                Curious
+            </button>
+            <button class="mood-pill" data-mood="dreamy" data-styles="impressionism,abstract">
+                <span class="mood-emoji">&#128171;</span>
+                Dreamy
+            </button>
+            <button class="mood-pill" data-mood="bold" data-styles="contemporary,abstract">
+                <span class="mood-emoji">&#128293;</span>
+                Bold
+            </button>
+            <button class="mood-pill" data-mood="reflective" data-styles="photography,minimalist">
+                <span class="mood-emoji">&#128367;</span>
+                Reflective
+            </button>
         </div>
     </section>
 
