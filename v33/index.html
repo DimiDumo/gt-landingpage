@@ -547,9 +547,10 @@
             opacity: 1;
         }
 
-        /* Filter classes */
+        /* Filter classes - keep filtered artworks visible but dimmed */
         .artwork.filtered-out {
-            opacity: 0.15 !important;
+            opacity: 0.35 !important;
+            filter: grayscale(80%);
             pointer-events: none;
         }
 
