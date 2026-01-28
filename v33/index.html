@@ -549,8 +549,7 @@
 
         /* Filter classes */
         .artwork.filtered-out {
-            opacity: 0.15;
-            transform: scale(0.9);
+            opacity: 0.15 !important;
             pointer-events: none;
         }
 
@@ -1870,8 +1869,10 @@
         styleBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 applyFilter(btn.dataset.style);
-                // Scroll to gallery carousel
-                document.getElementById('walk').scrollIntoView({ behavior: 'smooth' });
+                // Scroll to gallery carousel after a brief delay to let filter apply
+                setTimeout(() => {
+                    document.getElementById('walk').scrollIntoView({ behavior: 'smooth' });
+                }, 50);
             });
         });
 
