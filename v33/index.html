@@ -1046,106 +1046,6 @@
             opacity: 0.5;
         }
 
-        /* ===== HISTORY PANEL ===== */
-        .history-fab {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 56px;
-            height: 56px;
-            background: var(--text-dark);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-            cursor: pointer;
-            font-size: 1.3rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 998;
-            transition: transform 0.3s;
-        }
-
-        .history-fab:hover {
-            transform: scale(1.1);
-        }
-
-        .history-panel {
-            position: fixed;
-            bottom: 100px;
-            right: 2rem;
-            width: 320px;
-            max-height: 400px;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            z-index: 999;
-            overflow: hidden;
-            transform: translateY(20px);
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .history-panel.open {
-            transform: translateY(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .history-header {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            font-family: 'Playfair Display', serif;
-            font-size: 1.1rem;
-            color: var(--text-dark);
-        }
-
-        .history-list {
-            padding: 1rem;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .history-item {
-            display: flex;
-            gap: 1rem;
-            padding: 0.75rem;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .history-item:hover {
-            background: var(--wall-shadow);
-        }
-
-        .history-thumb {
-            width: 45px;
-            height: 45px;
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--accent-coral), var(--accent-blue));
-            flex-shrink: 0;
-        }
-
-        .history-info h4 {
-            font-size: 0.9rem;
-            margin-bottom: 0.15rem;
-            color: var(--text-dark);
-        }
-
-        .history-info p {
-            font-size: 0.75rem;
-            color: rgba(44, 36, 22, 0.5);
-        }
-
-        .history-empty {
-            text-align: center;
-            padding: 2rem;
-            color: rgba(44, 36, 22, 0.5);
-            font-size: 0.9rem;
-        }
 
         /* ===== MOBILE RESPONSIVE ===== */
         @media (max-width: 900px) {
@@ -1827,16 +1727,6 @@
         </div>
     </footer>
 
-    <!-- History FAB & Panel -->
-    <button class="history-fab" id="historyFab" title="View History">&#128214;</button>
-    <div class="history-panel" id="historyPanel">
-        <div class="history-header">Recently Visited</div>
-        <div class="history-list" id="historyList">
-            <div class="history-empty">
-                Click on any painting to start exploring galleries.
-            </div>
-        </div>
-    </div>
 
     <script>
         // ===== STORAGE =====
@@ -2071,67 +1961,6 @@
             });
         });
 
-        // ===== HISTORY PANEL =====
-        const historyFab = document.getElementById('historyFab');
-        const historyPanel = document.getElementById('historyPanel');
-        const historyListEl = document.getElementById('historyList');
-
-        function getColorForStyle(style) {
-            const colors = {
-                abstract: '#E87C9A, #FFB6C1',
-                photography: '#7CB5E8, #A5D4F5',
-                impressionism: '#9CE87C, #C4E8A5',
-                minimalist: '#E8D47C, #F5E6A3',
-                contemporary: '#C97BE8, #DDA0DD'
-            };
-            return colors[style] || '#E8E4DC, #D4D0C8';
-        }
-
-        function formatTimeAgo(ts) {
-            const diff = Date.now() - ts;
-            const mins = Math.floor(diff / 60000);
-            if (mins < 1) return 'Just now';
-            if (mins < 60) return `${mins}m ago`;
-            const hrs = Math.floor(mins / 60);
-            if (hrs < 24) return `${hrs}h ago`;
-            return `${Math.floor(hrs / 24)}d ago`;
-        }
-
-        function renderHistory() {
-            if (visitHistory.length === 0) {
-                historyListEl.innerHTML = '<div class="history-empty">Click on any painting to start exploring galleries.</div>';
-                return;
-            }
-
-            historyListEl.innerHTML = visitHistory.map(item => `
-                <div class="history-item" data-artist="${item.artist}">
-                    <div class="history-thumb" style="background: linear-gradient(135deg, ${getColorForStyle(item.style)});"></div>
-                    <div class="history-info">
-                        <h4>${item.artist}</h4>
-                        <p>${item.style} &bull; ${formatTimeAgo(item.timestamp)}</p>
-                    </div>
-                </div>
-            `).join('');
-
-            document.querySelectorAll('.history-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    alert(`Returning to ${item.dataset.artist}'s gallery...`);
-                });
-            });
-        }
-
-        historyFab.addEventListener('click', () => {
-            historyPanel.classList.toggle('open');
-        });
-
-        // Close panel when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!historyPanel.contains(e.target) && !historyFab.contains(e.target)) {
-                historyPanel.classList.remove('open');
-            }
-        });
-
-        renderHistory();
 
         // ===== FADE IN ANIMATIONS =====
         const fadeElements = document.querySelectorAll('.fade-up');
