@@ -394,44 +394,6 @@
             gap: 0.3rem;
         }
 
-        /* Carousel navigation arrows */
-        .carousel-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 44px;
-            height: 44px;
-            background: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
-            transition: all 0.2s;
-            z-index: 20;
-        }
-
-        .carousel-nav:hover {
-            transform: translateY(-50%) scale(1.1);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-
-        .carousel-nav.prev {
-            left: 0;
-        }
-
-        .carousel-nav.next {
-            right: 0;
-        }
-
-        .carousel-nav svg {
-            width: 20px;
-            height: 20px;
-            stroke: var(--text-dark);
-        }
-
         /* Carousel hint */
         .carousel-hint {
             text-align: center;
@@ -1062,16 +1024,6 @@
                 padding: 0 1rem;
             }
 
-            .carousel-nav {
-                width: 36px;
-                height: 36px;
-            }
-
-            .carousel-nav svg {
-                width: 16px;
-                height: 16px;
-            }
-
             .event-item {
                 flex-direction: column;
                 gap: 1rem;
@@ -1134,24 +1086,6 @@
             .carousel-viewport {
                 gap: 0.25rem;
                 padding: 0 0.5rem;
-            }
-
-            .carousel-nav {
-                width: 28px;
-                height: 28px;
-            }
-
-            .carousel-nav svg {
-                width: 12px;
-                height: 12px;
-            }
-
-            .carousel-nav.prev {
-                left: 0.25rem;
-            }
-
-            .carousel-nav.next {
-                right: 0.25rem;
             }
 
             .mood-pills {
@@ -1224,21 +1158,9 @@
 
         <!-- v35: Hero Carousel (3 images, center focus) -->
         <div class="hero-carousel fade-up" id="heroCarousel">
-            <button class="carousel-nav prev" id="carouselPrev">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M15 18l-6-6 6-6"/>
-                </svg>
-            </button>
-
             <div class="carousel-viewport" id="carouselViewport">
                 <!-- Items will be rendered by JS -->
             </div>
-
-            <button class="carousel-nav next" id="carouselNext">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9 18l6-6-6-6"/>
-                </svg>
-            </button>
         </div>
 
     </section>
@@ -1550,8 +1472,6 @@
 
         // ===== CAROUSEL RENDERING =====
         const carouselViewport = document.getElementById('carouselViewport');
-        const prevBtn = document.getElementById('carouselPrev');
-        const nextBtn = document.getElementById('carouselNext');
 
         function getVisibleIndices(centerIdx) {
             const total = artworkData.length;
@@ -1612,17 +1532,6 @@
                 carouselViewport.appendChild(item);
             });
         }
-
-        // Navigation handlers
-        prevBtn.addEventListener('click', () => {
-            currentIndex = (currentIndex - 1 + artworkData.length) % artworkData.length;
-            renderCarousel();
-        });
-
-        nextBtn.addEventListener('click', () => {
-            currentIndex = (currentIndex + 1) % artworkData.length;
-            renderCarousel();
-        });
 
         // Initialize carousel
         renderCarousel();
