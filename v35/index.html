@@ -111,10 +111,14 @@
             display: flex;
             gap: 0.35rem;
             padding: 0.35rem;
-            background: var(--wall-shadow);
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-radius: 100px;
             flex-shrink: 0;
             margin-bottom: 1rem;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
         .style-btn {
@@ -1151,7 +1155,14 @@
             <h1 class="hero-title">Every painting is a <em>portal</em></h1>
         </div>
 
-        <!-- Style Filter - integrated into hero -->
+        <!-- v35: Hero Carousel (3 images, center focus) -->
+        <div class="hero-carousel fade-up" id="heroCarousel">
+            <div class="carousel-viewport" id="carouselViewport">
+                <!-- Items will be rendered by JS -->
+            </div>
+        </div>
+
+        <!-- Style Filter - at bottom of carousel -->
         <div class="style-filter fade-up" id="styleFilter">
             <button class="style-btn active" data-style="all">All</button>
             <button class="style-btn" data-style="abstract">Abstract</button>
@@ -1159,13 +1170,6 @@
             <button class="style-btn" data-style="impressionism">Impressionism</button>
             <button class="style-btn" data-style="minimalist">Minimalist</button>
             <button class="style-btn" data-style="contemporary">Contemporary</button>
-        </div>
-
-        <!-- v35: Hero Carousel (3 images, center focus) -->
-        <div class="hero-carousel fade-up" id="heroCarousel">
-            <div class="carousel-viewport" id="carouselViewport">
-                <!-- Items will be rendered by JS -->
-            </div>
         </div>
 
     </section>
