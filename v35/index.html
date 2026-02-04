@@ -318,15 +318,15 @@
                 inset 0 0 0 3px var(--frame-mahogany),
                 inset 0 0 0 7px var(--frame-gold),
                 inset 0 0 0 9px var(--frame-mahogany);
-            /* Height based on available viewport, width maintains aspect ratio */
-            height: calc(100vh - 180px);
-            max-height: 70vh;
+            /* Height based on available viewport, leaving room for artist card */
+            height: calc(100vh - 240px);
+            max-height: 60vh;
             aspect-ratio: 3 / 4;
         }
 
         .carousel-item.side .carousel-frame {
-            height: calc(100vh - 220px);
-            max-height: 55vh;
+            height: calc(100vh - 280px);
+            max-height: 48vh;
         }
 
         .carousel-canvas {
@@ -346,9 +346,9 @@
         /* Artist info card - shown below center image */
         .artist-info-card {
             position: absolute;
-            bottom: -10px;
+            bottom: 0;
             left: 50%;
-            transform: translateX(-50%) translateY(50%);
+            transform: translateX(-50%) translateY(calc(100% + 12px));
             background: rgba(35, 30, 25, 0.92);
             backdrop-filter: blur(12px);
             border-radius: 16px;
@@ -356,8 +356,8 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            min-width: 320px;
-            max-width: 90%;
+            /* Match the width of the carousel frame */
+            width: 100%;
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
             z-index: 20;
             opacity: 0;
@@ -1049,15 +1049,15 @@
                 flex-wrap: wrap;
             }
 
-            /* v35: Carousel mobile adjustments */
+            /* v35: Carousel tablet adjustments */
             .carousel-frame {
-                height: calc(100vh - 200px);
-                max-height: 60vh;
+                height: calc(100vh - 260px);
+                max-height: 55vh;
             }
 
             .carousel-item.side .carousel-frame {
-                height: calc(100vh - 240px);
-                max-height: 45vh;
+                height: calc(100vh - 300px);
+                max-height: 42vh;
             }
 
             .carousel-viewport {
@@ -1124,15 +1124,15 @@
                 font-size: clamp(1.5rem, 6vw, 2.5rem);
             }
 
-            /* v35: Smaller carousel on small screens */
+            /* v35: Smaller carousel on small screens - leave room for fixed artist card */
             .carousel-frame {
-                height: calc(100vh - 180px);
-                max-height: 55vh;
+                height: calc(100vh - 240px);
+                max-height: 50vh;
             }
 
             .carousel-item.side .carousel-frame {
-                height: calc(100vh - 220px);
-                max-height: 40vh;
+                height: calc(100vh - 280px);
+                max-height: 38vh;
             }
 
             .carousel-viewport {
@@ -1140,12 +1140,17 @@
                 padding: 0 0.5rem;
             }
 
-            /* Artist info card mobile */
+            /* Artist info card mobile - full width */
             .artist-info-card {
-                min-width: 280px;
-                padding: 0.75rem 1rem;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                transform: none;
+                width: 100%;
+                border-radius: 16px 16px 0 0;
+                padding: 0.875rem 1.25rem;
                 gap: 0.75rem;
-                bottom: -5px;
             }
 
             .artist-avatar {
