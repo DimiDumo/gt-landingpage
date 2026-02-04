@@ -343,37 +343,96 @@
             background-position: center;
         }
 
-        .carousel-overlay {
+        /* Artist info card - shown below center image */
+        .artist-info-card {
             position: absolute;
-            inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.85), transparent 70%);
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%) translateY(50%);
+            background: rgba(35, 30, 25, 0.92);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 0.875rem 1.25rem;
             display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 1.25rem;
-            color: white;
+            align-items: center;
+            gap: 1rem;
+            min-width: 320px;
+            max-width: 90%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            z-index: 20;
             opacity: 0;
+            transition: opacity 0.4s ease;
         }
 
-        .carousel-artist {
+        .carousel-item.active .artist-info-card {
+            opacity: 1;
+        }
+
+        .artist-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            flex-shrink: 0;
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .artist-details {
+            flex: 1;
+            min-width: 0;
+            text-align: left;
+        }
+
+        .artist-name {
             font-family: 'Playfair Display', serif;
             font-size: 1.1rem;
+            font-weight: 500;
+            color: white;
             margin-bottom: 0.2rem;
         }
 
-        .carousel-style {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            opacity: 0.7;
+        .artist-bio {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.7);
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        .carousel-enter {
-            margin-top: 0.5rem;
-            font-size: 0.8rem;
+        .visit-gallery-btn {
+            padding: 0.65rem 1.25rem;
+            background: white;
+            color: var(--text-dark);
+            border: none;
+            border-radius: 100px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.4rem;
+            white-space: nowrap;
+            transition: transform 0.2s, box-shadow 0.2s;
+            flex-shrink: 0;
+        }
+
+        .visit-gallery-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(255,255,255,0.2);
+        }
+
+        .visit-gallery-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* Hide artist card on side items */
+        .carousel-item.side .artist-info-card {
+            display: none;
         }
 
         /* Carousel hint */
@@ -1006,6 +1065,17 @@
                 padding: 0 1rem;
             }
 
+            /* Artist info card tablet */
+            .artist-info-card {
+                min-width: 300px;
+                padding: 0.75rem 1rem;
+            }
+
+            .artist-avatar {
+                width: 48px;
+                height: 48px;
+            }
+
             .event-item {
                 flex-direction: column;
                 gap: 1rem;
@@ -1068,6 +1138,33 @@
             .carousel-viewport {
                 gap: 0.25rem;
                 padding: 0 0.5rem;
+            }
+
+            /* Artist info card mobile */
+            .artist-info-card {
+                min-width: 280px;
+                padding: 0.75rem 1rem;
+                gap: 0.75rem;
+                bottom: -5px;
+            }
+
+            .artist-avatar {
+                width: 44px;
+                height: 44px;
+            }
+
+            .artist-name {
+                font-size: 0.95rem;
+            }
+
+            .artist-bio {
+                font-size: 0.75rem;
+                -webkit-line-clamp: 2;
+            }
+
+            .visit-gallery-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
             }
 
             .mood-pills {
@@ -1415,14 +1512,62 @@
     <script>
         // ===== ARTWORK DATA =====
         const artworkData = [
-            { artist: 'Anna Schulz', style: 'abstract', gradient: 'linear-gradient(135deg, #E87C9A, #FFB6C1, #E8927C)' },
-            { artist: 'Gomolemo Mokete', style: 'photography', gradient: 'linear-gradient(135deg, #7CB5E8, #A5D4F5, #5A9BD4)' },
-            { artist: 'Arya Bimbi', style: 'impressionism', gradient: 'linear-gradient(135deg, #9CE87C, #C4E8A5, #7BC85A)' },
-            { artist: 'Alvaro Daza', style: 'minimalist', gradient: 'linear-gradient(180deg, #E8D47C, #F5E6A3, #D4C088)' },
-            { artist: 'Patricia Wolf', style: 'contemporary', gradient: 'linear-gradient(135deg, #C97BE8, #DDA0DD, #A855D4)' },
-            { artist: 'Pedro Batista', style: 'abstract', gradient: 'linear-gradient(45deg, #E8927C, #F5B89A, #D47C5A)' },
-            { artist: 'Alann De Vuyst', style: 'photography', gradient: 'linear-gradient(135deg, #7CE8D4, #A5E8E2, #5AD4C0)' },
-            { artist: 'Dastagir Syed', style: 'contemporary', gradient: 'linear-gradient(90deg, #E87CB5, #F5A0C8, #D45A95)' }
+            {
+                artist: 'Anna Schulz',
+                style: 'abstract',
+                gradient: 'linear-gradient(135deg, #E87C9A, #FFB6C1, #E8927C)',
+                bio: 'Berlin-based abstract artist exploring emotions through bold color combinations and fluid forms.',
+                avatar: 'linear-gradient(135deg, #E87C9A, #C97B84)'
+            },
+            {
+                artist: 'Gomolemo Mokete',
+                style: 'photography',
+                gradient: 'linear-gradient(135deg, #7CB5E8, #A5D4F5, #5A9BD4)',
+                bio: 'Documentary photographer from Johannesburg capturing urban life and cultural heritage.',
+                avatar: 'linear-gradient(135deg, #7CB5E8, #5A9BD4)'
+            },
+            {
+                artist: 'Arya Bimbi',
+                style: 'impressionism',
+                gradient: 'linear-gradient(135deg, #9CE87C, #C4E8A5, #7BC85A)',
+                bio: 'Indonesian painter inspired by nature and traditional Balinese landscapes.',
+                avatar: 'linear-gradient(135deg, #9CE87C, #7BC85A)'
+            },
+            {
+                artist: 'Alvaro Daza',
+                style: 'minimalist',
+                gradient: 'linear-gradient(180deg, #E8D47C, #F5E6A3, #D4C088)',
+                bio: 'Madrid-based minimalist creating serene compositions with light and geometry.',
+                avatar: 'linear-gradient(135deg, #E8D47C, #D4C088)'
+            },
+            {
+                artist: 'Patricia Wolf',
+                style: 'contemporary',
+                gradient: 'linear-gradient(135deg, #C97BE8, #DDA0DD, #A855D4)',
+                bio: 'Vienna contemporary artist blending digital techniques with classical painting.',
+                avatar: 'linear-gradient(135deg, #C97BE8, #A855D4)'
+            },
+            {
+                artist: 'Pedro Batista',
+                style: 'abstract',
+                gradient: 'linear-gradient(45deg, #E8927C, #F5B89A, #D47C5A)',
+                bio: 'São Paulo abstract expressionist working with raw textures and earthy palettes.',
+                avatar: 'linear-gradient(135deg, #E8927C, #D47C5A)'
+            },
+            {
+                artist: 'Alann De Vuyst',
+                style: 'photography',
+                gradient: 'linear-gradient(135deg, #7CE8D4, #A5E8E2, #5AD4C0)',
+                bio: 'Belgian fine art photographer specializing in ethereal coastal landscapes.',
+                avatar: 'linear-gradient(135deg, #7CE8D4, #5AD4C0)'
+            },
+            {
+                artist: 'Dastagir Syed',
+                style: 'contemporary',
+                gradient: 'linear-gradient(90deg, #E87CB5, #F5A0C8, #D45A95)',
+                bio: 'Mumbai-based artist merging traditional Indian motifs with modern aesthetics.',
+                avatar: 'linear-gradient(135deg, #E87CB5, #D45A95)'
+            }
         ];
 
         let currentIndex = 0;
@@ -1481,35 +1626,52 @@
                     <div class="carousel-frame">
                         <div class="carousel-canvas">
                             <div class="carousel-image" style="background: ${artwork.gradient};"></div>
-                            <div class="carousel-overlay">
-                                <span class="carousel-artist">${artwork.artist}</span>
-                                <span class="carousel-style">${artwork.style}</span>
-                                <span class="carousel-enter">Enter Gallery &rarr;</span>
-                            </div>
                         </div>
                     </div>
+                    ${isCenter ? `
+                    <div class="artist-info-card">
+                        <div class="artist-avatar" style="background: ${artwork.avatar};"></div>
+                        <div class="artist-details">
+                            <div class="artist-name">${artwork.artist}</div>
+                            <div class="artist-bio">${artwork.bio}</div>
+                        </div>
+                        <button class="visit-gallery-btn">
+                            Visit Gallery
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                    ` : ''}
                 `;
 
-                // Click handler
-                item.addEventListener('click', () => {
-                    if (isCenter) {
-                        // Enter gallery
-                        visitHistory.unshift({
-                            artist: artwork.artist,
-                            style: artwork.style,
-                            timestamp: Date.now()
-                        });
-                        visitHistory = visitHistory.slice(0, 10);
-                        saveData();
-
-                        console.log(`Entering ${artwork.artist}'s gallery`);
-                        alert(`Entering ${artwork.artist}'s gallery...\n\nIn the full app, this takes you directly to their virtual gallery.`);
-                    } else {
-                        // Navigate to this artwork
+                // Click handler for side items (to navigate)
+                if (!isCenter) {
+                    item.addEventListener('click', () => {
                         currentIndex = idx;
                         renderCarousel();
+                    });
+                }
+
+                // Click handler for Visit Gallery button
+                if (isCenter) {
+                    const visitBtn = item.querySelector('.visit-gallery-btn');
+                    if (visitBtn) {
+                        visitBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            visitHistory.unshift({
+                                artist: artwork.artist,
+                                style: artwork.style,
+                                timestamp: Date.now()
+                            });
+                            visitHistory = visitHistory.slice(0, 10);
+                            saveData();
+
+                            console.log(`Entering ${artwork.artist}'s gallery`);
+                            alert(`Entering ${artwork.artist}'s gallery...\n\nIn the full app, this takes you directly to their virtual gallery.`);
+                        });
                     }
-                });
+                }
 
                 carouselViewport.appendChild(item);
             });
