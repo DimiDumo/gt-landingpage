@@ -347,15 +347,15 @@
             background-position: center;
         }
 
-        /* Artist info card - shown directly below center image */
+        /* Artist info card - attached directly to bottom of center image */
         .artist-info-card {
             position: absolute;
             bottom: 0;
             left: 0;
-            transform: translateY(calc(100% + 8px));
+            transform: translateY(100%);
             background: rgba(35, 30, 25, 0.92);
             backdrop-filter: blur(12px);
-            border-radius: 12px;
+            border-radius: 0 0 12px 12px;
             padding: 0.75rem 1rem;
             display: flex;
             align-items: center;
