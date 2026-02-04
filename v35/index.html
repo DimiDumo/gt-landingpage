@@ -343,19 +343,19 @@
             background-position: center;
         }
 
-        /* Artist info card - shown below center image */
+        /* Artist info card - shown directly below center image */
         .artist-info-card {
             position: absolute;
             bottom: 0;
-            left: 50%;
-            transform: translateX(-50%) translateY(calc(100% + 12px));
+            left: 0;
+            transform: translateY(calc(100% + 8px));
             background: rgba(35, 30, 25, 0.92);
             backdrop-filter: blur(12px);
-            border-radius: 16px;
-            padding: 0.875rem 1.25rem;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.875rem;
             /* Match the width of the carousel frame */
             width: 100%;
             box-shadow: 0 8px 32px rgba(0,0,0,0.3);
@@ -1140,7 +1140,7 @@
                 padding: 0 0.5rem;
             }
 
-            /* Artist info card mobile - full width */
+            /* Artist info card mobile - full width fixed at bottom */
             .artist-info-card {
                 position: fixed;
                 bottom: 0;
