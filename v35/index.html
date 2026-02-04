@@ -9,19 +9,19 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --wall-light: #F8F6F2;
-            --wall-shadow: #E8E4DC;
-            --floor-wood: #D4C4A8;
-            --floor-dark: #8B7355;
-            --frame-mahogany: #4A3728;
-            --frame-gold: #C9A868;
-            --accent-coral: #E8927C;
-            --accent-blue: #7CB5E8;
-            --accent-green: #9CE87C;
-            --accent-purple: #C97BE8;
-            --text-dark: #2C2416;
-            --text-light: #FAFAF8;
-            --vision-dark: #1F1D1A;
+            --wall-light: #FFFFFF;
+            --wall-shadow: #F8F9FA;
+            --floor-wood: #F0F0F0;
+            --floor-dark: #E0E0E0;
+            --frame-mahogany: #1A1A1A;
+            --frame-gold: #FF6B6B;
+            --accent-coral: #FF6B6B;
+            --accent-blue: #4ECDC4;
+            --accent-green: #95E1D3;
+            --accent-purple: #A78BFA;
+            --text-dark: #1A1A1A;
+            --text-light: #FFFFFF;
+            --vision-dark: #0A0A0A;
         }
 
         * {
@@ -59,7 +59,7 @@
         }
 
         .top-bar.scrolled {
-            background: rgba(248, 246, 242, 0.95);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             border-bottom-color: rgba(0,0,0,0.05);
         }
@@ -168,9 +168,7 @@
             text-align: center;
             padding: 4.5rem 0 1.5rem;
             position: relative;
-            background:
-                linear-gradient(to bottom, var(--wall-light), var(--wall-shadow) 80%),
-                repeating-linear-gradient(90deg, transparent, transparent 100px, rgba(0,0,0,0.02) 100px, rgba(0,0,0,0.02) 101px);
+            background: var(--wall-light);
             overflow: hidden;
         }
 
@@ -186,8 +184,8 @@
         .hero-badge {
             display: inline-block;
             padding: 0.4rem 1rem;
-            background: rgba(201, 168, 104, 0.15);
-            color: var(--frame-mahogany);
+            background: rgba(255, 107, 107, 0.1);
+            color: var(--accent-coral);
             border-radius: 100px;
             font-size: 0.8rem;
             font-weight: 500;
@@ -353,7 +351,7 @@
             bottom: 0;
             left: 0;
             transform: translateY(100%);
-            background: rgba(35, 30, 25, 0.92);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(12px);
             border-radius: 0 0 12px 12px;
             padding: 0.75rem 1rem;
@@ -362,7 +360,7 @@
             gap: 0.875rem;
             /* Match the width of the carousel frame */
             width: 100%;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             z-index: 20;
             opacity: 0;
             transition: opacity 0.4s ease;
@@ -379,7 +377,7 @@
             background-size: cover;
             background-position: center;
             flex-shrink: 0;
-            border: 2px solid rgba(255,255,255,0.2);
+            border: 2px solid rgba(0,0,0,0.1);
         }
 
         .artist-details {
@@ -392,13 +390,13 @@
             font-family: 'Playfair Display', serif;
             font-size: 1.1rem;
             font-weight: 500;
-            color: white;
+            color: var(--text-dark);
             margin-bottom: 0.2rem;
         }
 
         .artist-bio {
             font-size: 0.8rem;
-            color: rgba(255,255,255,0.7);
+            color: rgba(26, 26, 26, 0.6);
             line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -408,8 +406,8 @@
 
         .visit-gallery-btn {
             padding: 0.65rem 1.25rem;
-            background: white;
-            color: var(--text-dark);
+            background: var(--text-dark);
+            color: white;
             border: none;
             border-radius: 100px;
             font-family: inherit;
@@ -426,7 +424,7 @@
 
         .visit-gallery-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 4px 16px rgba(255,255,255,0.2);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
         }
 
         .visit-gallery-btn svg {
@@ -1157,6 +1155,8 @@
                 border-radius: 16px 16px 0 0;
                 padding: 0.875rem 1.25rem;
                 gap: 0.75rem;
+                background: rgba(255, 255, 255, 0.98);
+                box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
             }
 
             .artist-avatar {
