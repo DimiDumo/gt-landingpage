@@ -425,34 +425,6 @@
             stroke: var(--text-dark);
         }
 
-        /* Carousel dots indicator */
-        .carousel-dots {
-            display: flex;
-            justify-content: center;
-            gap: 0.5rem;
-            margin-top: 0.75rem;
-            flex-shrink: 0;
-        }
-
-        .carousel-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--wall-shadow);
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .carousel-dot.active {
-            background: var(--text-dark);
-            transform: scale(1.2);
-        }
-
-        .carousel-dot:hover {
-            background: var(--frame-mahogany);
-        }
-
         /* Carousel hint */
         .carousel-hint {
             text-align: center;
@@ -1262,8 +1234,6 @@
             </button>
         </div>
 
-        <div class="carousel-dots" id="carouselDots"></div>
-
     </section>
 
     <!-- Mood Selector -->
@@ -1573,7 +1543,6 @@
 
         // ===== CAROUSEL RENDERING =====
         const carouselViewport = document.getElementById('carouselViewport');
-        const carouselDots = document.getElementById('carouselDots');
         const prevBtn = document.getElementById('carouselPrev');
         const nextBtn = document.getElementById('carouselNext');
 
@@ -1634,18 +1603,6 @@
                 });
 
                 carouselViewport.appendChild(item);
-            });
-
-            // Render dots
-            carouselDots.innerHTML = '';
-            artworkData.forEach((_, idx) => {
-                const dot = document.createElement('button');
-                dot.className = `carousel-dot ${idx === currentIndex ? 'active' : ''}`;
-                dot.addEventListener('click', () => {
-                    currentIndex = idx;
-                    renderCarousel();
-                });
-                carouselDots.appendChild(dot);
             });
         }
 
