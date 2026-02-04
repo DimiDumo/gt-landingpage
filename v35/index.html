@@ -331,14 +331,11 @@
             aspect-ratio: 3 / 4;
         }
 
-        .carousel-item.side .carousel-frame {
+        /* Side and far-side items share the same height */
+        .carousel-item.side .carousel-frame,
+        .carousel-item.far-side .carousel-frame {
             height: calc(100vh - 280px);
             max-height: 48vh;
-        }
-
-        .carousel-item.far-side .carousel-frame {
-            height: calc(100vh - 320px);
-            max-height: 40vh;
         }
 
         .carousel-canvas {
@@ -1067,7 +1064,8 @@
                 max-height: 55vh;
             }
 
-            .carousel-item.side .carousel-frame {
+            .carousel-item.side .carousel-frame,
+            .carousel-item.far-side .carousel-frame {
                 height: calc(100vh - 300px);
                 max-height: 42vh;
             }
@@ -1142,7 +1140,8 @@
                 max-height: 50vh;
             }
 
-            .carousel-item.side .carousel-frame {
+            .carousel-item.side .carousel-frame,
+            .carousel-item.far-side .carousel-frame {
                 height: calc(100vh - 280px);
                 max-height: 38vh;
             }
