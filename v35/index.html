@@ -304,9 +304,16 @@
 
         /* Side items - partially visible, peeking from edges */
         .carousel-item.side {
-            opacity: 0.5;
-            transform: scale(0.75);
-            filter: brightness(0.85);
+            opacity: 0.6;
+            transform: scale(0.8);
+            filter: brightness(0.9);
+        }
+
+        /* Far side items - even more faded, for wide screens */
+        .carousel-item.far-side {
+            opacity: 0.35;
+            transform: scale(0.65);
+            filter: brightness(0.8);
         }
 
 
@@ -327,6 +334,11 @@
         .carousel-item.side .carousel-frame {
             height: calc(100vh - 280px);
             max-height: 48vh;
+        }
+
+        .carousel-item.far-side .carousel-frame {
+            height: calc(100vh - 320px);
+            max-height: 40vh;
         }
 
         .carousel-canvas {
@@ -1605,24 +1617,53 @@
         // ===== CAROUSEL RENDERING =====
         const carouselViewport = document.getElementById('carouselViewport');
 
+        function getVisibleCount() {
+            // Calculate how many items to show based on screen width
+            const width = window.innerWidth;
+            if (width >= 1400) return 5; // Wide desktop: 5 items
+            if (width >= 1100) return 5; // Desktop: 5 items
+            if (width >= 800) return 3;  // Tablet: 3 items
+            return 3; // Mobile: 3 items
+        }
+
         function getVisibleIndices(centerIdx) {
             const total = artworkData.length;
-            const prevIdx = (centerIdx - 1 + total) % total;
-            const nextIdx = (centerIdx + 1) % total;
-            return [prevIdx, centerIdx, nextIdx];
+            const count = getVisibleCount();
+            const indices = [];
+
+            // Calculate how many items on each side of center
+            const sideCount = Math.floor(count / 2);
+
+            for (let i = -sideCount; i <= sideCount; i++) {
+                indices.push((centerIdx + i + total) % total);
+            }
+
+            return indices;
         }
 
         function renderCarousel() {
-            const [prevIdx, centerIdx, nextIdx] = getVisibleIndices(currentIndex);
+            const indices = getVisibleIndices(currentIndex);
+            const centerPosition = Math.floor(indices.length / 2);
 
             carouselViewport.innerHTML = '';
 
-            // Create the three visible items
-            [prevIdx, centerIdx, nextIdx].forEach((idx, position) => {
+            // Create the visible items
+            indices.forEach((idx, position) => {
                 const artwork = artworkData[idx];
-                const isCenter = position === 1;
+                const isCenter = position === centerPosition;
+                const distanceFromCenter = Math.abs(position - centerPosition);
+
+                let itemClass = 'carousel-item';
+                if (isCenter) {
+                    itemClass += ' active';
+                } else if (distanceFromCenter === 1) {
+                    itemClass += ' side';
+                } else {
+                    itemClass += ' far-side';
+                }
+
                 const item = document.createElement('div');
-                item.className = `carousel-item ${isCenter ? 'active' : 'side'}`;
+                item.className = itemClass;
                 item.dataset.index = idx;
                 item.dataset.style = artwork.style;
                 item.dataset.artist = artwork.artist;
@@ -1684,6 +1725,13 @@
 
         // Initialize carousel
         renderCarousel();
+
+        // Re-render carousel on resize to adjust visible item count
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(renderCarousel, 150);
+        });
 
         // ===== AUDIENCE TABS =====
         const audienceTabs = document.querySelectorAll('.audience-tab');
