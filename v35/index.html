@@ -152,26 +152,28 @@
             color: white;
         }
 
-        /* ===== HERO ENTRANCE (v35 - with integrated carousel) ===== */
+        /* ===== HERO ENTRANCE (v35 - full height carousel) ===== */
         .hero-entrance {
-            min-height: 100vh;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
             align-items: center;
             text-align: center;
-            padding: 5rem 2rem 2rem;
+            padding: 4.5rem 0 1.5rem;
             position: relative;
             background:
                 linear-gradient(to bottom, var(--wall-light), var(--wall-shadow) 80%),
                 repeating-linear-gradient(90deg, transparent, transparent 100px, rgba(0,0,0,0.02) 100px, rgba(0,0,0,0.02) 101px);
+            overflow: hidden;
         }
 
         .hero-content {
             max-width: 700px;
             position: relative;
             z-index: 10;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+            padding: 0 1rem;
         }
 
         .hero-badge {
@@ -255,22 +257,26 @@
             color: white;
         }
 
-        /* ===== v35: HERO CAROUSEL (3 images, center focus) ===== */
+        /* ===== v35: HERO CAROUSEL (3 images, full height, center focus) ===== */
         .hero-carousel {
             width: 100%;
-            max-width: 900px;
+            flex: 1;
             position: relative;
-            margin: 0 auto;
-            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 0;
+            overflow: visible;
         }
 
         .carousel-viewport {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 1rem;
-            padding: 1rem 0;
+            gap: 1.5vw;
+            height: 100%;
             position: relative;
+            padding: 0 2rem;
         }
 
         .carousel-item {
@@ -278,6 +284,9 @@
             position: relative;
             cursor: pointer;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+            display: flex;
+            align-items: center;
         }
 
         /* Center (active) item */
@@ -286,37 +295,39 @@
             transform: scale(1);
         }
 
-        /* Side items - partially visible */
+        /* Side items - partially visible, peeking from edges */
         .carousel-item.side {
-            opacity: 0.6;
-            transform: scale(0.85);
-            filter: brightness(0.9);
+            opacity: 0.5;
+            transform: scale(0.75);
+            filter: brightness(0.85);
         }
 
         .carousel-item.side:hover {
-            opacity: 0.85;
-            transform: scale(0.88);
+            opacity: 0.7;
+            transform: scale(0.78);
         }
 
         .carousel-item.active:hover {
-            transform: scale(1.03) translateY(-5px);
+            transform: scale(1.02);
         }
 
         .carousel-frame {
             background: white;
-            padding: 12px;
+            padding: clamp(8px, 1.5vw, 16px);
             box-shadow:
-                0 8px 30px rgba(0,0,0,0.15),
+                0 8px 40px rgba(0,0,0,0.2),
                 inset 0 0 0 3px var(--frame-mahogany),
                 inset 0 0 0 7px var(--frame-gold),
                 inset 0 0 0 9px var(--frame-mahogany);
-            width: 240px;
-            height: 300px;
+            /* Height based on available viewport, width maintains aspect ratio */
+            height: calc(100vh - 180px);
+            max-height: 70vh;
+            aspect-ratio: 3 / 4;
         }
 
         .carousel-item.side .carousel-frame {
-            width: 180px;
-            height: 225px;
+            height: calc(100vh - 220px);
+            max-height: 55vh;
         }
 
         .carousel-canvas {
@@ -419,7 +430,8 @@
             display: flex;
             justify-content: center;
             gap: 0.5rem;
-            margin-top: 1rem;
+            margin-top: 0.75rem;
+            flex-shrink: 0;
         }
 
         .carousel-dot {
@@ -1057,13 +1069,18 @@
 
             /* v35: Carousel mobile adjustments */
             .carousel-frame {
-                width: 200px;
-                height: 250px;
+                height: calc(100vh - 200px);
+                max-height: 60vh;
             }
 
             .carousel-item.side .carousel-frame {
-                width: 140px;
-                height: 175px;
+                height: calc(100vh - 240px);
+                max-height: 45vh;
+            }
+
+            .carousel-viewport {
+                gap: 0.5rem;
+                padding: 0 1rem;
             }
 
             .carousel-nav {
@@ -1117,36 +1134,45 @@
 
         @media (max-width: 600px) {
             .hero-entrance {
-                padding: 4.5rem 1rem 2rem;
+                padding: 4rem 0 1rem;
             }
 
-            .hero-cta-group {
-                flex-direction: column;
+            .hero-title {
+                font-size: clamp(1.5rem, 6vw, 2.5rem);
             }
 
             /* v35: Smaller carousel on small screens */
             .carousel-frame {
-                width: 160px;
-                height: 200px;
+                height: calc(100vh - 180px);
+                max-height: 55vh;
             }
 
             .carousel-item.side .carousel-frame {
-                width: 100px;
-                height: 125px;
+                height: calc(100vh - 220px);
+                max-height: 40vh;
             }
 
             .carousel-viewport {
-                gap: 0.5rem;
+                gap: 0.25rem;
+                padding: 0 0.5rem;
             }
 
             .carousel-nav {
-                width: 32px;
-                height: 32px;
+                width: 28px;
+                height: 28px;
             }
 
             .carousel-nav svg {
-                width: 14px;
-                height: 14px;
+                width: 12px;
+                height: 12px;
+            }
+
+            .carousel-nav.prev {
+                left: 0.25rem;
+            }
+
+            .carousel-nav.next {
+                right: 0.25rem;
             }
 
             .mood-pills {
