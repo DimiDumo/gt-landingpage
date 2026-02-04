@@ -52,9 +52,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: transparent;
+            backdrop-filter: none;
+            border-bottom: 1px solid transparent;
+            transition: background 0.3s, backdrop-filter 0.3s, border-color 0.3s;
+        }
+
+        .top-bar.scrolled {
             background: rgba(248, 246, 242, 0.95);
             backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            border-bottom-color: rgba(0,0,0,0.05);
         }
 
         .logo {
@@ -1776,6 +1783,20 @@
         window.addEventListener('scroll', updateFilterVisibility);
         window.addEventListener('resize', updateFilterVisibility);
         updateFilterVisibility();
+
+        // ===== HEADER SCROLL EFFECT =====
+        const topBar = document.querySelector('.top-bar');
+
+        function updateHeaderBackground() {
+            if (window.scrollY > 50) {
+                topBar.classList.add('scrolled');
+            } else {
+                topBar.classList.remove('scrolled');
+            }
+        }
+
+        window.addEventListener('scroll', updateHeaderBackground);
+        updateHeaderBackground();
 
         // ===== FADE IN ANIMATIONS =====
         const fadeElements = document.querySelectorAll('.fade-up');
